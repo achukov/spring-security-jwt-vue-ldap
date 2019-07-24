@@ -1,0 +1,73 @@
+ //to reset element-ui default css
+ .el-upload {
+   input[type="file"] {
+     display: none !important;
+   }
+ }
+
+ .el-upload__input {
+   display: none;
+ }
+
+ //Temporary solution to diolag problem https://github.com/ElemeFE/element/issues/2461
+ .el-dialog {
+   transform: none;
+   left: 0;
+   position: relative;
+   margin: 0 auto;
+ }
+
+ //element ui upload
+ .upload-container {
+   .el-upload {
+     width: 100%;
+
+     .el-upload-dragger {
+       width: 100%;
+       height: 200px;
+     }
+   }
+ }
+
+ .el-select {
+   display: list-item;
+ }
+
+ .el-input.is-disabled .el-input__inner  {
+  background-color: #F5F7FA; 
+  border-color: #E4E7ED;
+  color: #606266;
+  cursor: text;
+}
+.el-textarea.is-disabled .el-textarea__inner{
+  background-color: #F5F7FA; 
+  border-color: #E4E7ED;
+  color: #606266;
+  cursor: text;
+}
+.el-radio-button__orig-radio:disabled+.el-radio-button__inner {
+  color: #606266;
+  cursor: text;
+}
+.el-radio-button__orig-radio:disabled:checked+.el-radio-button__inner {
+  background-color: #409EFF;
+}
+// .el-collapse-item__header {
+//   display: -webkit-box;
+//   display: -ms-flexbox;
+//   display: flex;
+//   -webkit-box-align: center;
+//   -ms-flex-align: center;
+//   align-items: center;
+//   height: 30;
+//   line-height: 30;
+//   background-color: #FFF;
+//   color: #303133;
+//   cursor: pointer;
+//   border-bottom: 1px solid #EBEEF5;
+//   font-size: 13px;
+//   font-weight: 500;
+//   -webkit-transition: border-bottom-color .3s;
+//   transition: border-bottom-color .3s;
+//   outline: 0;
+// }

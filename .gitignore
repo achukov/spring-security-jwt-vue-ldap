@@ -1,0 +1,13 @@
+vue-admin/node_modules/
+vue-admin/dist/
+vue-admin/package-lock.json
+report-api/build
+report-api/classes/
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
