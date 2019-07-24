@@ -1,0 +1,55 @@
+server:
+  tomcat:
+    protocol-header: x-forwarded-proto
+    use-relative-redirects: true
+
+spring:
+  profiles:
+    active: dev
+  jackson:
+    serialization:
+      write-dates-as-timestamps: true
+    time-zone: UTC
+  servlet:
+    multipart:
+      max-request-size: 10MB
+      max-file-size: 10MB
+  jpa:
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL57Dialect
+
+
+jwt:
+  tokenHeader: Authorization
+  secret: w-eyJleHAiOjE1NDMyMDUyODUsInN1YiI6ImFkbWluIiwiY3JlYXRlZCI6MTU0MDYxMzI4N
+  expiration: 86400000
+  tokenHead: "Bearer "
+  exceptUrl: "/auth/**"
+  route:
+    login: /auth/login
+    refresh: /auth/refresh
+    client: /auth/login
+
+management:
+  endpoints:
+    web:
+      exposure:
+       include: shutdown
+  endpoint:
+    shutdown:
+      enabled: true
+
+ldap:
+  admins: alexey_chukov
+  host: ldap://z2glrumsvls01.Global.batgen.com:389
+  root: OU=RU,OU=BAT Users,DC=Global,DC=batgen,DC=com
+  domain: Global.batgen.com
+  user-dn: CN=RU SVCITWiki,OU=Service Accounts,OU=Admin,DC=Global,DC=batgen,DC=com
+  user-password: G5Rj"DueU4{a8pq
+  

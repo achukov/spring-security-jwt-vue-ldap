@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="LdpProcess" name="LdpProcess" isExecutable="true">
+    <startEvent id="startevent1" name="Start"></startEvent>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <userTask id="usertask1" name="submit application" activiti:assignee="#{ASSIGNEE_USER}">
+      <extensionElements>
+        <modeler:initiator-can-complete xmlns:modeler="http://activiti.com/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
+      </extensionElements>
+    </userTask>
+    <userTask id="usertask2" name="Approval [Department Manager]">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.ifsaid.report.common.activiti.listiner.NormalTaskCreateListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="usertask3" name="Approval [General Manager]">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.ifsaid.report.common.activiti.listiner.NormalTaskCreateListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="usertask1"></sequenceFlow>
+    <sequenceFlow id="flow2" name="submit" sourceRef="usertask1" targetRef="usertask2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[#{OUTCOME=="submit"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow3" name="agree" sourceRef="usertask2" targetRef="usertask3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[#{OUTCOME=="agree"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow4" name="agree" sourceRef="usertask3" targetRef="endevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[#{OUTCOME=="agree"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow6" name="turn down" sourceRef="usertask2" targetRef="usertask1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[#{OUTCOME=="turn down"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow7" name="turn down" sourceRef="usertask3" targetRef="usertask1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[#{OUTCOME=="turn down"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow5" name="give up" sourceRef="usertask1" targetRef="endevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${OUTCOME=="give up"}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_LdpProcess">
+    <bpmndi:BPMNPlane bpmnElement="LdpProcess" id="BPMNPlane_LdpProcess">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="192.5" y="21.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="28.0" width="28.0" x="193.5" y="465.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
+        <omgdc:Bounds height="55.0" width="171.0" x="122.0" y="121.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask2" id="BPMNShape_usertask2">
+        <omgdc:Bounds height="55.0" width="171.0" x="122.0" y="221.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask3" id="BPMNShape_usertask3">
+        <omgdc:Bounds height="55.0" width="171.0" x="122.0" y="331.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="207.5" y="51.0"></omgdi:waypoint>
+        <omgdi:waypoint x="207.5" y="121.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="207.5" y="176.0"></omgdi:waypoint>
+        <omgdi:waypoint x="207.5" y="221.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="207.5" y="276.0"></omgdi:waypoint>
+        <omgdi:waypoint x="207.5" y="331.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="207.5" y="386.0"></omgdi:waypoint>
+        <omgdi:waypoint x="207.5" y="465.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="122.0" y="147.7433628318584"></omgdi:waypoint>
+        <omgdi:waypoint x="38.0" y="147.0"></omgdi:waypoint>
+        <omgdi:waypoint x="38.0" y="479.0"></omgdi:waypoint>
+        <omgdi:waypoint x="193.5" y="479.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="293.0" y="248.21782178217822"></omgdi:waypoint>
+        <omgdi:waypoint x="359.0" y="248.0"></omgdi:waypoint>
+        <omgdi:waypoint x="359.0" y="148.0"></omgdi:waypoint>
+        <omgdi:waypoint x="293.0" y="148.21782178217822"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
+        <omgdi:waypoint x="293.0" y="358.25915492957745"></omgdi:waypoint>
+        <omgdi:waypoint x="385.0" y="358.0"></omgdi:waypoint>
+        <omgdi:waypoint x="385.0" y="148.0"></omgdi:waypoint>
+        <omgdi:waypoint x="293.0" y="128.45228826803356"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
