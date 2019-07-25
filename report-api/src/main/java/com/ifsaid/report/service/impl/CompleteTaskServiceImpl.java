@@ -19,7 +19,7 @@ import org.activiti.engine.task.Task;
 import java.util.*;
 
 public class CompleteTaskServiceImpl extends BaseServiceImpl<Ldp, String, LdpRepository> implements ICompleteTaskService {
-//TODO merge with ldpServices
+
     private final ILdpService ldpService;
     private final RepositoryService repositoryService;
     private final RuntimeService runtimeService;
