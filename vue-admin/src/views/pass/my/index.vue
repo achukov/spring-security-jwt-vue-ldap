@@ -209,9 +209,9 @@
 
 <script>
 
-import { scrollTo } from '@/utils/scroll-to'
-import { getMyPassPage, savePass, updatePass, removePassById } from '@/api/pass'
-import { mapGetters } from 'vuex'
+import { scrollTo } from '@/utils/scroll-to';
+import { getMyPassPage, savePass, updatePass, removePassById } from '@/api/pass';
+import { mapGetters } from 'vuex';
 // import UserList from '@/components/UserList'
 
 export default {
@@ -291,7 +291,7 @@ export default {
           // }
         ]
       }
-    }
+    };
   },
   computed: {
     ...mapGetters([
@@ -300,142 +300,142 @@ export default {
     ])
   },
   created() {
-    this.getTableData()
+    this.getTableData();
   },
   methods: {
     handleCurrentChange(index) {
-      this.page.page = index
-      scrollTo(0, 800)
-      this.getTableData()
+      this.page.page = index;
+      scrollTo(0, 800);
+      this.getTableData();
     },
     handleSizeChange(size) {
-      this.page.size = size
-      scrollTo(0, 800)
-      this.getTableData()
+      this.page.size = size;
+      scrollTo(0, 800);
+      this.getTableData();
     },
     handleFilter() {
-      this.getTableData()
+      this.getTableData();
     },
     getTableData() {
-      const _this = this
-      _this.loading = true
+      const _this = this;
+      _this.loading = true;
       getMyPassPage(_this.page).then((result) => {
         if (result.status === 200) {
-          _this.tableData = result.data.content
-          _this.page.total = result.data.totalElements
-          _this.loading = false
+          _this.tableData = result.data.content;
+          _this.page.total = result.data.totalElements;
+          _this.loading = false;
         }
       }).catch((err) => {
-        console.log('err :', err)
-      })
+        console.log('err :', err);
+      });
     },
     currentChange(index) {
       // Switch paging
-      this.page.page = index
-      this.getTableData()
+      this.page.page = index;
+      this.getTableData();
     },
     emptyEntity() {
-      this.entity.psid = 0
-      this.entity.type = 'Пропуск на посещение'
-      this.entity.createdBy = ''// = this.$store.state.user.account
-      this.entity.startdate = ''
-      this.entity.enddate = ''
-      this.entity.visitors = ''
-      this.entity.contactperson = ''
-      this.entity.phonenumber = ''
-      this.entity.carnumber = ''
-      this.entity.cartype = ''
-      this.entity.parktype = ''
-      this.entity.parklevel = ''
-      this.entity.buildingaccess = 0
-      this.entity.state = 0
+      this.entity.psid = 0;
+      this.entity.type = 'Пропуск на посещение';
+      this.entity.createdBy = '';// = this.$store.state.user.account
+      this.entity.startdate = '';
+      this.entity.enddate = '';
+      this.entity.visitors = '';
+      this.entity.contactperson = '';
+      this.entity.phonenumber = '';
+      this.entity.carnumber = '';
+      this.entity.cartype = '';
+      this.entity.parktype = '';
+      this.entity.parklevel = '';
+      this.entity.buildingaccess = 0;
+      this.entity.state = 0;
     },
     addEntity() {
-      this.isEdit = false
-      this.emptyEntity()
-      this.dialog.title = 'New Pass Approval Request'
-      this.dialog.visible = true
-      this.entity.historyLog = ';Created by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString()
+      this.isEdit = false;
+      this.emptyEntity();
+      this.dialog.title = 'New Pass Approval Request';
+      this.dialog.visible = true;
+      this.entity.historyLog = ';Created by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString();
       this.$nextTick(() => {
-        this.$refs.entity.clearValidate()
-      })
+        this.$refs.entity.clearValidate();
+      });
     },
     updateEntity(data) {
-      this.emptyEntity()
-      this.entity.psid = data.psid
-      this.entity.type = data.type
-      this.entity.createdBy = data.createdBy
-      this.entity.startdate = data.startdate
-      this.entity.enddate = data.enddate
-      this.entity.visitors = data.visitors
-      this.entity.contactperson = data.contactperson
-      this.entity.phonenumber = data.phonenumber
-      this.entity.carnumber = data.carnumber
-      this.entity.cartype = data.cartype
-      this.entity.parktype = data.parktype
-      this.entity.parklevel = data.parklevel
-      this.entity.buildingaccess = data.buildingaccess
-      this.entity.state = data.state
-      this.entity.createTime = data.createTime
-      this.entity.historyLog = data.historyLog
-      this.dialog.title = 'Pass Approval Request'
-      this.dialog.visible = true
-      this.entity.state !== 0 ? this.isEdit = true : this.isEdit = false
+      this.emptyEntity();
+      this.entity.psid = data.psid;
+      this.entity.type = data.type;
+      this.entity.createdBy = data.createdBy;
+      this.entity.startdate = data.startdate;
+      this.entity.enddate = data.enddate;
+      this.entity.visitors = data.visitors;
+      this.entity.contactperson = data.contactperson;
+      this.entity.phonenumber = data.phonenumber;
+      this.entity.carnumber = data.carnumber;
+      this.entity.cartype = data.cartype;
+      this.entity.parktype = data.parktype;
+      this.entity.parklevel = data.parklevel;
+      this.entity.buildingaccess = data.buildingaccess;
+      this.entity.state = data.state;
+      this.entity.createTime = data.createTime;
+      this.entity.historyLog = data.historyLog;
+      this.dialog.title = 'Pass Approval Request';
+      this.dialog.visible = true;
+      this.entity.state !== 0 ? this.isEdit = true : this.isEdit = false;
     },
     deleteEntity(data) {
-      const _this = this
+      const _this = this;
       if (data.psid > 0) {
         _this.$confirm('Are you sure you want to delete this record?', 'warning',
           { confirmButtonText: 'Confirm', cancelButtonText: 'Cancel', type: 'warning' })
           .then(() => {
             removePassById(data.psid).then((result) => {
               if (result.status === 200) {
-                _this.$notify({ title: 'Success', message: 'Successfully deleted!', type: 'success' })
-                _this.getTableData()
+                _this.$notify({ title: 'Success', message: 'Successfully deleted!', type: 'success' });
+                _this.getTableData();
               }
             }).catch((err) => {
-              console.log('err :', err)
-              _this.$notify.error({ title: 'Error', message: err.message })
-            })
+              console.log('err :', err);
+              _this.$notify.error({ title: 'Error', message: err.message });
+            });
           }).catch(() => {
-            _this.$message({ type: 'info', message: 'Cancelled' })
-          })
+            _this.$message({ type: 'info', message: 'Cancelled' });
+          });
       }
     },
     saveAndFlush(id) {
-      const _this = this
+      const _this = this;
       _this.$refs.entity.validate(valid => {
         if (valid) {
-          _this.entity.state = id
+          _this.entity.state = id;
           if (_this.entity.psid > 0) {
-            _this.entity.historyLog = _this.entity.historyLog + 'Updated by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString()
+            _this.entity.historyLog = _this.entity.historyLog + 'Updated by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString();
             updatePass(_this.entity).then((result) => {
               if (result.status === 200) {
-                _this.$notify({ title: 'Success', message: 'Заявка отправлена на согласование', type: 'success' })
-                _this.getTableData()
-                _this.dialog.visible = false
+                _this.$notify({ title: 'Success', message: 'Заявка отправлена на согласование', type: 'success' });
+                _this.getTableData();
+                _this.dialog.visible = false;
               }
             }).catch((err) => {
-              console.log('err :', err)
-            })
+              console.log('err :', err);
+            });
           } else {
             savePass(_this.entity).then((result) => {
-              _this.isEdit = false
+              _this.isEdit = false;
               if (result.status === 200) {
-                _this.$notify({ title: 'Success', message: 'Заявка отправлена на согласование', type: 'success' })
-                _this.getTableData()
-                _this.dialog.visible = false
+                _this.$notify({ title: 'Success', message: 'Заявка отправлена на согласование', type: 'success' });
+                _this.getTableData();
+                _this.dialog.visible = false;
               }
             }).catch((err) => {
-              console.log('err :', err)
-              _this.$notify.error({ title: 'Error', message: err.message })
-            })
+              console.log('err :', err);
+              _this.$notify.error({ title: 'Error', message: err.message });
+            });
           }
         }
-      })
+      });
     }
   }
-}
+};
 
 </script>
 

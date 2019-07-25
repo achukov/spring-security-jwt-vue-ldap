@@ -56,8 +56,8 @@
 
 <script>
 
-import { getDeptTree, getDeptAll, saveDept, updateDept, removeDeptById } from '@/api/department'
-import { mapGetters } from 'vuex'
+import { getDeptTree, getDeptAll, saveDept, updateDept, removeDeptById } from '@/api/department';
+import { mapGetters } from 'vuex';
 
 export default {
   components: {},
@@ -85,7 +85,7 @@ export default {
         level: [{ required: true, message: 'Department level cannot be empty and must be a number', trigger: 'blur' }],
         describe: [{ required: true, message: 'Department description cannot be empty', trigger: 'blur' }]
       }
-    }
+    };
   },
   computed: {
     ...mapGetters([
@@ -93,104 +93,104 @@ export default {
     ])
   },
   created() {
-    this.getDeptTreeData()
-    this.getDeptListData()
+    this.getDeptTreeData();
+    this.getDeptListData();
   },
   methods: {
     getDeptTreeData() {
-      const _this = this
-      _this.loading = true
+      const _this = this;
+      _this.loading = true;
       getDeptTree().then((result) => {
         if (result.status === 200) {
-          _this.treeData = result.data
-          _this.loading = false
+          _this.treeData = result.data;
+          _this.loading = false;
         }
       }).catch((err) => {
-        console.log('err :', err)
-      })
+        console.log('err :', err);
+      });
     },
     getDeptListData() {
-      const _this = this
-      _this.loading = true
+      const _this = this;
+      _this.loading = true;
       getDeptAll().then((result) => {
         if (result.status === 200) {
-          _this.listData = result.data
-          _this.loading = false
+          _this.listData = result.data;
+          _this.loading = false;
         }
       }).catch((err) => {
-        console.log('err :', err)
-      })
+        console.log('err :', err);
+      });
     },
     handleNodeClick(data) {
-      this.deptForm = data
+      this.deptForm = data;
     },
     handleChange(data) {
-      console.log('data :', data)
+      console.log('data :', data);
     },
     saveAndFlush() {
-      const _this = this
+      const _this = this;
       _this.$refs.deptForm.validate(valid => {
         if (valid) {
-          _this.deptForm.upTime = new Date()
+          _this.deptForm.upTime = new Date();
           if (_this.deptForm.id > 0) {
             updateDept(_this.deptForm).then((result) => {
               if (result.status === 200) {
-                _this.$notify({ title: 'Success', message: 'Modify department success!', type: 'success' })
-                _this.getDeptTreeData()
-                _this.getDeptListData()
+                _this.$notify({ title: 'Success', message: 'Modify department success!', type: 'success' });
+                _this.getDeptTreeData();
+                _this.getDeptListData();
               }
-              _this.isEdit = true
+              _this.isEdit = true;
             }).catch((err) => {
-              console.log('err :', err)
-              _this.$notify.error({ title: 'Error', message: err.message })
-            })
+              console.log('err :', err);
+              _this.$notify.error({ title: 'Error', message: err.message });
+            });
           } else {
-            _this.deptForm.addTime = new Date()
+            _this.deptForm.addTime = new Date();
             saveDept(_this.deptForm).then((result) => {
               if (result.status === 200) {
-                _this.$notify({ title: 'Success', message: 'New department success!', type: 'success' })
-                _this.getDeptTreeData()
-                _this.getDeptListData()
+                _this.$notify({ title: 'Success', message: 'New department success!', type: 'success' });
+                _this.getDeptTreeData();
+                _this.getDeptListData();
               }
-              _this.isEdit = true
+              _this.isEdit = true;
             }).catch((err) => {
-              console.log('err :', err)
-              _this.$notify.error({ title: 'Error', message: err.message })
-            })
+              console.log('err :', err);
+              _this.$notify.error({ title: 'Error', message: err.message });
+            });
           }
         }
-      })
+      });
     },
     addEntity() {
-      this.isEdit = false
-      const parentId = this.deptForm.id
-      this.deptForm = { id: 0, name: '', parentId: parentId, level: '', describe: '' }
+      this.isEdit = false;
+      const parentId = this.deptForm.id;
+      this.deptForm = { id: 0, name: '', parentId: parentId, level: '', describe: '' };
     },
     deleteEntity() {
-      const _this = this
+      const _this = this;
       if (_this.deptForm.id > 0) {
         _this.$confirm('Make sure to delete [' + _this.deptForm.name + '] Please confirm that this department is not used below. Otherwise it cannot be deleted. Continue?', 'Warning',
           { confirmButtonText: 'Confirm', cancelButtonText: 'Cancel', type: 'warning' })
           .then(() => {
             removeDeptById(_this.deptForm.id).then((result) => {
               if (result.status === 200) {
-                _this.$notify({ type: 'success', title: 'Success', message: 'Delete department successfully!' })
-                _this.getDeptTreeData()
-                _this.getDeptListData()
+                _this.$notify({ type: 'success', title: 'Success', message: 'Delete department successfully!' });
+                _this.getDeptTreeData();
+                _this.getDeptListData();
               }
             }).catch((err) => {
-              console.log('err :', err)
-              _this.$notify.error({ title: 'Error', message: err.message })
-            })
+              console.log('err :', err);
+              _this.$notify.error({ title: 'Error', message: err.message });
+            });
           }).catch(() => {
-            _this.$message({ type: 'info', message: 'Undelete' })
-          })
+            _this.$message({ type: 'info', message: 'Undelete' });
+          });
       } else {
-        _this.$notify.error({ title: 'Error', message: 'Please select the department before you can delete it.' })
+        _this.$notify.error({ title: 'Error', message: 'Please select the department before you can delete it.' });
       }
     }
   }
-}
+};
 
 </script>
 <style lang='scss' scoped>

@@ -1,89 +1,89 @@
-import Vue from 'vue'
+import Vue from 'vue';
 // Time formatting
-import { formatDate } from '@/utils/index'
+import { formatDate } from '@/utils/index';
 
 // Timestamp-processed filter
 Vue.filter('formatDate', function(time) {
   // Return the processed value
-  var date = new Date(time)
-  return formatDate(date, 'dd-MM-yyyy')
-})
+  var date = new Date(time);
+  return formatDate(date, 'dd-MM-yyyy');
+});
 
 // Timestamp-processed filter
 Vue.filter('formatTime', function(time) {
   // Return the processed value
-  var date = new Date(time)
-  return formatDate(date, 'dd-MM-yyyy hh:mm:ss')
-})
+  var date = new Date(time);
+  return formatDate(date, 'dd-MM-yyyy hh:mm:ss');
+});
 
 // Status display filter
 Vue.filter('showState', function(state) {
   // Determine what type of state is
-  let result = ''
+  let result = '';
   if (state === 0) {
-    result = 'Deleted'
+    result = 'Deleted';
   } else if (state === 1) {
-    result = 'Normal'
+    result = 'Normal';
   } else {
-    result = 'Hidden'
+    result = 'Hidden';
   }
-  return result
-})
+  return result;
+});
 
 Vue.filter('showBuild', function(buildingaccess) {
   // Determine what type of state is
-  let result = ''
+  let result = '';
   if (buildingaccess === '0') {
-    result = 'Нет'
+    result = 'Нет';
   } else if (buildingaccess === '1') {
-    result = 'Да'
+    result = 'Да';
   } else {
-    result = 'Неизвестно'
+    result = 'Неизвестно';
   }
-  return result
-})
+  return result;
+});
 
 Vue.filter('showInherit', function(inherit) {
-  let result = ''
+  let result = '';
   if (inherit === 0) {
-    result = 'Not inherit'
+    result = 'Not inherit';
   } else if (inherit === 1) {
-    result = 'inherit'
+    result = 'inherit';
   } else {
-    result = 'Not inherit'
+    result = 'Not inherit';
   }
-  return result
-})
+  return result;
+});
 
 // Status display filter
 Vue.filter('showGender', function(gender) {
   // Determine what type of state is
-  let result = ''
+  let result = '';
   if (gender === 0) {
-    result = 'Female'
+    result = 'Female';
   } else if (gender === 1) {
-    result = 'Male'
+    result = 'Male';
   } else {
-    result = 'Unknown'
+    result = 'Unknown';
   }
-  return result
-})
+  return result;
+});
 
 Vue.filter('uppercase', function(value) {
   if (!value) {
-    return ''
+    return '';
   }
 
-  value = value.toString()
-  return value.toUpperCase()
-})
+  value = value.toString();
+  return value.toUpperCase();
+});
 
 Vue.filter('formatText', function(text) {
   try {
-    var array = text.split(';')
-    var str = array.join('\n')
-    return str
+    var array = text.split(';');
+    var str = array.join('\n');
+    return str;
   } catch (e) {
-    return null
+    return null;
   }
-})
+});

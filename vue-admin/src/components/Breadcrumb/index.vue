@@ -10,41 +10,41 @@
 </template>
 
 <script>
-import pathToRegexp from 'path-to-regexp'
+import pathToRegexp from 'path-to-regexp';
 
 export default {
   data() {
     return {
       levelList: null
-    }
+    };
   },
   watch: {
     $route() {
-      this.getBreadcrumb()
+      this.getBreadcrumb();
     }
   },
   created() {
-    this.getBreadcrumb()
+    this.getBreadcrumb();
   },
   methods: {
     getBreadcrumb() {
-      const { params } = this.$route
+      const { params } = this.$route;
       let matched = this.$route.matched.filter(item => {
         if (item.name) {
           // To solve this problem https://github.com/PanJiaChen/vue-element-admin/issues/561
-          var toPath = pathToRegexp.compile(item.path)
-          item.path = toPath(params)
-          return true
+          var toPath = pathToRegexp.compile(item.path);
+          item.path = toPath(params);
+          return true;
         }
-      })
-      const first = matched[0]
+      });
+      const first = matched[0];
       if (first && first.name !== 'dashboard') {
-        matched = [{ path: '/dashboard', meta: { title: 'Home' }}].concat(matched)
+        matched = [{ path: '/dashboard', meta: { title: 'Home' }}].concat(matched);
       }
-      this.levelList = matched
+      this.levelList = matched;
     }
   }
-}
+};
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>

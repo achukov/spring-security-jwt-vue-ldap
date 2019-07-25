@@ -42,7 +42,7 @@ public class BaseController<T extends BaseEntity, ID, S extends IBaseService<T, 
         return Result.success(baseService.findAll(rageRequest));
     }
 
-    @ApiOperation(value = "New", notes = "without Id")
+    @ApiOperation(value = "New", notes = "Without Id")
     @PostMapping("/")
     public Result<T> save(@RequestBody T entity) {
         log.info("save :  {}", entity);

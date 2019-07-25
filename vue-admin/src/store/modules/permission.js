@@ -1,5 +1,5 @@
 // store/permission.js
-import { asyncRouterMap, constantRouterMap } from '@/router'
+import { asyncRouterMap, constantRouterMap } from '@/router';
 
 /**
  * @param  {Array} userRouter User permission json returned in the background.
@@ -8,24 +8,24 @@ import { asyncRouterMap, constantRouterMap } from '@/router'
  */
 
 export function recursionRouter(userRouter = [], allRouter = []) {
-  var realRoutes = []
+  var realRoutes = [];
   allRouter.forEach((v, i) => {
     // 404 loop
     if (v.path === '*') {
-      realRoutes.push(v)
+      realRoutes.push(v);
     }
     userRouter.forEach((item, index) => {
       if (item.resources === v.meta.resources) {
         if (item.children && item.children.length > 0) {
-          v.children = recursionRouter(item.children, v.children)
+          v.children = recursionRouter(item.children, v.children);
         }
-        v.meta.title = item.title
-        v.meta.icon = item.icon
-        realRoutes.push(v)
+        v.meta.title = item.title;
+        v.meta.icon = item.icon;
+        realRoutes.push(v);
       }
-    })
-  })
-  return realRoutes
+    });
+  });
+  return realRoutes;
 }
 
 /**
@@ -36,10 +36,10 @@ export function recursionRouter(userRouter = [], allRouter = []) {
 export function setDefaultRoute(routes) {
   routes.forEach((v, i) => {
     if (v.children && v.children.length > 0) {
-      v.redirect = { name: v.children[0].name }
-      setDefaultRoute(v.children)
+      v.redirect = { name: v.children[0].name };
+      setDefaultRoute(v.children);
     }
-  })
+  });
 }
 
 const permission = {
@@ -49,19 +49,19 @@ const permission = {
   },
   mutations: {
     SET_ROUTERS: (state, routers) => {
-      state.dynamicRouters = routers
-      state.routers = constantRouterMap.concat(routers)
+      state.dynamicRouters = routers;
+      state.routers = constantRouterMap.concat(routers);
       // console.log(JSON.stringify(state.routers))
     }
   },
   actions: {
     GenerateRoutes({ commit }, data) {
       return new Promise(resolve => {
-        commit('SET_ROUTERS', recursionRouter(data, asyncRouterMap))
-        resolve()
-      })
+        commit('SET_ROUTERS', recursionRouter(data, asyncRouterMap));
+        resolve();
+      });
     }
   }
-}
+};
 
-export default permission
+export default permission;

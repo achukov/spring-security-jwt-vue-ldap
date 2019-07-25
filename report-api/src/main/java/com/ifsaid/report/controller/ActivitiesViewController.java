@@ -26,7 +26,7 @@ public class ActivitiesViewController {
         this.activitiesViewService = activitiesViewService;
     }
     @GetMapping
-    public void checkNowProcessActivitiesByLeaveBillId(@RequestParam(name = "LdpId") String LdpId,
+    public void checkNowProcessActivitiesByLdpId(@RequestParam(name = "LdpId") String LdpId,
                                                        HttpServletResponse response) {
         try (InputStream stream = activitiesViewService.checkNowProcessActivitiesById(LdpId);
              ServletOutputStream outputStream = response.getOutputStream()) {

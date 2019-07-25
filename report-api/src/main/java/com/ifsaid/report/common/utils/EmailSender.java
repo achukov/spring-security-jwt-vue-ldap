@@ -2,31 +2,20 @@ package com.ifsaid.report.common.utils;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
-import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.mail.internet.MimeMessage;
 import javax.servlet.ServletContext;
 
 import com.ifsaid.report.entity.User;
-import com.ifsaid.report.vo.UserVo;
 
-import java.util.logging.Level;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
-import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;

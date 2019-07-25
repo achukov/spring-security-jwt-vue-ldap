@@ -68,8 +68,9 @@ public class ActivitiesViewServiceImpl implements IActivitiesViewService {
         List<String> hightLightElements = new ArrayList<>();
         hightLightElements.add(activityId);
         // Return to the image stream, if the font is not set, Chinese will be garbled
-        InputStream imageStream = processDiagramGenerator.generateDiagram(bpmnModel, "PNG", hightLightElements,
-                new ArrayList<>(), "Black body", "Black body", "Black body", processEngineConfiguration.getClassLoader(), 1.0);
+        InputStream imageStream;
+        imageStream = processDiagramGenerator.generateDiagram(bpmnModel, "PNG", hightLightElements,
+                new ArrayList<>(), "Lucida", "Lucida", "Lucida", processEngineConfiguration.getClassLoader(), 1.0);
 
         return imageStream;
     }

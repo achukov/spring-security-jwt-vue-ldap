@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 export default {
   name: 'Logo',
   props: {
@@ -29,16 +29,16 @@ export default {
     }
   },
   data() {
-    return {}
+    return {};
   },
   computed: {
     ...mapGetters(['website']),
     type: function(val) {
-      return this.website.logo.indexOf('static') !== -1
+      return this.website.logo.indexOf('static') !== -1;
     }
   },
   methods: {}
-}
+};
 </script>
 
 <style scoped="scoped" lang="scss">

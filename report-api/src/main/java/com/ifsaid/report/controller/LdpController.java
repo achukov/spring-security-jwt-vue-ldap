@@ -6,8 +6,10 @@ import com.ifsaid.report.service.ILdpService;
 import com.ifsaid.report.vo.MyPage;
 import com.ifsaid.report.vo.Result;
 
+import io.swagger.annotations.ApiOperation;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,8 +25,9 @@ public class LdpController extends BaseController<Ldp, Long, ILdpService> {
     @GetMapping("/list")
     @Override
     public Result<Page<Ldp>> findAll(MyPage page) {
-
         return Result.success(baseService.findAll(page));
     }
+
+//    @PostMapping("/create")
 
 }

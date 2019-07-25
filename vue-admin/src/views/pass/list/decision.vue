@@ -119,9 +119,9 @@
 
 <script>
 
-import { updatePass, getPassById } from '@/api/pass'
+import { updatePass, getPassById } from '@/api/pass';
 
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
 export default {
   components: {},
@@ -155,7 +155,7 @@ export default {
         // state: [{ required: true, message: 'Role status cannot be empty', trigger: 'blur' }],
         describe: [{ required: true, message: 'Role description cannot be empty', trigger: 'blur' }]
       }
-    }
+    };
   },
   computed: {
     ...mapGetters([
@@ -164,73 +164,73 @@ export default {
     ])
   },
   created() {
-    const id = this.$route.params && this.$route.params.id
-    this.fetchData(id)
+    const id = this.$route.params && this.$route.params.id;
+    this.fetchData(id);
   },
   methods: {
     addComment() {
-      this.dialogVisible = true
+      this.dialogVisible = true;
     },
     cancleCommit() {
-      this.dialogVisible = false
-      this.comments = ''
+      this.dialogVisible = false;
+      this.comments = '';
     },
     fetchData(id) {
-      const _this = this
-      _this.loading = true
+      const _this = this;
+      _this.loading = true;
       getPassById(id).then((result) => {
         if (result.status === 200) {
-          _this.entity.psid = result.data.psid
-          _this.entity.createdBy = result.data.createdBy
-          _this.entity.type = result.data.type
-          _this.entity.startdate = result.data.startdate
-          _this.entity.enddate = result.data.enddate
-          _this.entity.visitors = result.data.visitors
-          _this.entity.contactperson = result.data.contactperson
-          _this.entity.phonenumber = result.data.phonenumber
-          _this.entity.carnumber = result.data.carnumber
-          _this.entity.cartype = result.data.cartype
-          _this.entity.parktype = result.data.parktype
-          _this.entity.parklevel = result.data.parklevel
-          _this.entity.buildingaccess = result.data.buildingaccess
-          _this.entity.state = result.data.state
+          _this.entity.psid = result.data.psid;
+          _this.entity.createdBy = result.data.createdBy;
+          _this.entity.type = result.data.type;
+          _this.entity.startdate = result.data.startdate;
+          _this.entity.enddate = result.data.enddate;
+          _this.entity.visitors = result.data.visitors;
+          _this.entity.contactperson = result.data.contactperson;
+          _this.entity.phonenumber = result.data.phonenumber;
+          _this.entity.carnumber = result.data.carnumber;
+          _this.entity.cartype = result.data.cartype;
+          _this.entity.parktype = result.data.parktype;
+          _this.entity.parklevel = result.data.parklevel;
+          _this.entity.buildingaccess = result.data.buildingaccess;
+          _this.entity.state = result.data.state;
           // _this.entity.comments = result.data.comments
-          _this.entity.historyLog = result.data.historyLog
-          _this.entity.createTime = result.data.createTime
-          _this.loading = false
+          _this.entity.historyLog = result.data.historyLog;
+          _this.entity.createTime = result.data.createTime;
+          _this.loading = false;
         }
       }).catch((err) => {
-        console.log('err :', err)
-      })
+        console.log('err :', err);
+      });
     },
     saveAndFlush(id) {
-      const _this = this
+      const _this = this;
       _this.$refs.entity.validate(valid => {
         if (valid) {
-          _this.entity.state = id
+          _this.entity.state = id;
           if (id === 2) {
-            _this.entity.historyLog = _this.entity.historyLog + ';Approved by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString()
+            _this.entity.historyLog = _this.entity.historyLog + ';Approved by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString();
           } else if (id === 0) {
-            _this.entity.historyLog = _this.entity.historyLog + ';Rejected by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString() + ' Comments: ' + _this.comments
+            _this.entity.historyLog = _this.entity.historyLog + ';Rejected by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString() + ' Comments: ' + _this.comments;
           } else {
-            _this.entity.historyLog = _this.entity.historyLog + 'Updated by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString()
+            _this.entity.historyLog = _this.entity.historyLog + 'Updated by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString();
           }
           if (_this.entity.psid > 0) {
             // Modify information
             updatePass(_this.entity).then((result) => {
               if (result.status === 200) {
-                _this.$notify({ title: 'Success', message: 'Modify the Pass successfully!', type: 'success' })
-                _this.$router.push({ path: '/' })
+                _this.$notify({ title: 'Success', message: 'Modify the Pass successfully!', type: 'success' });
+                _this.$router.push({ path: '/' });
               }
             }).catch((err) => {
-              console.log('err :', err)
-            })
+              console.log('err :', err);
+            });
           }
         }
-      })
+      });
     }
   }
-}
+};
 
 </script>
 

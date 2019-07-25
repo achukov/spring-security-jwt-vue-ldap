@@ -64,10 +64,10 @@ export default {
   },
   methods: {
     goTo() {
-      this.$router.push({ path: 'pass/my' })
+      this.$router.push({ path: 'pass/my' });
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

@@ -1,19 +1,15 @@
 package com.ifsaid.report.controller;
 
 import com.ifsaid.report.common.jwt.JwtUser;
+import com.ifsaid.report.dto.AuthenticationRequestDto;
 import com.ifsaid.report.service.IUserService;
-import com.ifsaid.report.vo.LoginUser;
 import com.ifsaid.report.vo.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 
 @Slf4j
 @Api(tags = "log in")
@@ -25,8 +21,8 @@ public class AuthController {
 
     @ApiOperation(value = "log in", notes = "Username, password login format {\"username\":\"admin\",\"password\":\"admin\"}")
     @PostMapping(value = "${jwt.route.login}")
-    public Result<String> login(@RequestBody LoginUser user) {
-        log.info("LoginUser : {}", user);
+    public Result<String> login(@RequestBody AuthenticationRequestDto user) {
+        log.info("AuthenticationRequestDto : {}", user);
         return Result.success("login successful", userService.login(user.getUsername(), user.getPassword()));
     }
 

@@ -15,7 +15,7 @@ import com.ifsaid.report.repository.UserRepository;
 import com.ifsaid.report.service.*;
 import com.ifsaid.report.vo.ButtonVo;
 import com.ifsaid.report.vo.MenuVo;
-import com.ifsaid.report.vo.UserVo;
+import com.ifsaid.report.dto.UserDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +23,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -72,9 +70,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, String, UserRepositor
     }
 
     @Override
-    public UserVo findUserInfo(String account) {
+    public UserDto findUserInfo(String account) {
         User user = findByAccount(account);
-        UserVo result = new UserVo(user.getUid(), user.getAvatar(), user.getType(), user.getAccount(), user.getMail());
+        UserDto result = new UserDto(user.getUid(), user.getAvatar(), user.getType(), user.getAccount(), user.getMail());
         Set<Permission> permissions = permissionService.findAllByUserId(user.getUid());
         Set<ButtonVo> buttonVos = new HashSet<>();
         Set<MenuVo> menuVos = new HashSet<>();
@@ -158,13 +156,13 @@ public class UserServiceImpl extends BaseServiceImpl<User, String, UserRepositor
 
 
     @Override
-    public Page<UserVo> findAllInfo(Pageable page) {
+    public Page<UserDto> findAllInfo(Pageable page) {
         Page<User> all = findAll(page);
-        List<UserVo> userVos = new ArrayList<>();
+        List<UserDto> userVos = new ArrayList<>();
         all.forEach(user -> {
             Dept dept = deptService.findById(user.getDept());
             Set<Role> roles = roleService.findAllByUserId(user.getUid());
-            UserVo userVo = new UserVo(user.getUid(),
+            UserDto userVo = new UserDto(user.getUid(),
                     user.getAvatar(), user.getType(),
                     user.getAccount(), user.getMail(), user.getEmployeeId(),
                     user.getDescription(), user.getState(), dept, roles,

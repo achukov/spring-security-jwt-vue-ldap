@@ -84,9 +84,9 @@
 </template>
 
 <script>
-import { scrollTo } from '@/utils/scroll-to'
-import { getDatabasePage, saveDatabase, updateDatabase, removeDatabaseById } from '@/api/database'
-import { mapGetters } from 'vuex'
+import { scrollTo } from '@/utils/scroll-to';
+import { getDatabasePage, saveDatabase, updateDatabase, removeDatabaseById } from '@/api/database';
+import { mapGetters } from 'vuex';
 
 export default {
   components: {},
@@ -119,7 +119,7 @@ export default {
       },
       tableData: [],
       loading: false
-    }
+    };
   },
   computed: {
     ...mapGetters([
@@ -128,123 +128,123 @@ export default {
     ])
   },
   created() {
-    this.getTableData()
+    this.getTableData();
   },
   mounted() {},
   methods: {
     tableRowClassName({ row, rowIndex }) {
       if (row.did % 2 !== 0) {
-        return 'warning-row'
+        return 'warning-row';
       } else {
-        return 'success-row'
+        return 'success-row';
       }
     },
     getTableData() {
-      const _this = this
-      _this.loading = true
+      const _this = this;
+      _this.loading = true;
       getDatabasePage(_this.page).then((result) => {
         if (result.status === 200) {
-          console.log(result.data.content)
-          _this.tableData = result.data.content
-          _this.page.total = result.data.totalElements
-          _this.loading = false
+          console.log(result.data.content);
+          _this.tableData = result.data.content;
+          _this.page.total = result.data.totalElements;
+          _this.loading = false;
         }
       }).catch((err) => {
-        console.log('err :', err)
-      })
+        console.log('err :', err);
+      });
     },
     handleFilter() {
-      this.getTableData()
+      this.getTableData();
     },
     handleCurrentChange(index) {
-      this.page.page = index
-      scrollTo(0, 800)
-      this.getTableData()
+      this.page.page = index;
+      scrollTo(0, 800);
+      this.getTableData();
     },
     handleSizeChange(size) {
-      this.page.size = size
-      scrollTo(0, 800)
-      this.getTableData()
+      this.page.size = size;
+      scrollTo(0, 800);
+      this.getTableData();
     },
     emptyEntity() {
-      this.entity.did = 0
-      this.entity.title = ''
-      this.entity.path = ''
-      this.entity.describe = ''
-      this.entity.owner = ''
-      this.entity.ownersubs = ''
+      this.entity.did = 0;
+      this.entity.title = '';
+      this.entity.path = '';
+      this.entity.describe = '';
+      this.entity.owner = '';
+      this.entity.ownersubs = '';
     },
     addEntity() {
-      this.emptyEntity()
-      this.dialog.title = 'New Record'
-      this.dialog.visible = true
+      this.emptyEntity();
+      this.dialog.title = 'New Record';
+      this.dialog.visible = true;
       this.$nextTick(() => {
-        this.$refs.entity.clearValidate()
-      })
+        this.$refs.entity.clearValidate();
+      });
     },
     updateEntity(data) {
-      this.emptyEntity()
-      this.entity.did = data.did
-      this.entity.title = data.title
-      this.entity.path = data.path
-      this.entity.describe = data.describe
-      this.entity.owner = data.owner
-      this.entity.ownersubs = data.ownersubs
-      this.entity.createTime = data.createTime
-      this.dialog.title = 'Modify LN Database Record'
-      this.dialog.visible = true
+      this.emptyEntity();
+      this.entity.did = data.did;
+      this.entity.title = data.title;
+      this.entity.path = data.path;
+      this.entity.describe = data.describe;
+      this.entity.owner = data.owner;
+      this.entity.ownersubs = data.ownersubs;
+      this.entity.createTime = data.createTime;
+      this.dialog.title = 'Modify LN Database Record';
+      this.dialog.visible = true;
     },
     deleteEntity(data) {
-      const _this = this
+      const _this = this;
       if (data.did > 0) {
         _this.$confirm('Are you sure you want to delete this record?', 'Warning',
           { confirmButtonText: 'Confirm', cancelButtonText: 'Cancel', type: 'warning' })
           .then(() => {
             removeDatabaseById(data.did).then((result) => {
               if (result.status === 200) {
-                _this.$notify({ title: 'Success', message: 'Successfully deleted!', type: 'success' })
-                _this.getTableData()
+                _this.$notify({ title: 'Success', message: 'Successfully deleted!', type: 'success' });
+                _this.getTableData();
               }
             }).catch((err) => {
-              console.log('err :', err)
-              _this.$notify.error({ title: 'Error', message: err.message })
-            })
+              console.log('err :', err);
+              _this.$notify.error({ title: 'Error', message: err.message });
+            });
           }).catch(() => {
-            _this.$message({ type: 'info', message: 'Cancelled' })
-          })
+            _this.$message({ type: 'info', message: 'Cancelled' });
+          });
       }
     },
     saveAndFlush() {
-      const _this = this
+      const _this = this;
       _this.$refs.entity.validate(valid => {
         if (valid) {
           if (_this.entity.did > 0) {
             updateDatabase(_this.entity).then((result) => {
               if (result.status === 200) {
-                _this.$notify({ title: 'Success', message: 'Modify the Pass successfully!', type: 'success' })
-                _this.getTableData()
-                _this.dialog.visible = false
+                _this.$notify({ title: 'Success', message: 'Modify the Pass successfully!', type: 'success' });
+                _this.getTableData();
+                _this.dialog.visible = false;
               }
             }).catch((err) => {
-              console.log('err :', err)
-            })
+              console.log('err :', err);
+            });
           } else {
             saveDatabase(_this.entity).then((result) => {
               if (result.status === 200) {
-                _this.$notify({ title: 'Success', message: 'New Pass succeeded!', type: 'success' })
-                _this.getTableData()
-                _this.dialog.visible = false
+                _this.$notify({ title: 'Success', message: 'New Pass succeeded!', type: 'success' });
+                _this.getTableData();
+                _this.dialog.visible = false;
               }
             }).catch((err) => {
-              console.log('err :', err)
-              _this.$notify.error({ title: 'Error', message: err.message })
-            })
+              console.log('err :', err);
+              _this.$notify.error({ title: 'Error', message: err.message });
+            });
           }
         }
-      })
+      });
     }
   }
-}
+};
 
 </script>
 <style lang='scss' scope>

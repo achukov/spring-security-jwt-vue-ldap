@@ -1,8 +1,10 @@
-package com.ifsaid.report.vo;
+package com.ifsaid.report.dto;
 
 import com.ifsaid.report.entity.Dept;
 import com.ifsaid.report.entity.Role;
 import com.ifsaid.report.entity.User;
+import com.ifsaid.report.vo.ButtonVo;
+import com.ifsaid.report.vo.MenuVo;
 import lombok.Data;
 
 import java.util.Date;
@@ -10,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 @Data
-public class UserVo {
+public class UserDto {
 
     private String uid;
     private String avatar;
@@ -32,22 +34,26 @@ public class UserVo {
     private Set<ButtonVo> buttons;
     private Set<MenuVo> menus;
 
-    public UserVo() {
-    }
-
-    public User toSysUser() {
+     public User toUser() {
         User user = new User();
         user.setAvatar(this.avatar);
         user.setAccount(this.account);
         user.setType(this.type);
         user.setMail(this.mail);
+
         return user;
     }
-    public UserVo(String mail) {
+
+//    public static UserDto fromUser(User user){
+//         UserDto userDto = new UserDto();
+//
+//    }
+
+    public UserDto(String mail) {
         this.mail = mail;
     }
 
-    public UserVo(String uid, String avatar, String type, String account, String mail) {
+    public UserDto(String uid, String avatar, String type, String account, String mail) {
         this.uid = uid;
         this.avatar = avatar;
         this.type = type;
@@ -55,7 +61,7 @@ public class UserVo {
         this.mail = mail;
     }
 
-    public UserVo(String uid, String avatar, String type, String account, String mail, String employeeId, String phone, Integer state, Dept department, Set<Role> roles, Date createTime, Date upTime) {
+    public UserDto(String uid, String avatar, String type, String account, String mail, String employeeId, String phone, Integer state, Dept department, Set<Role> roles, Date createTime, Date upTime) {
         this.uid = uid;
         this.avatar = avatar;
         this.type = type;

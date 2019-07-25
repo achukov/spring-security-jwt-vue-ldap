@@ -1,12 +1,12 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-import app from './modules/app'
-import user from './modules/user'
-import permission from './modules/permission'
-import common from './modules/common'
-import getters from './getters'
+import Vue from 'vue';
+import Vuex from 'vuex';
+import app from './modules/app';
+import user from './modules/user';
+import permission from './modules/permission';
+import common from './modules/common';
+import getters from './getters';
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 const store = new Vuex.Store({
   modules: {
@@ -16,6 +16,6 @@ const store = new Vuex.Store({
     common
   },
   getters
-})
+});
 
-export default store
+export default store;

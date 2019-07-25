@@ -26,10 +26,10 @@ export default {
   name: 'Page404',
   computed: {
     message() {
-      return 'Похоже у вас нет разрешения для просмотра этой странички.'
+      return 'Похоже у вас нет разрешения для просмотра этой странички.';
     }
   }
-}
+};
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>

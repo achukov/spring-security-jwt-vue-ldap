@@ -18,9 +18,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import SidebarItem from './SidebarItem'
-import logo from './Logo'
+import { mapGetters } from 'vuex';
+import SidebarItem from './SidebarItem';
+import logo from './Logo';
 
 export default {
   components: {
@@ -33,8 +33,8 @@ export default {
       'sidebar'
     ]),
     isCollapse() {
-      return !this.sidebar.opened
+      return !this.sidebar.opened;
     }
   }
-}
+};
 </script>

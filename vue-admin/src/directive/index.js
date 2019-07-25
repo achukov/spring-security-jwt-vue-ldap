@@ -1,6 +1,6 @@
-import Vue from 'vue'
-import store from '@/store'
-import Inputmask from 'inputmask'
+import Vue from 'vue';
+import store from '@/store';
+import Inputmask from 'inputmask';
 
 /** Register global directive**/
 
@@ -11,28 +11,28 @@ import Inputmask from 'inputmask'
 Vue.directive('has', {
   inserted: function(el, binding) {
     if (!Vue.prototype.$_has(binding.value)) {
-      el.parentNode.removeChild(el)
+      el.parentNode.removeChild(el);
     }
   }
-})
+});
 
 // Permission check method
 Vue.prototype.$_has = function(value) {
   // Get user button permissions
-  let isExist = false
+  let isExist = false;
   // List of all current user buttons
-  const dynamicButtons = store.getters.buttons
+  const dynamicButtons = store.getters.buttons;
   if (dynamicButtons === undefined || dynamicButtons === null || dynamicButtons.length < 1) {
-    return isExist
+    return isExist;
   }
   dynamicButtons.forEach(button => {
     if (button.resources === value) {
-      isExist = true
-      return isExist
+      isExist = true;
+      return isExist;
     }
-  })
-  return isExist
-}
+  });
+  return isExist;
+};
 
 /**
  * Instruction to modify the title
@@ -40,16 +40,16 @@ Vue.prototype.$_has = function(value) {
  */
 Vue.directive('title', {
   inserted: function(el, binding) {
-    document.title = el.innerText
-    el.remove()
+    document.title = el.innerText;
+    el.remove();
   }
-})
+});
 
 Vue.directive('mask', {
   bind: function(el, binding) {
-    Inputmask(binding.value).mask(el.getElementsByTagName('INPUT')[0])
+    Inputmask(binding.value).mask(el.getElementsByTagName('INPUT')[0]);
   }
-})
+});
 // // create a directive to transform the model value
 // Vue.directive('uppercase', {
 //   twoWay: true, // this transformation applies back to the vm
@@ -67,8 +67,8 @@ Vue.directive('uppercase',
   {
     inserted: function(el, _, vnode) {
       el.addEventListener('input', async function(e) {
-        e.target.value = e.target.value.toUpperCase()
-        vnode.componentInstance.$emit('input', e.target.value.toUpperCase())
-      })
+        e.target.value = e.target.value.toUpperCase();
+        vnode.componentInstance.$emit('input', e.target.value.toUpperCase());
+      });
     }
-  })
+  });

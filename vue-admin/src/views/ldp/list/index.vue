@@ -9,180 +9,42 @@
       </div>
 
       <el-dialog :visible.sync="dialog.visible" :title="dialog.title" :close-on-click-modal="false" :center="true" top="5vh" width="700px">
-        <el-form id="Pass" ref="entity" :model="entity" :rules="rules" :inline="false" label-position="top" size="mini" >
-          <el-collapse v-model="activeName" accordion>
-            <el-collapse-item title="info" name="1">
-              <div> Номер: {{ entity.psid }} </div>
-              <div> Автор: {{ entity.createdBy }} </div>
-              <div style="white-space: pre-line;"> История: {{ entity.historyLog | formatText }} </div>
-            </el-collapse-item>
-            <el-collapse-item title="status" name="2">
-              <el-steps :active="entity.state" align-center process-status="success" finish-status="finish">
-                <el-step title="Новый" description="Заполнение документа"/>
-                <el-step title="На Согласовании" description="Утверждается отделом безопасности"/>
-                <el-step title="Утвержден" description="Заявка согласована"/>
-              </el-steps>
-            </el-collapse-item>
-          </el-collapse>
-          <el-row :gutter="20">
-            <el-col :span="16" :offset="6">
-              <div style="margin-bottom: 10px; margin-top: 10px; text-align: left">
-                <el-radio-group v-model="entity.type" size="small">
-                  <el-radio-button v-for="item in typeoptions" :key="item" :label="item" :value="item"/>
-                </el-radio-group>
-              </div>
-            </el-col>
-          </el-row>
+        <el-form id="Ldp" ref="entity" :model="entity" :rules="rules" :inline="false" label-position="top" size="mini" >
           <fieldset style="margin-bottom: 5px; border-radius: 5px; padding: 20px; border: 1px solid #DCDFE6;">
             <el-row :gutter="20">
               <el-col :span="12">
-                <el-form-item :label-width="formLabelWidth" label="Дата начала" prop="startdate">
-                  <el-date-picker v-model="entity.startdate" type="datetime" format="dd-MM-yyyy HH:mm" placeholder="Please pick a date" />
+                <el-form-item :label-width="formLabelWidth" label="Серийный номер" prop="serialnumber">
+                  <el-input v-model="entity.serialnumber" placeholder="Серийный номер"/>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item :label-width="formLabelWidth" label="Дата окончания" prop="enddate">
-                  <el-date-picker v-model="entity.enddate" type="datetime" format="dd-MM-yyyy HH:mm" placeholder="Please pick a date" />
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row :gutter="20">
-              <el-col :span="24">
-                <el-form-item :label-width="formLabelWidth" label="Посетители" prop="visitors">
-                  <el-input
-                    v-model="entity.visitors"
-                    :autosize="{ minRows: 3, maxRows: 5}"
-                    type="textarea"
-                    placeholder="Фамилия, Имя, Отчество посетителя пишутся в одну строку, каждый новый посетитель пишется с новой строки."
-                    cleareble/>
-                <!-- <UserList/> -->
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </fieldset>
-          <fieldset style="margin-bottom: 5px; border-radius: 5px; padding: 20px; border: 1px solid #DCDFE6;">
-            <el-row :gutter="20">
-              <el-col :span="12">
-                <el-form-item :label-width="formLabelWidth" label="Контактное лицо" prop="contactperson">
-                  <el-input v-model="entity.contactperson" placeholder="ivan_ivanov@bat.com"/>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item :label-width="formLabelWidth" label="Телефон для связи" prop="phonenumber">
-                  <el-input v-mask="'+7 (###) ###-####'" v-model="entity.phonenumber" type="tel" placeholder="+7 (___) ___-____">
-                    <i slot="prefix" class="el-input__icon el-icon-phone"/>
-                  </el-input>
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </fieldset>
-          <fieldset v-if="entity.type =='Пропуск на въезд'" style="margin-bottom: 5px; border-radius: 5px; padding: 20px; border: 1px solid #DCDFE6;">
-            <el-row :gutter="20">
-              <el-col :span="12">
-                <template>
-                  <el-form-item :label-width="formLabelWidth" label="Номер автомобиля" prop="carnumber">
-                    <el-input v-uppercase v-model="entity.carnumber" placeholder="А777АА199"/>
-                  </el-form-item>
-                </template>
-              </el-col>
-              <el-col :span="12">
-                <template>
-                  <el-form-item :label-width="formLabelWidth" label="Марка автомобиля" prop="cartype">
-                    <el-input v-model="entity.cartype" placeholder="TOYOTA"/>
-                  </el-form-item>
-                </template>
-              </el-col>
-            </el-row>
-            <el-row :gutter="20">
-              <el-col :span="12">
-                <template>
-                  <el-form-item :label-width="formLabelWidth" label="Вид парковки" prop="parktype">
-                    <el-select v-model="entity.parktype" placeholder="please choose" class="filter-item">
-                      <el-option v-for="item in parkoptions" :key="item" :label="item" :value="item"/>
-                    </el-select>
-                  </el-form-item>
-                </template>
-              </el-col>
-              <el-col :span="12">
-                <template>
-                  <el-form-item :label-width="formLabelWidth" label="Уровень парковки" prop="parklevel">
-                    <el-select v-model="entity.parklevel" placeholder="please choose" class="filter-item">
-                      <el-option v-for="item in leveloptions" :key="item" :label="item" :value="item"/>
-                    </el-select>
-                  </el-form-item>
-                </template>
-              </el-col>
-            </el-row>
-            <el-row :gutter="20">
-              <el-col :span="12">
-                <el-form-item :label-width="formLabelWidth" label="Требуется доступ в здание" prop="buildingaccess">
-                  <el-switch v-model="entity.buildingaccess" active-text="Да" inactive-text="Нет" active-value="1" inactive-value="0"/>
+                <el-form-item :label-width="formLabelWidth" label="Характер ущерба" prop="dmgtype">
+                  <el-input v-model="entity.dmgtype" placeholder="Характер ущерба"/>
                 </el-form-item>
               </el-col>
             </el-row>
           </fieldset>
         </el-form>
         <span slot="footer" class="dialog-footer">
-          <el-button size="mini" type="primary" @click="saveAndFlush(1)">Save and Submit</el-button>
+          <el-button size="mini" type="primary" @click="saveAndFlush()">Save and Submit</el-button>
           <el-button size="mini" @click="dialog.visible = false">Cancel</el-button>
         </span>
       </el-dialog>
 
     </el-header>
     <el-main>
-      <el-table v-loading="loading" :data="tableData" :default-sort = "{prop: 'psid', order: 'descending'}" size="mini" border tooltip-effect="light" element-loading-text="Loading..." style="width: 100%">
-        <!-- <el-table-column type="expand">
-          <template slot-scope="scope">
-            <p>Посетители: {{ scope.row.visitors }}</p>
-          </template>
-        </el-table-column> -->
-        <el-table-column sortable fixed prop="psid" label="Id" width="60"/>
-        <el-table-column show-overflow-tooltip sortable prop="createTime" label="Создано">
-          <template slot-scope="scope">
-            <i class="el-icon-time"/>
-            <span style="margin-left: 5px">{{ scope.row.createTime | formatTime }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column show-overflow-tooltip label="Кем создано" width="180">
-          <template slot-scope="scope">
-            <span style="margin-left: 5px"> {{ scope.row.createdBy }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column show-overflow-tooltip sortable prop="type" label="Тип" width="180">
-          <template slot-scope="scope">
-            <i v-if="scope.row.type=='Пропуск на посещение'" class="el-icon-user"/>
-            <i v-else class="el-icon-truck"/>
-            <span style="margin-left: 5px">{{ scope.row.type }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column show-overflow-tooltip label="Действителен с">
-          <template slot-scope="scope">
-            <i class="el-icon-time"/>
-            <span style="margin-left: 5px">{{ scope.row.startdate | formatTime }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column show-overflow-tooltip label="Действителен по" width="180">
-          <template slot-scope="scope">
-            <i class="el-icon-time"/>
-            <span style="margin-left: 5px">{{ scope.row.enddate | formatTime }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column show-overflow-tooltip prop="visitors" label="Посетители" width="180"/>
-        <el-table-column show-overflow-tooltip prop="carnumber" label="Номер автомобиля" width="180"/>
-        <el-table-column sortable prop="state" label="Статус">
-          <template slot-scope="scope">
-            <el-tag v-if="scope.row.state==0" type="info" size="mini">Новый</el-tag>
-            <el-tag v-if="scope.row.state==1" type="warning" size="mini">На Согласовании</el-tag>
-            <el-tag v-if="scope.row.state==2" type="success" size="mini">Утвержден</el-tag>
-            <el-tag v-if="scope.row.state==3" type="danger" size="mini">Отменен</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column fixed="right" label="Решение" width="125">
-          <template slot-scope="scope">
-            <el-button v-has="'pass:approve'" v-if="scope.row.state === 1" size="mini" icon="el-icon-check" type="success" @click="decision(scope.row, 2)"/>
-            <el-button v-has="'pass:approve'" v-if="scope.row.state === 1" size="mini" icon="el-icon-close" type="danger" @click="decision(scope.row, 0)"/>
-          </template>
-        </el-table-column>
+      <el-table v-loading="loading" :data="tableData" :default-sort = "{prop: 'lid', order: 'descending'}" size="mini" border tooltip-effect="light" element-loading-text="Loading..." style="width: 100%">
+
+        <el-table-column sortable fixed prop="lid" label="Id" width="60"/>
+        <el-table-column show-overflow-tooltip sortable prop="serialnumber" label="serialnumber"/>
+        <el-table-column show-overflow-tooltip sortable prop="employeeid" label="employeeid"/>
+        <el-table-column show-overflow-tooltip sortable prop="dmgtype" label="dmgtype"/>
+        <el-table-column show-overflow-tooltip sortable prop="dmgdescription" label="dmgdescription"/>
+        <el-table-column show-overflow-tooltip sortable prop="asset" label="asset"/>
+        <el-table-column show-overflow-tooltip sortable prop="commisdate" label="commisdate"/>
+        <el-table-column show-overflow-tooltip sortable prop="ifrs" label="ifrs"/>
+        <el-table-column show-overflow-tooltip sortable prop="isrepare" label="isrepare"/>
+        <el-table-column show-overflow-tooltip sortable prop="price" label="price"/>
         <el-table-column fixed="right" label="Actions" width="125">
           <template slot-scope="scope">
             <el-tooltip :open-delay="600" class="item" effect="light" content="Edit document" placement="top-start">
@@ -190,6 +52,9 @@
             </el-tooltip>
             <el-tooltip :open-delay="600" class="item" effect="light" content="Delete document" placement="top-end">
               <el-button v-has="'pass:delete'" type="danger" icon="el-icon-delete" plain size="mini" @click="deleteEntity(scope.row)"/>
+            </el-tooltip>
+            <el-tooltip :open-delay="600" class="item" effect="light" content="View document" placement="top-end">
+              <el-button  type="warning" icon="el-icon-delete" plain size="mini" @click="checkNowProcessActivities(scope.row)"/>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -218,42 +83,34 @@
 
 <script>
 
-import { scrollTo } from '@/utils/scroll-to'
-import { getPassPage, savePass, updatePass, removePassById } from '@/api/pass'
-import { mapGetters } from 'vuex'
-// import UserList from '@/components/UserList'
+import { scrollTo } from '@/utils/scroll-to';
+import { getLdpPage, saveLdp, updateLdp, removeLdpById } from '@/api/ldp';
+import { mapGetters } from 'vuex';
 
 export default {
   components: {
-    // UserList
   },
   data() {
     return {
       page: {
         page: 1,
-        size: 17,
+        size: 15,
         search: null,
         total: 0
       },
-      activeName: '0',
       showOverflowTooltip: true,
       formLabelWidth: '130px',
-      comments: '',
       entity: {
-        psid: 0,
-        type: '',
-        createdBy: '',
-        startdate: '',
-        enddate: '',
-        visitors: '',
-        contactperson: '',
-        phonenumber: '',
-        carnumber: '',
-        cartype: '',
-        parktype: '',
-        parklevel: '',
-        buildingaccess: 0,
-        state: 0
+        lid: 0,
+        serialnumber: '',
+        employeeid: '',
+        dmgtype: '',
+        dmgdescription: '',
+        asset: '',
+        commisdate: '',
+        ifrs: '',
+        isrepare: '',
+        price: ''
       },
       dialog: {
         visible: false,
@@ -261,13 +118,6 @@ export default {
       },
       tableData: [],
       loading: false,
-      authority: {
-        list: [],
-        psid: 0,
-        visible: false,
-        title: ''
-      },
-      // buildoptions: ['Да', 'Нет'],
       typeoptions: ['Пропуск на посещение', 'Пропуск на въезд'],
       parkoptions: ['Гостевой', 'Погрузка-разгрузка', 'Посадка пассажиров'],
       leveloptions: ['Наземный', 'Подземный'],
@@ -289,7 +139,7 @@ export default {
         carnumber: [{ required: true, message: 'Необходимо указать регистрационный номер автомобиля', trigger: 'blur' }
         ]
       }
-    }
+    };
   },
   computed: {
     ...mapGetters([
@@ -298,178 +148,133 @@ export default {
     ])
   },
   created() {
-    this.getTableData()
+    this.getTableData();
   },
   methods: {
-    nextStep() {
-      if (this.entity.state++ > 1) this.entity.state = 0
-    },
     handleCurrentChange(index) {
-      this.page.page = index
-      scrollTo(0, 800)
-      this.getTableData()
+      this.page.page = index;
+      scrollTo(0, 800);
+      this.getTableData();
     },
     handleSizeChange(size) {
-      this.page.size = size
-      scrollTo(0, 800)
-      this.getTableData()
+      this.page.size = size;
+      scrollTo(0, 800);
+      this.getTableData();
     },
     handleFilter() {
-      this.getTableData()
+      this.getTableData();
     },
     getTableData() {
-      const _this = this
-      _this.loading = true
-      getPassPage(_this.page).then((result) => {
+      const _this = this;
+      _this.loading = true;
+      getLdpPage(_this.page).then((result) => {
         if (result.status === 200) {
-          _this.tableData = result.data.content
-          _this.page.total = result.data.totalElements
-          _this.loading = false
+          _this.tableData = result.data.content;
+          _this.page.total = result.data.totalElements;
+          _this.loading = false;
         }
       }).catch((err) => {
-        console.log('err :', err)
-      })
-    },
-    addComment() {
-      this.dialogVisible = true
-    },
-    cancleCommit() {
-      this.dialogVisible = false
-      this.comments = ''
+        console.log('err :', err);
+      });
     },
     currentChange(index) {
-      // Switch paging
-      this.page.page = index
-      this.getTableData()
+      this.page.page = index;
+      this.getTableData();
     },
     emptyEntity() {
-      this.entity.psid = 0
-      this.entity.type = 'Пропуск на посещение'
-      this.entity.createdBy = ''// = this.$store.state.user.account
-      this.entity.startdate = ''
-      this.entity.enddate = ''
-      this.entity.visitors = ''
-      this.entity.contactperson = ''
-      this.entity.phonenumber = ''
-      this.entity.carnumber = ''
-      this.entity.cartype = ''
-      this.entity.parktype = ''
-      this.entity.parklevel = ''
-      this.entity.buildingaccess = 0
-      this.entity.state = 0
+      this.entity.lid = 0;
+      this.entity.createdBy = 'NA';
+      this.entity.serialnumber = '';
+      this.entity.employeeid = '';
+      this.entity.dmgtype = '';
+      this.entity.dmgdescription = '';
+      this.entity.asset = '';
+      this.entity.commisdate = '';
+      this.entity.ifrs = '';
+      this.entity.isrepare = '';
+      this.entity.price = '';
     },
     addEntity() {
-      this.emptyEntity()
-      this.dialog.title = 'New Pass Approval Request'
-      this.dialog.visible = true
-      this.entity.historyLog = ';Created by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString()
+      this.emptyEntity();
+      this.dialog.title = 'New Loss and Damage Claim Procedure';
+      this.dialog.visible = true;
       this.$nextTick(() => {
-        this.$refs.entity.clearValidate()
-      })
+        this.$refs.entity.clearValidate();
+      });
     },
     updateEntity(data) {
-      this.emptyEntity()
-      this.entity.psid = data.psid
-      this.entity.type = data.type
-      this.entity.createdBy = data.createdBy
-      this.entity.startdate = data.startdate
-      this.entity.enddate = data.enddate
-      this.entity.visitors = data.visitors
-      this.entity.contactperson = data.contactperson
-      this.entity.phonenumber = data.phonenumber
-      this.entity.carnumber = data.carnumber
-      this.entity.cartype = data.cartype
-      this.entity.parktype = data.parktype
-      this.entity.parklevel = data.parklevel
-      this.entity.buildingaccess = data.buildingaccess
-      this.entity.state = data.state
-      this.entity.createTime = data.createTime
-      this.entity.historyLog = data.historyLog
-      this.dialog.title = 'Pass Approval Request'
-      this.dialog.visible = true
+      this.emptyEntity();
+      this.entity.lid = data.lid;
+      this.entity.serialnumber = data.serialnumber;
+      this.entity.employeeid = data.employeeid;
+      this.entity.dmgtype = data.dmgtype;
+      this.entity.dmgdescription = data.dmgdescription;
+      this.entity.asset = data.asset;
+      this.entity.commisdate = data.commisdate;
+      this.entity.ifrs = data.ifrs;
+      this.entity.isrepare = data.isrepare;
+      this.entity.price = data.price;
+      this.dialog.title = 'Loss and Damage Claim Procedure';
+      this.dialog.visible = true;
     },
-    decision(data, id) {
-      const _this = this
-      debugger
-      data.state = id
-      if (data.psid > 0) {
-        _this.$confirm('Вы точно хотите ' + (id === 2 ? 'утвердить' : 'отклонить') + ' заявку ?', 'Внимание',
-          { confirmButtonText: 'Да', cancelButtonText: 'Отменить', type: 'warning' })
-          .then(() => {
-            if (id === 2) {
-              data.historyLog = data.historyLog + ';Approved by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString()
-            } else if (id === 0) {
-              // _this.addComment()
-              data.historyLog = data.historyLog + ';Rejected by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString()
-            }
-            updatePass(data).then((result) => {
-              if (result.status === 200) {
-                _this.$notify({ title: 'Success', message: 'Successfully!', type: 'success' })
-                _this.getTableData()
-              }
-            }).catch((err) => {
-              console.log('err :', err)
-              _this.$notify.error({ title: 'Error', message: err.message })
-            })
-          }).catch(() => {
-            _this.$message({ type: 'info', message: 'Cancelled' })
-          })
-      }
+    checkNowProcessActivities(data) {
+    },
+    completeTask(elem) {
+      let paramMap = {};
+      debugger;
+      let paramArray = $(elem).val().split(":");
     },
     deleteEntity(data) {
-      const _this = this
-      if (data.psid > 0) {
+      const _this = this;
+      if (data.lid > 0) {
         _this.$confirm('Are you sure you want to delete this record?', 'warning',
           { confirmButtonText: 'Confirm', cancelButtonText: 'Cancel', type: 'warning' })
           .then(() => {
-            removePassById(data.psid).then((result) => {
+            removeLdpById(data.psid).then((result) => {
               if (result.status === 200) {
-                _this.$notify({ title: 'Success', message: 'Successfully deleted!', type: 'success' })
-                _this.getTableData()
+                _this.$notify({ title: 'Success', message: 'Successfully deleted!', type: 'success' });
+                _this.getTableData();
               }
             }).catch((err) => {
-              console.log('err :', err)
-              _this.$notify.error({ title: 'Error', message: err.message })
-            })
+              console.log('err :', err);
+              _this.$notify.error({ title: 'Error', message: err.message });
+            });
           }).catch(() => {
-            _this.$message({ type: 'info', message: 'Cancelled' })
-          })
+            _this.$message({ type: 'info', message: 'Cancelled' });
+          });
       }
     },
-    saveAndFlush(id) {
-      const _this = this
+    saveAndFlush() {
+      const _this = this;
       _this.$refs.entity.validate(valid => {
         if (valid) {
-          _this.entity.state = id
-          if (_this.entity.psid > 0) {
-            _this.entity.historyLog = _this.entity.historyLog + 'Updated by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString()
-            updatePass(_this.entity).then((result) => {
+          if (_this.entity.lid > 0) {
+            updateLdp(_this.entity).then((result) => {
               if (result.status === 200) {
-                _this.$notify({ title: 'Success', message: 'Modify the Pass successfully!', type: 'success' })
-                _this.getTableData()
-                _this.dialog.visible = false
+                _this.$notify({ title: 'Success', message: 'Modify successfully!', type: 'success' });
+                _this.getTableData();
+                _this.dialog.visible = false;
               }
             }).catch((err) => {
-              console.log('err :', err)
-            })
+              console.log('err :', err);
+            });
           } else {
-            // New role
-            savePass(_this.entity).then((result) => {
+            saveLdp(_this.entity).then((result) => {
               if (result.status === 200) {
-                _this.$notify({ title: 'Success', message: 'New Pass succeeded!', type: 'success' })
-                _this.getTableData()
-                _this.dialog.visible = false
+                _this.$notify({ title: 'Success', message: 'Succeeded!', type: 'success' });
+                _this.getTableData();
+                _this.dialog.visible = false;
               }
             }).catch((err) => {
-              console.log('err :', err)
-              _this.$notify.error({ title: 'Error', message: err.message })
-            })
+              console.log('err :', err);
+              _this.$notify.error({ title: 'Error', message: err.message });
+            });
           }
         }
-      })
+      });
     }
   }
-}
+};
 
 </script>
 

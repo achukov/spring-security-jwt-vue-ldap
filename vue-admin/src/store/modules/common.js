@@ -31,5 +31,5 @@ const common = {
   mutations: {
 
   }
-}
-export default common
+};
+export default common;

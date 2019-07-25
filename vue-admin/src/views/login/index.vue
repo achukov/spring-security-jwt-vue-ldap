@@ -52,31 +52,31 @@ export default {
       loginRules: {
         username: [{ required: true, message: 'Username cannot be empty', trigger: 'blur' },
           { validator: function(rule, value, callback) {
-            const regex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/
+            const regex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
             if (!regex.test(value)) {
-              callback(new Error('Invalid email address'))
+              callback(new Error('Invalid email address'));
             } else {
-              callback()
+              callback();
             }
           }, trigger: 'blur' }],
         password: [{ required: true, message: 'Password cannot be empty', trigger: 'blur' },
           { validator: function(rule, value, callback) {
             if (value.length < 3) {
-              callback(new Error('Password cannot be less than 3 digits'))
+              callback(new Error('Password cannot be less than 3 digits'));
             } else {
-              callback()
+              callback();
             }
           }, trigger: 'blur' }]
       },
       loading: false,
       pwdType: 'password',
       redirect: undefined
-    }
+    };
   },
   watch: {
     $route: {
       handler: function(route) {
-        this.redirect = route.query && route.query.redirect
+        this.redirect = route.query && route.query.redirect;
       },
       immediate: true
     }
@@ -84,29 +84,29 @@ export default {
   methods: {
     showPwd() {
       if (this.pwdType === 'password') {
-        this.pwdType = ''
+        this.pwdType = '';
       } else {
-        this.pwdType = 'password'
+        this.pwdType = 'password';
       }
     },
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
-          this.loading = true
+          this.loading = true;
           this.$store.dispatch('Login', this.loginForm).then(() => {
-            this.loading = false
-            this.$router.push({ path: '/' })
+            this.loading = false;
+            this.$router.push({ path: '/' });
           }).catch(() => {
-            this.loading = false
-          })
+            this.loading = false;
+          });
         } else {
-          console.log('error submit!')
-          return false
+          console.log('error submit!');
+          return false;
         }
-      })
+      });
     }
   }
-}
+};
 </script>
 
 <style rel="stylesheet/scss" lang="scss">

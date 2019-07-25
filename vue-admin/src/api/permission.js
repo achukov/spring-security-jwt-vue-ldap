@@ -1,30 +1,30 @@
-import request from '@/utils/request'
+import request from '@/utils/request';
 
 export function getPermissionTree(params) {
-  return request({ url: '/permission/tree', method: 'get', data: params })
+  return request({ url: '/permission/tree', method: 'get', data: params });
 }
 
 export function getPermissionPage(params) {
-  return request({ url: '/permission/page', method: 'get', data: params })
+  return request({ url: '/permission/page', method: 'get', data: params });
 }
 
 export function getPermissionAll() {
-  return request({ url: '/permission/all', method: 'get' })
+  return request({ url: '/permission/all', method: 'get' });
 }
 
 export function getPermissionById(params) {
-  return request({ url: '/permission/info/' + params, method: 'get' })
+  return request({ url: '/permission/info/' + params, method: 'get' });
 }
 
 export function savePermission(params) {
-  return request({ url: '/permission/', method: 'post', data: params })
+  return request({ url: '/permission/', method: 'post', data: params });
 }
 
 export function updatePermission(params) {
-  return request({ url: '/permission/', method: 'put', data: params })
+  return request({ url: '/permission/', method: 'put', data: params });
 }
 
 export function removePermissionById(params) {
-  return request({ url: '/permission/' + params, method: 'delete' })
+  return request({ url: '/permission/' + params, method: 'delete' });
 }
 

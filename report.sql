@@ -52,7 +52,7 @@ CREATE TABLE `tb_ldp` (
   `t_price` int UNSIGNED,
   `t_lm_decis` tinyint(4) DEFAULT 0,
   `t_overall` tinyint(4) DEFAULT 0,
-  `t_state` tinyint(4) DEFAULT 0,
+  `t_status` tinyint(4) DEFAULT 0,
   `t_create_time` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
   `t_up_time` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
   `t_created_by` varchar(255) NOT NULL,

@@ -1,12 +1,14 @@
 package com.ifsaid.report.controller;
 
+import com.ifsaid.report.entity.CommentModel;
 import com.ifsaid.report.service.ICompleteTaskService;
+import com.ifsaid.report.vo.Result;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 @Api(tags = "All Activities")
 @RestController
@@ -21,8 +23,25 @@ public class CompleteTaskController {
     }
 
     @GetMapping(value = "/getItemById")
-    public ResponseJsonResult getItemById(@RequestParam(name = "taskId") String taskId) {
+    public Result getItemById(@RequestParam(name = "taskId") String taskId) {
         Map<String, Object> map = completeTaskService.getItemById(taskId);
-        return ResponseJsonResult.successResult(map);
+        return Result.success(map);
+    }
+
+    @GetMapping(value = "/getCommentsByTaskId")
+    public List<CommentModel> getCommentsByTaskId(@RequestParam(name = "taskId") String taskId) {
+        List<CommentModel> list = completeTaskService.getCommentsByTaskId(taskId);
+        return list;
+    }
+
+    @PostMapping
+    public Result completeTask(@RequestBody Map<String, String> paramMap) {
+        try {
+            completeTaskService.completeTask(paramMap);
+            return Result.success("Successful task");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.success("Task failure");
+        }
     }
 }

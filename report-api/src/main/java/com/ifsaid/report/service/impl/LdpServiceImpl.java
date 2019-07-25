@@ -57,7 +57,7 @@ public class LdpServiceImpl extends BaseServiceImpl<Ldp, Long, LdpRepository> im
     @Override
     public Ldp save(Ldp entity) throws JpaCrudException {
 
-        entity.setState(LdpEnum.EXAMINATION.getCode());
+        entity.setStatus(LdpEnum.EXAMINATION.getCode());
         super.save(entity);
 
         startProcessByKey(entity.getLid());
@@ -69,7 +69,7 @@ public class LdpServiceImpl extends BaseServiceImpl<Ldp, Long, LdpRepository> im
     public Ldp update(Ldp entity) throws JpaCrudException {
         entity.setUpdatedBy(SecurityUtils.getCurrentMail());
 
-        if( entity.getState().equals("2")){
+        if( entity.getStatus().equals("2")){
             emailSender.htmlEmail(
                 servletContext,
                 // user name
@@ -82,7 +82,7 @@ public class LdpServiceImpl extends BaseServiceImpl<Ldp, Long, LdpRepository> im
                 "Please click this <a href=\"http://ruits/ldp/my\">link</a> for further details."
                 + " Thank you."
             );
-        } else if ( entity.getState().equals("0")) {
+        } else if ( entity.getStatus().equals("0")) {
             emailSender.htmlEmail(
                 servletContext,
                 // user name

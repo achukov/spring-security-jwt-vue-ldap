@@ -98,9 +98,9 @@
 
 <script>
 
-import { getRolePage, getRoleById, saveRole, updateRole, removeRoleById, updateRolePermission } from '@/api/role'
+import { getRolePage, getRoleById, saveRole, updateRole, removeRoleById, updateRolePermission } from '@/api/role';
 
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
 export default {
   components: {},
@@ -143,17 +143,17 @@ export default {
         name: [{ required: true, message: 'Role name cannot be empty', trigger: 'blur' },
           {
             validator: function(rule, value, callback) {
-              const regex = /[R][O][L][E][_][A-Z]{3,}/
+              const regex = /[R][O][L][E][_][A-Z]{3,}/;
               if (!regex.test(value)) {
-                callback(new Error('The role name must be all uppercase English and start with "ROLE_"'))
+                callback(new Error('The role name must be all uppercase English and start with "ROLE_"'));
               } else {
-                callback()
+                callback();
               }
             }, trigger: 'blur'
           }
         ]
       }
-    }
+    };
   },
   computed: {
     ...mapGetters([
@@ -161,213 +161,213 @@ export default {
     ])
   },
   created() {
-    this.getTableData()
+    this.getTableData();
   },
   methods: {
     getTableData() {
       // Get the list of roles
-      const _this = this
-      _this.loading = true
+      const _this = this;
+      _this.loading = true;
       getRolePage(_this.page).then((result) => {
         if (result.status === 200) {
-          _this.tableData = result.data.content
-          _this.page.total = result.data.totalElements
-          _this.loading = false
+          _this.tableData = result.data.content;
+          _this.page.total = result.data.totalElements;
+          _this.loading = false;
         }
       }).catch((err) => {
-        console.log('err :', err)
-      })
+        console.log('err :', err);
+      });
     },
     currentChange(index) {
       // Switch paging
-      this.page.page = index
-      this.getTableData()
+      this.page.page = index;
+      this.getTableData();
     },
     emptyEntity() {
-      this.entity.rid = 0
-      this.entity.describe = ''
-      this.entity.name = ''
-      this.entity.state = 1
+      this.entity.rid = 0;
+      this.entity.describe = '';
+      this.entity.name = '';
+      this.entity.state = 1;
     },
     addRoleEntity() {
-      this.emptyEntity()
-      this.dialog.title = 'New role'
-      this.dialog.visible = true
+      this.emptyEntity();
+      this.dialog.title = 'New role';
+      this.dialog.visible = true;
     },
     updateRoleEntity(data) {
-      this.emptyEntity()
-      this.entity.rid = data.rid
-      this.entity.describe = data.describe
-      this.entity.name = data.name
-      this.entity.state = data.state
-      this.entity.createTime = data.createTime
-      this.dialog.title = 'Modify role'
-      this.dialog.visible = true
+      this.emptyEntity();
+      this.entity.rid = data.rid;
+      this.entity.describe = data.describe;
+      this.entity.name = data.name;
+      this.entity.state = data.state;
+      this.entity.createTime = data.createTime;
+      this.dialog.title = 'Modify role';
+      this.dialog.visible = true;
     },
     deleteRoleEntity(data) {
       // Delete a role. If the current role is associated with another user or permission, it cannot be deleted.
-      const _this = this
+      const _this = this;
       if (data.rid > 0) {
         _this.$confirm('Make sure to delete [' + data.describe + '] ? Please confirm that there are no users under this role. Otherwise it cannot be deleted. Continue?', 'Warning',
           { confirmButtonText: 'Confirm', cancelButtonText: 'Cancel', type: 'warning' })
           .then(() => {
             removeRoleById(data.rid).then((result) => {
               if (result.status === 200) {
-                _this.$notify({ title: 'Success', message: 'successfully deleted!', type: 'success' })
-                _this.getTableData()
+                _this.$notify({ title: 'Success', message: 'successfully deleted!', type: 'success' });
+                _this.getTableData();
               }
             }).catch((err) => {
-              console.log('err :', err)
-              _this.$notify.error({ title: 'Error', message: err.message })
-            })
+              console.log('err :', err);
+              _this.$notify.error({ title: 'Error', message: err.message });
+            });
           }).catch(() => {
-            _this.$message({ type: 'info', message: 'Undelete' })
-          })
+            _this.$message({ type: 'info', message: 'Undelete' });
+          });
       } else {
-        _this.$notify.error({ title: 'Error', message: 'Please select the role before you can delete it.' })
+        _this.$notify.error({ title: 'Error', message: 'Please select the role before you can delete it.' });
       }
     },
     saveAndFlush() {
-      const _this = this
+      const _this = this;
       _this.$refs.entity.validate(valid => {
         if (valid) {
           if (_this.entity.rid > 0) {
             // Modify role information
             updateRole(_this.entity).then((result) => {
               if (result.status === 200) {
-                _this.$notify({ title: 'Success', message: 'Modify the role successfully!', type: 'success' })
-                _this.getTableData()
-                _this.dialog.visible = false
+                _this.$notify({ title: 'Success', message: 'Modify the role successfully!', type: 'success' });
+                _this.getTableData();
+                _this.dialog.visible = false;
               }
             }).catch((err) => {
-              console.log('err :', err)
-            })
+              console.log('err :', err);
+            });
           } else {
             // New role
             saveRole(_this.entity).then((result) => {
               if (result.status === 200) {
-                _this.$notify({ title: 'Success', message: 'New role succeeded!', type: 'success' })
-                _this.getTableData()
-                _this.dialog.visible = false
+                _this.$notify({ title: 'Success', message: 'New role succeeded!', type: 'success' });
+                _this.getTableData();
+                _this.dialog.visible = false;
               }
             }).catch((err) => {
-              console.log('err :', err)
-              _this.$notify.error({ title: 'Error', message: err.message })
-            })
+              console.log('err :', err);
+              _this.$notify.error({ title: 'Error', message: err.message });
+            });
           }
         }
-      })
+      });
     },
     clickDeal(currentObj, treeStatus) {
-      const selected = treeStatus.checkedKeys.indexOf(currentObj.pid) // -1 is not selected
+      const selected = treeStatus.checkedKeys.indexOf(currentObj.pid); // -1 is not selected
       if (selected === -1) {
-        this.changeParentAndChild(currentObj)
+        this.changeParentAndChild(currentObj);
       } else {
-        this.selectedParent(currentObj)
-        this.uniteChildSame(currentObj, true)
+        this.selectedParent(currentObj);
+        this.uniteChildSame(currentObj, true);
       }
     },
     uniteChildSame(treeList, isSelected) {
-      this.$refs.tree.setChecked(treeList.pid, isSelected)
+      this.$refs.tree.setChecked(treeList.pid, isSelected);
       if (treeList.children !== null) {
         for (let i = 0; i < treeList.children.length; i++) {
-          this.uniteChildSame(treeList.children[i], isSelected)
+          this.uniteChildSame(treeList.children[i], isSelected);
         }
       }
     },
     changeParentAndChild(currentObj) {
-      const currentNode = this.$refs.tree.getNode(currentObj)
+      const currentNode = this.$refs.tree.getNode(currentObj);
       if (currentNode.childNodes.length > 0) {
-        this.uniteChildSame(currentObj, false)
+        this.uniteChildSame(currentObj, false);
       }
       if (currentNode.parent.key) {
-        this.changeParentStatus(currentNode.parent)
+        this.changeParentStatus(currentNode.parent);
       }
     },
     selectedParent(currentObj) {
-      const currentNode = this.$refs.tree.getNode(currentObj)
+      const currentNode = this.$refs.tree.getNode(currentObj);
       if (currentNode.parent.key) {
         const childCheckedStatus = currentNode.parent.childNodes.every((item, index) => {
-          return item.checked === true
-        })
+          return item.checked === true;
+        });
         if (childCheckedStatus) {
-          this.$refs.tree.setChecked(currentNode.parent, true)
+          this.$refs.tree.setChecked(currentNode.parent, true);
         } else {
-          currentNode.parent.indeterminate = true
+          currentNode.parent.indeterminate = true;
         }
-        this.selectedParent(currentNode.parent)
+        this.selectedParent(currentNode.parent);
       }
     },
     changeParentStatus(parentNodes) {
-      const childNodes = parentNodes.childNodes
+      const childNodes = parentNodes.childNodes;
       const childCheckedStatus = childNodes.every((item, index) => {
-        return item.checked === false && item.indeterminate === false
-      })
+        return item.checked === false && item.indeterminate === false;
+      });
       const childCheckedAllChecked = childNodes.every((item, index) => {
-        return item.checked === true
-      })
+        return item.checked === true;
+      });
       if (childCheckedStatus) {
-        parentNodes.checked = false
-        parentNodes.indeterminate = false
+        parentNodes.checked = false;
+        parentNodes.indeterminate = false;
       }
       if (childCheckedAllChecked) {
-        parentNodes.checked = true
-        parentNodes.indeterminate = false
+        parentNodes.checked = true;
+        parentNodes.indeterminate = false;
       }
       if (!childCheckedStatus && !childCheckedAllChecked) {
-        parentNodes.checked = false
-        parentNodes.indeterminate = true
+        parentNodes.checked = false;
+        parentNodes.indeterminate = true;
       }
       if (parentNodes.parent.key) {
-        const parentNode = parentNodes.parent
-        this.changeParentStatus(parentNode)
+        const parentNode = parentNodes.parent;
+        this.changeParentStatus(parentNode);
       }
     },
     rolePermission(data) {
       // View the permissions that the current role has
-      const _this = this
+      const _this = this;
       if (data.rid > 0) {
         getRoleById(data.rid).then((result) => {
           // console.log('checked :', result.data.current)
           if (result.status === 200) {
-            _this.authority.list = result.data.all
-            _this.authority.checkedKeys = result.data.current
-            _this.authority.rid = data.rid
-            _this.authority.title = data.describe
-            _this.authority.visible = true
+            _this.authority.list = result.data.all;
+            _this.authority.checkedKeys = result.data.current;
+            _this.authority.rid = data.rid;
+            _this.authority.title = data.describe;
+            _this.authority.visible = true;
           }
         }).catch((err) => {
-          console.log('err :', err)
-          _this.$notify.error({ title: 'Error', message: err.message })
-        })
+          console.log('err :', err);
+          _this.$notify.error({ title: 'Error', message: err.message });
+        });
       }
     },
     updatePermission() {
       // Modify permissions for a role
-      const _this = this
-      const list = _this.$refs.tree.getCheckedKeys()
-      const father = _this.$refs.tree.getHalfCheckedNodes()
+      const _this = this;
+      const list = _this.$refs.tree.getCheckedKeys();
+      const father = _this.$refs.tree.getHalfCheckedNodes();
       // console.log(list)
       // console.log(father)
       if (father != null && father.length > 0) {
         father.forEach(f => {
-          list.push(f.pid)
-        })
+          list.push(f.pid);
+        });
       }
       // console.log('updated list :', list)
       updateRolePermission({ rid: _this.authority.rid, pids: list }).then((result) => {
         if (result.status === 200) {
-          _this.$notify({ title: 'Success', message: 'Modify role permissions successfully!', type: 'success' })
-          _this.getTableData()
-          _this.authority.visible = false
+          _this.$notify({ title: 'Success', message: 'Modify role permissions successfully!', type: 'success' });
+          _this.getTableData();
+          _this.authority.visible = false;
         }
       }).catch((err) => {
-        console.log('err :', err)
-        _this.$notify.error({ title: 'Error', message: err.message })
-      })
+        console.log('err :', err);
+        _this.$notify.error({ title: 'Error', message: err.message });
+      });
     }
   }
-}
+};
 
 </script>
 <style lang='scss' scoped>

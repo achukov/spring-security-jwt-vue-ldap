@@ -67,7 +67,7 @@
 
 <script>
 
-import { getPermissionTree, getPermissionAll, savePermission, updatePermission, removePermissionById } from '@/api/permission'
+import { getPermissionTree, getPermissionAll, savePermission, updatePermission, removePermissionById } from '@/api/permission';
 
 export default {
   components: {},
@@ -100,50 +100,50 @@ export default {
         parentId: [{ required: true, message: 'Superior authority cannot be empty', trigger: 'blur' }],
         resources: [{ required: true, message: 'The ID must be globally unique', trigger: 'blur' },
           { validator: function(rule, value, callback) {
-            const regex = /[a-z]{2}$/
+            const regex = /[a-z]{2}$/;
             if (!regex.test(value)) {
-              callback(new Error('The logo must be in English lowercase with more than 5 letters'))
+              callback(new Error('The logo must be in English lowercase with more than 5 letters'));
             } else {
-              callback()
+              callback();
             }
           }, trigger: 'blur' }
         ],
         describe: [{ required: true, message: 'Permission description cannot be empty', trigger: 'blur' }],
         type: [{ required: true, message: 'Permission type cannot be empty', trigger: 'blur' }]
       }
-    }
+    };
   },
   created() {
-    this.getPermissionTreeData()
-    this.getPermissionListData()
+    this.getPermissionTreeData();
+    this.getPermissionListData();
   },
   methods: {
     getPermissionTreeData() {
       // Get permission list to display as tree node
-      const _this = this
-      _this.loading = true
+      const _this = this;
+      _this.loading = true;
       getPermissionTree().then((result) => {
         if (result.status === 200) {
-          _this.treeData = result.data
-          _this.loading = false
+          _this.treeData = result.data;
+          _this.loading = false;
         }
       }).catch((err) => {
-        console.log('err :', err)
-      })
+        console.log('err :', err);
+      });
     },
     getPermissionListData() {
       // Get permission list to display as a list
-      const _this = this
-      _this.loading = true
+      const _this = this;
+      _this.loading = true;
       getPermissionAll().then((result) => {
         if (result.status === 200) {
-          _this.listDate = result.data
-          _this.listDate.push({ pid: 0, title: 'Menu' })
-          _this.loading = false
+          _this.listDate = result.data;
+          _this.listDate.push({ pid: 0, title: 'Menu' });
+          _this.loading = false;
         }
       }).catch((err) => {
-        console.log('err :', err)
-      })
+        console.log('err :', err);
+      });
     },
     handleNodeClick(data) {
       this.pmnForm = {
@@ -155,70 +155,70 @@ export default {
         describe: data.describe,
         createTime: data.createTime,
         type: data.type
-      }
+      };
     },
     addEntity() {
-      this.pmnForm = { pid: 0, icon: '', title: '', parentId: 0, resources: '', describe: '', type: 'menu' }
-      this.isEdit = false
+      this.pmnForm = { pid: 0, icon: '', title: '', parentId: 0, resources: '', describe: '', type: 'menu' };
+      this.isEdit = false;
     },
     deleteEntity() {
-      const _this = this
+      const _this = this;
       if (_this.pmnForm.pid > 0) {
         _this.$confirm('Make sure to delete [' + _this.pmnForm.title + '] ? Please confirm that there are no sub-rights under this permission. And no role is using this permission. Otherwise it cannot be deleted. Continue?', 'Warning',
           { confirmButtonText: 'Confirm', cancelButtonText: 'Cancel', type: 'warning' })
           .then(() => {
             removePermissionById(_this.pmnForm.pid).then((result) => {
               if (result.status === 200) {
-                _this.$notify({ type: 'success', title: 'Success', message: 'Delete permission succeeded!' })
-                _this.getPermissionTreeData()
-                _this.getPermissionListData()
-                _this.isEdit = true
+                _this.$notify({ type: 'success', title: 'Success', message: 'Delete permission succeeded!' });
+                _this.getPermissionTreeData();
+                _this.getPermissionListData();
+                _this.isEdit = true;
               }
             }).catch((err) => {
-              console.log('err :', err)
-              _this.$notify.error({ title: 'Error', message: err.message })
-            })
+              console.log('err :', err);
+              _this.$notify.error({ title: 'Error', message: err.message });
+            });
           }).catch(() => {
-            _this.$message({ type: 'info', message: 'Undelete' })
-          })
+            _this.$message({ type: 'info', message: 'Undelete' });
+          });
       } else {
-        _this.$notify.error({ title: 'Error', message: 'Please select the permission before you can delete it.' })
+        _this.$notify.error({ title: 'Error', message: 'Please select the permission before you can delete it.' });
       }
     },
     saveAndFlush() {
-      const _this = this
+      const _this = this;
       _this.$refs.pmnForm.validate(valid => {
         if (valid) {
           if (_this.pmnForm.pid > 0) {
             updatePermission(_this.pmnForm).then((result) => {
               if (result.status === 200) {
-                _this.$notify({ title: 'Success', message: 'Modify permission successfully!', type: 'success' })
-                _this.getPermissionTreeData()
-                _this.getPermissionListData()
+                _this.$notify({ title: 'Success', message: 'Modify permission successfully!', type: 'success' });
+                _this.getPermissionTreeData();
+                _this.getPermissionListData();
               }
-              _this.isEdit = true
+              _this.isEdit = true;
             }).catch((err) => {
-              console.log('err :', err)
-              _this.$notify.error({ title: 'Error', message: err.message })
-            })
+              console.log('err :', err);
+              _this.$notify.error({ title: 'Error', message: err.message });
+            });
           } else {
             savePermission(_this.pmnForm).then((result) => {
               if (result.status === 200) {
-                _this.$notify({ title: 'Success', message: 'New permission succeeded!', type: 'success' })
-                _this.getPermissionTreeData()
-                _this.getPermissionListData()
+                _this.$notify({ title: 'Success', message: 'New permission succeeded!', type: 'success' });
+                _this.getPermissionTreeData();
+                _this.getPermissionListData();
               }
-              _this.isEdit = true
+              _this.isEdit = true;
             }).catch((err) => {
-              console.log('err :', err)
-              _this.$notify.error({ title: 'Error', message: err.message })
-            })
+              console.log('err :', err);
+              _this.$notify.error({ title: 'Error', message: err.message });
+            });
           }
         }
-      })
+      });
     }
   }
-}
+};
 </script>
 
 <style lang='scss' scoped>

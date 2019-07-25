@@ -1,12 +1,12 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import Vue from 'vue';
+import Router from 'vue-router';
 
 // in development-env not use lazy-loading, because lazy-loading too many pages will cause webpack hot update too slow. so only in production use lazy-loading;
 // detail: https://panjiachen.github.io/vue-element-admin-site/#/lazy-loading
 
-Vue.use(Router)
+Vue.use(Router);
 
-import Layout from '@/views/layout/Layout'
+import Layout from '@/views/layout/Layout';
 
 /**
 * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
@@ -48,13 +48,13 @@ export const constantRouterMap = [{
   component: () => import('@/views/error/404/index'),
   hidden: true
 }
-]
+];
 
 export default new Router({
   mode: 'history',
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRouterMap
-})
+});
 
 // Asynchronously mounted route
 // Dynamic routing table that needs to be loaded according to permissions
@@ -166,6 +166,14 @@ export const asyncRouterMap = [{
     meta: {
       resources: 'ldp_my'
     }
+  },
+  {
+    path: 'index',
+    component: () => import('@/views/ldp/list/index'),
+    name: 'ldp_my',
+    meta: {
+      resources: 'ldp_my'
+    }
   }
   ]
 },
@@ -221,4 +229,4 @@ export const asyncRouterMap = [{
     title: '404'
   }
 }
-]
+];

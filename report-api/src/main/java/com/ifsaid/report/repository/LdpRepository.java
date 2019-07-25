@@ -4,6 +4,7 @@ import com.ifsaid.report.entity.Ldp;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -19,5 +20,9 @@ public interface LdpRepository extends JpaRepository<Ldp, Long> {
 
 //     @Query(value = "select a from ldp as a where a.createdBy =:createdBy ")
 //     Page<Ldp> findAllbyAuthor(Pageable page, @Param("createdBy") String createdBy);
+
+    @Modifying
+    @Query(nativeQuery = true, value = "update Ldp as l set l.status = ?2 where l.lid = ?1")
+    Integer updateStatus(Integer lid, Integer status);
 
 }

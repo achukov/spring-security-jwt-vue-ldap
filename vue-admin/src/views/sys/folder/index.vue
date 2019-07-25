@@ -143,10 +143,10 @@
 
 <script>
 
-import splitPane from 'vue-splitpane'
+import splitPane from 'vue-splitpane';
 
-import { getFolderTree, getFolderPage, saveFolder, updateFolder, removeFolderById } from '@/api/folder'
-import { mapGetters } from 'vuex'
+import { getFolderTree, getFolderPage, saveFolder, updateFolder, removeFolderById } from '@/api/folder';
+import { mapGetters } from 'vuex';
 
 export default {
   components: { splitPane },
@@ -196,7 +196,7 @@ export default {
         level: [{ required: true, message: 'Folder level cannot be empty and must be a number', trigger: 'blur' }]
         // inherit: [{ required: true, message: 'Folder inherit cannot be empty', trigger: 'blur' }]
       }
-    }
+    };
   },
   computed: {
     ...mapGetters([
@@ -204,8 +204,8 @@ export default {
     ])
   },
   created() {
-    this.getTreeData()
-    this.getTableData()
+    this.getTreeData();
+    this.getTableData();
   },
   methods: {
     handleChange(val) {
@@ -216,154 +216,154 @@ export default {
     resize() {
     },
     cancelEdit(row) {
-      row.owner = row.originalowner
-      row.edit = false
+      row.owner = row.originalowner;
+      row.edit = false;
       this.$message({
         message: 'The Owner has been restored to the original value',
         type: 'warning'
-      })
+      });
     },
     confirmEdit(row) {
-      row.edit = false
-      this.emptyEntity()
-      this.folderForm.owner = row.owner
+      row.edit = false;
+      this.emptyEntity();
+      this.folderForm.owner = row.owner;
       this.$message({
         message: 'The Owner has been edited',
         type: 'success'
-      })
+      });
     },
     handleCurrentChange(index) {
-      this.page.page = index
-      this.getTableData()
+      this.page.page = index;
+      this.getTableData();
     },
     handleSizeChange(size) {
-      this.page.size = size
-      this.getTableData()
+      this.page.size = size;
+      this.getTableData();
     },
     getTreeData() {
-      const _this = this
-      _this.loading = true
+      const _this = this;
+      _this.loading = true;
       getFolderTree().then((result) => {
         if (result.status === 200) {
-          _this.treeData = result.data
-          _this.loading = false
+          _this.treeData = result.data;
+          _this.loading = false;
         }
       }).catch((err) => {
-        console.log('err :', err)
-      })
+        console.log('err :', err);
+      });
     },
     getTableData() {
-      const _this = this
-      _this.loading = true
+      const _this = this;
+      _this.loading = true;
       getFolderPage(_this.page).then((result) => {
         if (result.status === 200) {
           /* console.log(result.data.content)*/
-          _this.tableData = result.data.content
-          _this.page.total = result.data.totalElements
-          _this.loading = false
+          _this.tableData = result.data.content;
+          _this.page.total = result.data.totalElements;
+          _this.loading = false;
         }
       }).catch((err) => {
-        console.log('err :', err)
-      })
+        console.log('err :', err);
+      });
     },
     handleFilter() {
-      this.getTableData()
+      this.getTableData();
     },
     handleNodeClick(data) {
-      this.folderForm = data
+      this.folderForm = data;
       if (this.folderForm.fullpath) {
-        this.selectedOptions = this.folderForm.fullpath.split('/').map(String)
+        this.selectedOptions = this.folderForm.fullpath.split('/').map(String);
       } else {
-        this.$set(this, 'selectedOptions', [])
+        this.$set(this, 'selectedOptions', []);
       }
     },
     saveAndFlush() {
-      const _this = this
+      const _this = this;
       _this.$refs.folderForm.validate(valid => {
         if (valid) {
-          _this.folderForm.upTime = new Date()
+          _this.folderForm.upTime = new Date();
           if (_this.folderForm.id > 0) {
-            _this.folderForm.fullpath = this.selectedOptions.join('/')
+            _this.folderForm.fullpath = this.selectedOptions.join('/');
             updateFolder(_this.folderForm).then((result) => {
               if (result.status === 200) {
-                _this.$notify({ title: 'Success', message: 'Modify Folder success!', type: 'success' })
-                _this.getTreeData()
-                _this.getTableData()
-                _this.emptyEntity()
+                _this.$notify({ title: 'Success', message: 'Modify Folder success!', type: 'success' });
+                _this.getTreeData();
+                _this.getTableData();
+                _this.emptyEntity();
               }
-              _this.isEdit = true
+              _this.isEdit = true;
             }).catch((err) => {
-              console.log('err :', err)
-              _this.$notify.error({ title: 'Error', message: err.message })
-            })
+              console.log('err :', err);
+              _this.$notify.error({ title: 'Error', message: err.message });
+            });
           } else {
-            _this.folderForm.addTime = new Date()
+            _this.folderForm.addTime = new Date();
             saveFolder(_this.folderForm).then((result) => {
               if (result.status === 200) {
-                _this.$notify({ title: 'Success', message: 'New Folder success!', type: 'success' })
-                _this.getTreeData()
-                _this.getTableData()
+                _this.$notify({ title: 'Success', message: 'New Folder success!', type: 'success' });
+                _this.getTreeData();
+                _this.getTableData();
               }
-              _this.isEdit = true
+              _this.isEdit = true;
             }).catch((err) => {
-              console.log('err :', err)
-              _this.$notify.error({ title: 'Error', message: err.message })
-            })
+              console.log('err :', err);
+              _this.$notify.error({ title: 'Error', message: err.message });
+            });
           }
         }
-      })
+      });
     },
     emptyEntity() {
-      this.folderForm.id = ''
-      this.folderForm.title = ''
-      this.folderForm.owner = ''
-      this.folderForm.ownersubs = ''
-      this.folderForm.level = ''
-      this.folderForm.inherit = ''
-      this.folderForm.fullpath = ''
-      this.selectedOptions = ''
+      this.folderForm.id = '';
+      this.folderForm.title = '';
+      this.folderForm.owner = '';
+      this.folderForm.ownersubs = '';
+      this.folderForm.level = '';
+      this.folderForm.inherit = '';
+      this.folderForm.fullpath = '';
+      this.selectedOptions = '';
     },
     addEntity() {
-      this.isEdit = false
-      const parentId = this.folderForm.id
-      this.folderForm = { id: 0, title: '', parentId: parentId, owner: '', ownersubs: '', level: '', inherit: '', fullpath: '' }
+      this.isEdit = false;
+      const parentId = this.folderForm.id;
+      this.folderForm = { id: 0, title: '', parentId: parentId, owner: '', ownersubs: '', level: '', inherit: '', fullpath: '' };
       this.$nextTick(() => {
-        this.$refs.entity.clearValidate()
-      })
+        this.$refs.entity.clearValidate();
+      });
     },
     deleteEntity() {
-      const _this = this
+      const _this = this;
       if (_this.folderForm.id > 0) {
         _this.$confirm('Make sure to delete [' + _this.folderForm.name + '] Please confirm that this Folder is not used below. Otherwise it cannot be deleted. Continue?', 'Warning',
           { confirmButtonText: 'Confirm', cancelButtonText: 'Cancel', type: 'warning' })
           .then(() => {
             removeFolderById(_this.folderForm.id).then((result) => {
               if (result.status === 200) {
-                _this.$notify({ type: 'success', title: 'Success', message: 'Delete folder successfully!' })
-                _this.getTreeData()
+                _this.$notify({ type: 'success', title: 'Success', message: 'Delete folder successfully!' });
+                _this.getTreeData();
                 // _this.getFolderListData()
               }
             }).catch((err) => {
-              console.log('err :', err)
-              _this.$notify.error({ title: 'Error', message: err.message })
-            })
+              console.log('err :', err);
+              _this.$notify.error({ title: 'Error', message: err.message });
+            });
           }).catch(() => {
-            _this.$message({ type: 'info', message: 'Undelete' })
-          })
+            _this.$message({ type: 'info', message: 'Undelete' });
+          });
       } else {
-        _this.$notify.error({ title: 'Error', message: 'Please select the folder before you can delete it.' })
+        _this.$notify.error({ title: 'Error', message: 'Please select the folder before you can delete it.' });
       }
     },
     filterNode(value, data) {
-      if (!value) return true
-      return data.ownersubs.toLowerCase().indexOf(value.toLowerCase()) !== -1 || data.owner.toLowerCase().indexOf(value.toLowerCase()) !== -1 || data.title.toLowerCase().indexOf(value.toLowerCase()) !== -1
+      if (!value) return true;
+      return data.ownersubs.toLowerCase().indexOf(value.toLowerCase()) !== -1 || data.owner.toLowerCase().indexOf(value.toLowerCase()) !== -1 || data.title.toLowerCase().indexOf(value.toLowerCase()) !== -1;
     },
     filterChange: function() {
-      this.$refs.tree.filter(this.filterText)
+      this.$refs.tree.filter(this.filterText);
       // this.$refs.tableData.filter(this.filterText)
     }
   }
-}
+};
 
 </script>
 // TODO icons

@@ -21,5 +21,5 @@ const getters = {
   menu_routers: state => state.permission.routers,
   // Dynamic menu routing for the current user
   dynamicRouters: state => state.permission.dynamicRouters
-}
-export default getters
+};
+export default getters;

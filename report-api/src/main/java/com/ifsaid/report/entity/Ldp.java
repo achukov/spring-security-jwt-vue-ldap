@@ -69,8 +69,8 @@ public class Ldp extends BaseEntity implements Serializable {
     @Column(name = "t_lm_decis")
     private Integer lmdecis;
 
-    @Column(name = "t_state")
-    private String state;
+    @Column(name = "t_status")
+    private String status;
 
     @Column(name = "t_overall")
     private Integer overall;

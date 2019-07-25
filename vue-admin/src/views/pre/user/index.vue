@@ -133,10 +133,10 @@
 
 <script>
 
-import { getUserPage, saveUser, updateUser, removeUserById, updateUserRoles } from '@/api/user'
-import { getDeptAll } from '@/api/department'
-import { getRoleAll } from '@/api/role'
-import UserAvatar from '@/components/UserAvatar'
+import { getUserPage, saveUser, updateUser, removeUserById, updateUserRoles } from '@/api/user';
+import { getDeptAll } from '@/api/department';
+import { getRoleAll } from '@/api/role';
+import UserAvatar from '@/components/UserAvatar';
 
 export default {
   components: {
@@ -219,106 +219,106 @@ export default {
       //       }
       //     }, trigger: 'blur' }]
       // }
-    }
+    };
   },
   created() {
-    this.getUserTableData()
-    this.getDeptListData()
-    this.getRoleListData()
+    this.getUserTableData();
+    this.getDeptListData();
+    this.getRoleListData();
   },
   methods: {
     getUserTableData() {
-      const _this = this
-      _this.loading = true
+      const _this = this;
+      _this.loading = true;
       getUserPage(_this.page).then((result) => {
         if (result.status === 200) {
-          _this.tableData = result.data.content
-          _this.page.total = result.data.totalElements
-          _this.loading = false
+          _this.tableData = result.data.content;
+          _this.page.total = result.data.totalElements;
+          _this.loading = false;
         }
       }).catch((err) => {
-        console.log('err :', err)
-      })
+        console.log('err :', err);
+      });
     },
     getDeptListData() {
       // Get a list of departments
-      const _this = this
-      _this.loading = true
+      const _this = this;
+      _this.loading = true;
       getDeptAll().then((result) => {
         if (result.status === 200) {
-          _this.deptList = result.data
-          _this.loading = false
+          _this.deptList = result.data;
+          _this.loading = false;
         }
       }).catch((err) => {
-        console.log('err :', err)
-      })
+        console.log('err :', err);
+      });
     },
     getRoleListData() {
       // Get the list of roles
-      const _this = this
-      _this.loading = true
+      const _this = this;
+      _this.loading = true;
       getRoleAll().then((result) => {
         if (result.status === 200) {
-          _this.roleList = result.data
-          _this.loading = false
+          _this.roleList = result.data;
+          _this.loading = false;
         }
       }).catch((err) => {
-        console.log('err :', err)
-      })
+        console.log('err :', err);
+      });
     },
     currentChange(index) {
       // Switch paging
-      this.page.page = index
-      this.getUserTableData()
+      this.page.page = index;
+      this.getUserTableData();
     },
     viewBigAvatar(url) {
       // View big avatar
-      window.open(url)
+      window.open(url);
     },
     updateUserRole(data) {
       // Reassign user permissions
-      this.getRoleListData()
-      this.emptyEntity()
+      this.getRoleListData();
+      this.emptyEntity();
       this.userRole = {
         visible: true,
         title: 'Modify user role'
-      }
-      const roles = []
+      };
+      const roles = [];
       data.roles.forEach(role => {
-        roles.push(role.rid)
-      })
-      this.entity.uid = data.uid
-      this.entity.account = data.account
-      this.entity.roles = roles
+        roles.push(role.rid);
+      });
+      this.entity.uid = data.uid;
+      this.entity.account = data.account;
+      this.entity.roles = roles;
     },
     saveUserRoles() {
       // Save the user's role information
-      const _this = this
-      const roles = this.entity.roles
+      const _this = this;
+      const roles = this.entity.roles;
       if (roles !== null && roles.length > 0) {
         _this.$confirm('Make sure to modify [' + _this.entity.account + '] Role? Do you want to continue?', 'Warning',
           { confirmButtonText: 'Confirm', cancelButtonText: 'Cancel', type: 'warning' })
           .then(() => {
             updateUserRoles({ uid: _this.entity.uid, rids: roles }).then((result) => {
               if (result.status === 200) {
-                _this.$message({ type: 'success', message: 'Modify the role successfully!' })
-                _this.userRole.visible = false
-                _this.getUserTableData()
+                _this.$message({ type: 'success', message: 'Modify the role successfully!' });
+                _this.userRole.visible = false;
+                _this.getUserTableData();
               }
             }).catch((err) => {
-              console.log('err :', err)
-              _this.$notify.error({ title: 'Error', message: err.message })
-            })
+              console.log('err :', err);
+              _this.$notify.error({ title: 'Error', message: err.message });
+            });
           }).catch(() => {
-            _this.$message({ type: 'info', message: 'Undelete' })
-          })
+            _this.$message({ type: 'info', message: 'Undelete' });
+          });
       } else {
-        _this.$notify.error({ title: 'Error', message: 'Please select the role before you can modify it.' })
+        _this.$notify.error({ title: 'Error', message: 'Please select the role before you can modify it.' });
       }
     },
     getAvatar(data) {
       // Get the value of the uploaded avatar
-      this.entity.avatar = data
+      this.entity.avatar = data;
     },
     emptyEntity() {
       // Clear user information
@@ -335,20 +335,20 @@ export default {
         dept: 0,
         roles: [],
         createTime: ''
-      }
+      };
     },
     addUserEntity() {
       // Add user
-      this.getDeptListData()
-      this.emptyEntity()
+      this.getDeptListData();
+      this.emptyEntity();
       this.dialog = {
         visible: true,
         title: 'New user'
-      }
+      };
     },
     updateUserEntity(data) {
       // Modify user information
-      this.emptyEntity()
+      this.emptyEntity();
       this.entity = {
         uid: data.uid,
         avatar: data.avatar,
@@ -362,66 +362,66 @@ export default {
         dept: data.department.id,
         roles: data.roles,
         createTime: data.createTime
-      }
+      };
       this.dialog = {
         visible: true,
         title: 'Modify user information'
-      }
+      };
     },
     deleteUserEntity(data) {
       // Delete this user
-      const _this = this
+      const _this = this;
       if (data.uid !== null && data.uid.trim() !== '') {
         _this.$confirm('Make sure to delete [' + data.account + '] Do you want to continue?', 'Warning',
           { confirmButtonText: 'Confirm', cancelButtonText: 'Cancel', type: 'warning' })
           .then(() => {
             removeUserById(data.uid).then((result) => {
               if (result.status === 200) {
-                _this.$message({ type: 'success', message: 'successfully deleted!' })
-                _this.getUserTableData()
+                _this.$message({ type: 'success', message: 'successfully deleted!' });
+                _this.getUserTableData();
               }
             }).catch((err) => {
-              console.log('err :', err)
-              _this.$notify.error({ title: 'Error', message: err.message })
-            })
+              console.log('err :', err);
+              _this.$notify.error({ title: 'Error', message: err.message });
+            });
           }).catch(() => {
-            _this.$message({ type: 'info', message: 'Undelete' })
-          })
+            _this.$message({ type: 'info', message: 'Undelete' });
+          });
       } else {
-        _this.$notify.error({ title: 'Error', message: 'Please select the user before you can delete it.' })
+        _this.$notify.error({ title: 'Error', message: 'Please select the user before you can delete it.' });
       }
     },
     saveAndFlush() {
-      const _this = this
+      const _this = this;
       _this.$refs.entity.validate(valid => {
         if (valid) {
           if (_this.entity.uid !== '') {
             updateUser(_this.entity).then((result) => {
               if (result.status === 200) {
-                _this.$notify({ title: 'Success', message: 'Modify user success!', type: 'success' })
-                _this.getUserTableData()
-                _this.dialog.visible = false
+                _this.$notify({ title: 'Success', message: 'Modify user success!', type: 'success' });
+                _this.getUserTableData();
+                _this.dialog.visible = false;
               }
             }).catch((err) => {
-              console.log('err :', err)
-            })
+              console.log('err :', err);
+            });
           } else {
             saveUser(_this.entity).then((result) => {
               if (result.status === 200) {
-                _this.$notify({ title: 'Success', message: 'Add user success!', type: 'success' })
-                _this.getUserTableData()
-                _this.dialog.visible = false
+                _this.$notify({ title: 'Success', message: 'Add user success!', type: 'success' });
+                _this.getUserTableData();
+                _this.dialog.visible = false;
               }
             }).catch((err) => {
-              console.log('err :', err)
-              _this.$notify.error({ title: 'Error', message: err.message })
-            })
+              console.log('err :', err);
+              _this.$notify.error({ title: 'Error', message: err.message });
+            });
           }
         }
-      })
+      });
     }
   }
-}
+};
 
 </script>
 <style lang='scss' scoped>
