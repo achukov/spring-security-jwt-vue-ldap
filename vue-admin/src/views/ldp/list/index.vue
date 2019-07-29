@@ -29,6 +29,7 @@
           <el-button size="mini" type="primary" @click="saveAndFlush()">Save and Submit</el-button>
           <el-button size="mini" @click="dialog.visible = false">Cancel</el-button>
         </span>
+        <el-image :src="actPicUrl" :fit="fit" style="width: 400px; height: 500px"/>
       </el-dialog>
 
     </el-header>
@@ -52,9 +53,6 @@
             </el-tooltip>
             <el-tooltip :open-delay="600" class="item" effect="light" content="Delete document" placement="top-end">
               <el-button v-has="'pass:delete'" type="danger" icon="el-icon-delete" plain size="mini" @click="deleteEntity(scope.row)"/>
-            </el-tooltip>
-            <el-tooltip :open-delay="600" class="item" effect="light" content="View document" placement="top-end">
-              <el-button  type="warning" icon="el-icon-delete" plain size="mini" @click="checkNowProcessActivities(scope.row)"/>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -98,6 +96,7 @@ export default {
         search: null,
         total: 0
       },
+      actPicUrl: '',
       showOverflowTooltip: true,
       formLabelWidth: '130px',
       entity: {
@@ -214,16 +213,15 @@ export default {
       this.entity.ifrs = data.ifrs;
       this.entity.isrepare = data.isrepare;
       this.entity.price = data.price;
+      this.actPicUrl = 'http://localhost:8090/activitiesView/info/' + data.lid;
       this.dialog.title = 'Loss and Damage Claim Procedure';
       this.dialog.visible = true;
     },
-    checkNowProcessActivities(data) {
-    },
-    completeTask(elem) {
-      let paramMap = {};
-      debugger;
-      let paramArray = $(elem).val().split(":");
-    },
+    // completeTask(elem) {
+    //   let paramMap = {};
+    //   debugger;
+    //   let paramArray = $(elem).val().split(':');
+    // },
     deleteEntity(data) {
       const _this = this;
       if (data.lid > 0) {

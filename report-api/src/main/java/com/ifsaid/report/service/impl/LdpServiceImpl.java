@@ -67,39 +67,9 @@ public class LdpServiceImpl extends BaseServiceImpl<Ldp, Long, LdpRepository> im
 
     @Override
     public Ldp update(Ldp entity) throws JpaCrudException {
-        entity.setUpdatedBy(SecurityUtils.getCurrentMail());
+//        entity.setUpdatedBy(SecurityUtils.getCurrentMail());
 
-        if( entity.getStatus().equals("2")){
-            emailSender.htmlEmail(
-                servletContext,
-                // user name
-                entity.getCreatedBy().toString(),
-                // to
-                entity.getCreatedBy().toString(),
-                // subject
-                "Ldp Approval number: " + entity.getLid() + " was approved.",
-                //  msg
-                "Please click this <a href=\"http://ruits/ldp/my\">link</a> for further details."
-                + " Thank you."
-            );
-        } else if ( entity.getStatus().equals("0")) {
-            emailSender.htmlEmail(
-                servletContext,
-                // user name
-                null,
-                // to
-                entity.getCreatedBy().toString(),
-                // subject
-                "Ldp Approval number: " + entity.getLid() + " was rejected."
-                + " History Log: " + entity.getHistoryLog(),
-                //  msg
-                "Please click this <a href=\"http://ruits/ldp/my\">link</a> for further details."
-                + " Thank you."
-            );
 
-        } else {
-            // TODO replay
-        }
 
         return super.update(entity);
     }

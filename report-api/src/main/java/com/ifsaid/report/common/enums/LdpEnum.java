@@ -8,7 +8,7 @@ public enum LdpEnum {
     COMPLETE("Approval completed", "2"),
     ASSIGNEE_USER("Personnel variable key", "ASSIGNEE_USER"),
     OUTCOME("Connected variable key", "OUTCOME"),
-    PROCESS_DEFINE_KEY("Request order process defined key", "LdpProcess");
+    PROCESS_DEFINE_KEY("Request process defined key", "LdpProcess");
 
     private String code;
 

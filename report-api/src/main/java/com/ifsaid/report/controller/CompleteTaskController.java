@@ -22,9 +22,9 @@ public class CompleteTaskController {
         this.completeTaskService = completeTaskService;
     }
 
-    @GetMapping(value = "/getItemById")
-    public Result getItemById(@RequestParam(name = "taskId") String taskId) {
-        Map<String, Object> map = completeTaskService.getItemById(taskId);
+    @GetMapping(value = "/getTaskById")
+    public Result getTaskById(@RequestParam(name = "taskId") String taskId) {
+        Map<String, Object> map = completeTaskService.getTaskById(taskId);
         return Result.success(map);
     }
 

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface ICompleteTaskService extends IBaseService<Ldp, Long> {
-    Map<String, Object> getItemById(String taskId);
+    Map<String, Object> getTaskById(String taskId);
     List<CommentModel> getCommentsByTaskId(String taskId);
     void completeTask(Map<String, String> paramMap) throws Exception;
 }

@@ -3,10 +3,7 @@ package com.ifsaid.report.controller;
 import com.ifsaid.report.service.IActivitiesViewService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
@@ -25,10 +22,11 @@ public class ActivitiesViewController {
     public ActivitiesViewController(IActivitiesViewService activitiesViewService) {
         this.activitiesViewService = activitiesViewService;
     }
-    @GetMapping
-    public void checkNowProcessActivitiesByLdpId(@RequestParam(name = "LdpId") String LdpId,
+    @GetMapping("/info/{id}")
+    public void checkNowProcessActivitiesById(@PathVariable String id,
                                                        HttpServletResponse response) {
-        try (InputStream stream = activitiesViewService.checkNowProcessActivitiesById(LdpId);
+        response.setContentType("image/png");
+        try (InputStream stream = activitiesViewService.checkNowProcessActivitiesById(id);
              ServletOutputStream outputStream = response.getOutputStream()) {
             BufferedImage image = ImageIO.read(stream);
             ImageIO.write(image, "PNG", outputStream);

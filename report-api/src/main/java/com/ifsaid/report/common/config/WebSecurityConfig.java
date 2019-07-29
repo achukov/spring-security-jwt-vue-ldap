@@ -91,11 +91,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .and().authorizeRequests()
         // Expose interfaces that do not require authentication. Log in, refresh the token,
         .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-        .antMatchers("/auth/**", "/actuator/**").permitAll()
+        .antMatchers("/auth/**", "/actuator/**", "/activitiesView/info/**").permitAll()
         .antMatchers("/v2/api-docs", "/doc.html", "/configuration/ui",
         "/swagger-resources", "/configuration/security", "/swagger-ui.html",
-        "/webjars/**", "/swagger-resources/configuration/ui", "/swagge‌​r-ui.html",
-        "/activity/**", "/activity/modeler.html", "/service/model/**", "/service/editor/**")
+        "/webjars/**", "/swagger-resources/configuration/ui", "/swagge‌​r-ui.html")
         .permitAll().anyRequest().authenticated();
         httpSecurity
             .addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);

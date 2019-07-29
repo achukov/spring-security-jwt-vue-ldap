@@ -41,7 +41,7 @@ public class CompleteTaskServiceImpl extends BaseServiceImpl<Ldp, Long, LdpRepos
     }
 
     @Override
-    public Map<String, Object> getItemById(String taskId) { //findById
+    public Map<String, Object> getTaskById(String taskId) { //findById
         Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
         String processInstanceId = task.getProcessInstanceId();
         ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
@@ -87,7 +87,10 @@ public class CompleteTaskServiceImpl extends BaseServiceImpl<Ldp, Long, LdpRepos
 
     @Override
     public List<CommentModel> getCommentsByTaskId(String taskId) {
-        Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+        Task task = taskService.createTaskQuery()
+                .taskId(taskId)
+                .singleResult();
+
         String processInstanceId = task.getProcessInstanceId();
         List<Comment> taskComments = taskService.getProcessInstanceComments(processInstanceId);
         ArrayList<CommentModel> commentModels = new ArrayList<>();
