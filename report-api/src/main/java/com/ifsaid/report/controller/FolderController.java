@@ -22,12 +22,6 @@ import java.util.*;
 @RequestMapping("/folder")
 public class FolderController extends BaseController<Folder, Integer, IFolderService> {
 
-    @Autowired
-    private ObjectMapper mapper;
-
-    @Autowired
-    private IFolderService folderService;
-
     @ApiOperation(value = "Query all", notes = "Return as a tree node")
     @GetMapping("/tree")
     public Result treeList() {

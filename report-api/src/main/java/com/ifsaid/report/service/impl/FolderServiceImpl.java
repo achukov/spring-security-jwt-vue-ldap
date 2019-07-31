@@ -71,12 +71,12 @@ public class FolderServiceImpl extends BaseServiceImpl<Folder, Integer, FolderRe
 
     @Override
     public Page<Folder> findAll(MyPage page) {
-        PageRequest rageRequest = PageRequest.of(page.getPage() - 1, page.getSize(), Sort.by(Sort.Direction.DESC, "upTime"));
+        PageRequest pageRequest = PageRequest.of(page.getPage() - 1, page.getSize(), Sort.by(Sort.Direction.DESC, "upTime"));
         Page<Folder> all = null;
          if (page.getSearch() != null && StringUtils.isNotEmpty(page.getSearch())) {
-            all = baseRepository.findAllBySearch(rageRequest, page.getSearch());
+            all = baseRepository.findAllBySearch(pageRequest, page.getSearch());
         } else {
-            all = baseRepository.findAll(rageRequest);
+            all = baseRepository.findAll(pageRequest);
         }
         return all;
     }

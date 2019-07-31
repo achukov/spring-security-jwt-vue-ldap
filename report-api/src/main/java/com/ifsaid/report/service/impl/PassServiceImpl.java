@@ -124,14 +124,14 @@ public class PassServiceImpl extends BaseServiceImpl<Pass, Long, PassRepository>
 
     @Override
     public Page<Pass> findAll(MyPage page) {
-        PageRequest rageRequest = PageRequest.of(page.getPage() - 1, page.getSize(), Sort.by(Sort.Direction.DESC, "upTime"));
+        PageRequest pageRequest = PageRequest.of(page.getPage() - 1, page.getSize(), Sort.by(Sort.Direction.DESC, "upTime"));
         Page<Pass> all = null;
         if (page.getCid() != null && page.getCid() > 0) {
-            all = baseRepository.findAllByCategoryId(rageRequest, page.getCid());
+            all = baseRepository.findAllByCategoryId(pageRequest, page.getCid());
         } else if (page.getSearch() != null && StringUtils.isNotEmpty(page.getSearch())) {
-            all = baseRepository.findAllBySearch(rageRequest, page.getSearch());
+            all = baseRepository.findAllBySearch(pageRequest, page.getSearch());
         } else {
-            all = baseRepository.findAll(rageRequest);
+            all = baseRepository.findAll(pageRequest);
         }
         return all;
     }
@@ -141,13 +141,13 @@ public class PassServiceImpl extends BaseServiceImpl<Pass, Long, PassRepository>
         final String authToken = token.substring(this.jwtTokenUtil.getTokenHead().length());
         String username = jwtTokenUtil.getMailFromToken(authToken);
 
-        PageRequest rageRequest = PageRequest.of(page.getPage() - 1, page.getSize(), Sort.by(Sort.Direction.DESC, "upTime"));
+        PageRequest pageRequest = PageRequest.of(page.getPage() - 1, page.getSize(), Sort.by(Sort.Direction.DESC, "upTime"));
         Page<Pass> all = null;
 
         if (page.getSearch() != null && StringUtils.isNotEmpty(page.getSearch())) {
-            all = baseRepository.findAllByAuthorAndSearch(rageRequest, page.getSearch(), username);
+            all = baseRepository.findAllByAuthorAndSearch(pageRequest, page.getSearch(), username);
         } else {
-            all = baseRepository.findAllbyAuthor(rageRequest, username);
+            all = baseRepository.findAllbyAuthor(pageRequest, username);
         }
         return all;
     }

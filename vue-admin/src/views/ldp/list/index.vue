@@ -26,10 +26,12 @@
           </fieldset>
         </el-form>
         <span slot="footer" class="dialog-footer">
-          <el-button size="mini" type="primary" @click="saveAndFlush()">Save and Submit</el-button>
+          <el-button size="mini" type="primary" @click="saveAndFlush()">Save</el-button>
           <el-button size="mini" @click="dialog.visible = false">Cancel</el-button>
+          <el-button size="mini" type="success" @click="startProcess()">Submit</el-button>
+          <!--  <el-button type="primary" @click="handleTask('btn_success')">handleTask</el-button>-->
         </span>
-        <el-image :src="actPicUrl" :fit="fit" style="width: 400px; height: 500px"/>
+        <el-image :src="actPicUrl" style="width: 400px; height: 500px"/>
       </el-dialog>
 
     </el-header>
@@ -57,6 +59,7 @@
           </template>
         </el-table-column>
       </el-table>
+
     </el-main>
     <el-footer>
       <el-pagination
@@ -76,6 +79,29 @@
         <el-button size="mini" @click="cancleCommit">Отменить</el-button>
       </span>
     </el-dialog> -->
+    <el-table v-loading="taskLoading" :data="taskData" :key="tableKey" size="mini" border highlight-current-row style="width: 100%">
+      <el-table-column width="200px" align="center" label="ID">
+        <template slot-scope="scope">
+          <span>{{ scope.row.taskId }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column width="200px" align="center" label="mission name">
+        <template slot-scope="scope">
+          <span>{{ scope.row.taskName }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column width="200px" align="center" label="Submission time">
+        <template slot-scope="scope">
+          <span>{{ scope.row.time | formatTime }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column fixed="right" align="center" label="operating" width="150">
+        <template slot-scope="scope">
+          <el-button size="small" type="success" @click="handleSubmit(scope.row)">Handle</el-button>
+          <el-button size="small" type="danger" @click="handleDelete(scope.row)">delete</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
   </el-container>
 </template>
 
@@ -83,6 +109,7 @@
 
 import { scrollTo } from '@/utils/scroll-to';
 import { getLdpPage, saveLdp, updateLdp, removeLdpById } from '@/api/ldp';
+import { getTaskByName } from '@/api/workflow';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -96,6 +123,13 @@ export default {
         search: null,
         total: 0
       },
+      pageTasks: {
+        page: 1,
+        size: 15,
+        search: null,
+        total: 0
+      },
+      list: null,
       actPicUrl: '',
       showOverflowTooltip: true,
       formLabelWidth: '130px',
@@ -115,8 +149,11 @@ export default {
         visible: false,
         title: ''
       },
+      taskData: [],
       tableData: [],
+      tableKey: 0,
       loading: false,
+      taskLoading: false,
       typeoptions: ['Пропуск на посещение', 'Пропуск на въезд'],
       parkoptions: ['Гостевой', 'Погрузка-разгрузка', 'Посадка пассажиров'],
       leveloptions: ['Наземный', 'Подземный'],
@@ -148,6 +185,7 @@ export default {
   },
   created() {
     this.getTableData();
+    this.getTasks();
   },
   methods: {
     handleCurrentChange(index) {
@@ -171,6 +209,19 @@ export default {
           _this.tableData = result.data.content;
           _this.page.total = result.data.totalElements;
           _this.loading = false;
+        }
+      }).catch((err) => {
+        console.log('err :', err);
+      });
+    },
+    getTasks() {
+      const _this = this;
+      this.taskLoading = true;
+      getTaskByName(_this.pageTasks).then((result) => {
+        if (result.status === 200) {
+          _this.taskData = result.data.content;
+          _this.page.total = result.data.totalElements;
+          _this.taskLoading = false;
         }
       }).catch((err) => {
         console.log('err :', err);
@@ -217,11 +268,18 @@ export default {
       this.dialog.title = 'Loss and Damage Claim Procedure';
       this.dialog.visible = true;
     },
-    // completeTask(elem) {
-    //   let paramMap = {};
-    //   debugger;
-    //   let paramArray = $(elem).val().split(':');
-    // },
+    handleTask(elem) {
+      // const paramMap = {};
+      // paramMap.outcome = elem;
+      // paramMap.lid = this.lid;
+      // paramMap.comment = 'aaa';
+      // paramMap.LdpId =
+      // this.obj.taskId = this.taskId;
+      // this.obj.taskFlag = result;
+      // this.obj.comment = this.form.comment;
+      // this.obj.leaveId = this.form.id;
+      // this.obj.days = this.form.days;
+    },
     deleteEntity(data) {
       const _this = this;
       if (data.lid > 0) {

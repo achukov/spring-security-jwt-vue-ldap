@@ -38,8 +38,8 @@ public class BaseController<T extends BaseEntity, ID, S extends IBaseService<T, 
     @GetMapping("/page")
     public Result<Page<T>> findAll(MyPage page) {
         log.info("page :  {} size : {}", page.getPage(), page.getSize());
-        PageRequest rageRequest = PageRequest.of(page.getPage() - 1, page.getSize(), Sort.by(Sort.Direction.DESC, "upTime"));
-        return Result.success(baseService.findAll(rageRequest));
+        PageRequest pageRequest = PageRequest.of(page.getPage() - 1, page.getSize(), Sort.by(Sort.Direction.DESC, "upTime"));
+        return Result.success(baseService.findAll(pageRequest));
     }
 
     @ApiOperation(value = "New", notes = "Without Id")

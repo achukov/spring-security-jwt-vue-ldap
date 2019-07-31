@@ -17,10 +17,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-public class BaseServiceImpl<T extends BaseEntity, ID, J extends JpaRepository> implements IBaseService<T, ID> {
+public class BaseServiceImpl<T extends BaseEntity, ID, R extends JpaRepository> implements IBaseService<T, ID> {
 
     @Autowired
-    protected J baseRepository;
+    protected R baseRepository;
 
     @Transactional(readOnly = true, rollbackFor = RuntimeException.class)
     @Override

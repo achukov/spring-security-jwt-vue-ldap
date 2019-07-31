@@ -30,28 +30,6 @@ public class ActivitiConfiguration extends AbstractProcessEngineAutoConfiguratio
         this.platformTransactionManager = platformTransactionManager;
     }
 
-    /**
-     *
-     * Configure the process engine, the most important of the activiti is the process engine, here is the injection of dataSource
-     * The configuration of StandaloneInMemProcessEngineConfiguration, this is the process engine configuration of the In Memory of the H2 database.
-     * SpringProcessEngineConfiguration is integrated with Spring's process engine configuration, of course, you can use MYSQL
-     *
-     * @param springAsyncExecutor Synchronous execution
-     * @return SpringProcessEngineConfiguration
-     * @throws IOException io error
-     */
-//    @Bean
-//    public SpringProcessEngineConfiguration springProcessEngineConfiguration(SpringAsyncExecutor springAsyncExecutor)
-//            throws IOException {
-//        return baseSpringProcessEngineConfiguration(dataSource, platformTransactionManager, springAsyncExecutor);
-//    }
-
-    /**
-     * The second way is to configure the database construction rules here.
-     * @param springAsyncExecutor Synchronous execution
-     * @return SpringProcessEngineConfiguration
-     * @throws IOException  io error
-     */
     @Bean
 	public SpringProcessEngineConfiguration springProcessEngineConfiguration(SpringAsyncExecutor springAsyncExecutor)
             throws IOException {

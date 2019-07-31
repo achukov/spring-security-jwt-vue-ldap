@@ -31,8 +31,8 @@ public class UserController extends BaseController<User, String, IUserService> {
 
     @GetMapping("/page/info")
     public Result<Page<UserDto>> findAllInfo(MyPage page) {
-        PageRequest rageRequest = PageRequest.of(page.getPage() - 1, page.getSize(), Sort.by(Sort.Direction.DESC, "upTime"));
-        return Result.success(baseService.findAllInfo(rageRequest));
+        PageRequest pageRequest = PageRequest.of(page.getPage() - 1, page.getSize(), Sort.by(Sort.Direction.DESC, "upTime"));
+        return Result.success(baseService.findAllInfo(pageRequest));
     }
     
 }

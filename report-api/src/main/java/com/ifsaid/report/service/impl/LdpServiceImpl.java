@@ -56,13 +56,7 @@ public class LdpServiceImpl extends BaseServiceImpl<Ldp, Long, LdpRepository> im
 
     @Override
     public Ldp save(Ldp entity) throws JpaCrudException {
-
-        entity.setStatus(LdpEnum.EXAMINATION.getCode());
-        super.save(entity);
-
-        startProcessByKey(entity.getLid());
-
-        return entity;
+        return super.save(entity);
     }
 
     @Override
@@ -81,23 +75,29 @@ public class LdpServiceImpl extends BaseServiceImpl<Ldp, Long, LdpRepository> im
 
     @Override
     public Page<Ldp> findAll(MyPage page) {
-        PageRequest rageRequest = PageRequest.of(page.getPage() - 1, page.getSize(), Sort.by(Sort.Direction.DESC, "upTime"));
+        PageRequest pageRequest = PageRequest.of(page.getPage() - 1, page.getSize(), Sort.by(Sort.Direction.DESC, "upTime"));
         Page<Ldp> all = null;
         if (page.getCid() != null && page.getCid() > 0) {
-            // all = baseRepository.findAllByCategoryId(rageRequest, page.getCid());
+            // all = baseRepository.findAllByCategoryId(pageRequest, page.getCid());
             all = null;
         } else if (page.getSearch() != null && StringUtils.isNotEmpty(page.getSearch())) {
-            all = baseRepository.findAllBySearch(rageRequest, page.getSearch());
+            all = baseRepository.findAllBySearch(pageRequest, page.getSearch());
         } else {
-            all = baseRepository.findAll(rageRequest);
+            all = baseRepository.findAll(pageRequest);
         }
         return all;
     }
 
+    @Override
+    public Ldp start(Long id) {
+        Ldp ldapEntity = findById(id);
+        ldapEntity.setStatus(LdpEnum.EXAMINATION.getCode());
+        startProcessByKey(ldapEntity.getLid());
+        return super.update(ldapEntity);
+    }
 
 
     private void startProcessByKey(Long aLong) {
-
         String businessKey = LdpEnum.PROCESS_DEFINE_KEY.getCode() + ":" + aLong;
         // Process variable, the person in charge (first submission)
         Map<String, Object> variables = new HashMap<>();

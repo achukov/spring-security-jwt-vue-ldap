@@ -51,6 +51,7 @@ public class RoleController extends BaseController<Role, Integer, IRoleService> 
         String uid = (String) map.get("uid");
         List<Integer> rids = (List<Integer>) map.get("rids");
         Set<Integer> collect = rids.stream().filter(r -> r != 0).collect(Collectors.toSet());
+
         log.info("updateUserRole collect : {}", collect);
         if (uid == null || StringUtils.isEmpty(uid)) {
             return Result.error500("User_Id cannot be empty", null);

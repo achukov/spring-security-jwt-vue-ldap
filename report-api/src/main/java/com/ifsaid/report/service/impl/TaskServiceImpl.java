@@ -1,16 +1,25 @@
 package com.ifsaid.report.service.impl;
 
 import com.ifsaid.report.common.enums.LdpEnum;
+import com.ifsaid.report.common.jwt.JwtTokenProvider;
 import com.ifsaid.report.common.service.impl.BaseServiceImpl;
 import com.ifsaid.report.common.utils.SecurityUtils;
-import com.ifsaid.report.entity.CommentModel;
+import com.ifsaid.report.dto.CommentDto;
+import com.ifsaid.report.dto.TaskDto;
+import com.ifsaid.report.vo.MyPage;
+import com.ifsaid.report.vo.Result;
 import lombok.extern.slf4j.Slf4j;
+import org.activiti.engine.HistoryService;
 import org.activiti.engine.impl.identity.Authentication;
+import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.task.Comment;
 import com.ifsaid.report.entity.Ldp;
+import org.activiti.engine.task.TaskQuery;
+import org.activiti.spring.ProcessEngineFactoryBean;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import com.ifsaid.report.repository.LdpRepository;
-import com.ifsaid.report.service.ICompleteTaskService;
+import com.ifsaid.report.service.ITaskService;
 import com.ifsaid.report.service.ILdpService;
 import org.activiti.bpmn.model.FlowElement;
 import org.activiti.bpmn.model.SequenceFlow;
@@ -20,37 +29,47 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class CompleteTaskServiceImpl extends BaseServiceImpl<Ldp, Long, LdpRepository> implements ICompleteTaskService {
+public class TaskServiceImpl extends BaseServiceImpl<Ldp, Long, LdpRepository> implements ITaskService {
 
     private final ILdpService ldpService;
-    private final RepositoryService repositoryService;
-    private final RuntimeService runtimeService;
     private final TaskService taskService;
+    private final RuntimeService runtimeService;
+    private final RepositoryService repositoryService;
+    private final HistoryService historyService;
+    private final ProcessEngineFactoryBean processEngine;
+    private final JwtTokenProvider jwtTokenUtil;
 
-    public CompleteTaskServiceImpl(ILdpService ldpService, RepositoryService repositoryService, RuntimeService runtimeService, TaskService taskService) {
+    public TaskServiceImpl(ILdpService ldpService, RepositoryService repositoryService, RuntimeService runtimeService, TaskService taskService, HistoryService historyService, ProcessEngineFactoryBean processEngine, JwtTokenProvider jwtTokenUtil) {
         this.ldpService = ldpService;
         this.repositoryService = repositoryService;
         this.runtimeService = runtimeService;
         this.taskService = taskService;
+        this.historyService = historyService;
+        this.processEngine = processEngine;
+        this.jwtTokenUtil = jwtTokenUtil;
     }
 
     @Override
-    public Map<String, Object> getTaskById(String taskId) { //findById
-        Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
-        String processInstanceId = task.getProcessInstanceId();
-        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
-                .processInstanceId(processInstanceId).singleResult();
-        String businessKey = processInstance.getBusinessKey();
+    public Map<String, Object> getTaskById(String taskId) {
+        Task task = taskService.createTaskQuery()
+                .taskId(taskId).singleResult();
+        ProcessInstance pi = runtimeService.createProcessInstanceQuery()
+                .processInstanceId(task.getProcessInstanceId()).singleResult();
 
-        String LdpId = businessKey.split(":")[1];
+        String businessKey = pi.getBusinessKey();
+        if (StringUtils.isNotBlank(businessKey)) {
+            businessKey = businessKey.split(":")[1];
+        }
 
-        Ldp LdpEntity = ldpService.findById(Long.parseLong(LdpId));
+        Ldp LdpEntity = ldpService.findById(Integer.valueOf(businessKey).longValue());
         List<String> sequenceFlowInfo = getSequenceFlowInfo(taskId);
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("dataInfo", LdpEntity);
@@ -59,22 +78,16 @@ public class CompleteTaskServiceImpl extends BaseServiceImpl<Ldp, Long, LdpRepos
         return resultMap;
     }
 
+
     private List<String> getSequenceFlowInfo(String taskId) {
         List<String> resultList = new ArrayList<>();
-        // 1. Query the task according to the task ID
         Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
-        // 2. get the process definition ID
         String processDefinitionId = task.getProcessDefinitionId();
-        // 3. get all the connection collection
         Collection<FlowElement> flowElements = repositoryService.getBpmnModel(processDefinitionId).getMainProcess()
                 .getFlowElements();
-        // 4. get the execution instance ID
         String executionId = task.getExecutionId();
-        // 5. get the execution instance
         Execution execution = runtimeService.createExecutionQuery().executionId(executionId).singleResult();
-        // 6. get ActId
         String activityId = execution.getActivityId();
-        // 7. get nodes for looping
         flowElements.forEach(item -> {
             if (item instanceof SequenceFlow) {
                 SequenceFlow flow = (SequenceFlow) item;
@@ -86,17 +99,17 @@ public class CompleteTaskServiceImpl extends BaseServiceImpl<Ldp, Long, LdpRepos
     }
 
     @Override
-    public List<CommentModel> getCommentsByTaskId(String taskId) {
+    public List<CommentDto> getCommentsByTaskId(String taskId) {
         Task task = taskService.createTaskQuery()
                 .taskId(taskId)
                 .singleResult();
 
         String processInstanceId = task.getProcessInstanceId();
         List<Comment> taskComments = taskService.getProcessInstanceComments(processInstanceId);
-        ArrayList<CommentModel> commentModels = new ArrayList<>();
+        ArrayList<CommentDto> commentModels = new ArrayList<>();
 
         taskComments.forEach(item -> {
-            CommentModel commentModel = new CommentModel();
+            CommentDto commentModel = new CommentDto();
             BeanUtils.copyProperties(item, commentModel);
             commentModels.add(commentModel);
         });
@@ -120,20 +133,40 @@ public class CompleteTaskServiceImpl extends BaseServiceImpl<Ldp, Long, LdpRepos
 
     }
 
+    @Override
+    public Long countTasksByUidAndCategoryId(String userId,String categoryId) {
+
+        Long count = taskService.createTaskQuery()
+                .taskCandidateOrAssigned(userId)
+                .taskCategory(categoryId)
+                .count();
+        return count;
+    }
+
+    @Override
+    public Page<TaskDto> getTaskByName(Pageable page, String token) {
+        final String authToken = token.substring(this.jwtTokenUtil.getTokenHead().length());
+        String username = jwtTokenUtil.getMailFromToken(authToken);
+        TaskQuery taskQuery  = taskService.createTaskQuery().taskCandidateOrAssigned(username);
+
+        List<TaskDto> taskDTOList = taskQuery.orderByTaskCreateTime().desc().list()
+                .stream().map(task -> {
+                    TaskDto dto = new TaskDto();
+                    dto.setTaskId(task.getId());
+                    dto.setTaskName(task.getName());
+                    dto.setProcessInstanceId(task.getProcessInstanceId());
+                    dto.setNodeKey(task.getTaskDefinitionKey());
+                    dto.setCategory(task.getCategory());
+                    dto.setTime(task.getCreateTime());
+                    return dto;
+                }).collect(Collectors.toList());
+            return new PageImpl<>(taskDTOList, page, taskDTOList.size());
+
+    }
+
     private void insertComment(String taskId, String processInstanceId, String outcome, String comment) {
-        /**
-         * Set up annotator
-         * When setting annotation information in Activiti, he will automatically get the user in the current thread.
-         * So we need to set the user variables in the current thread here.
-         *
-         * The specific location is: org.activiti.engine.impl.cmd.AddCommentCmd 95~96 lines of code
-         *
-         * String userId = Authentication.getAuthenticatedUserId();
-         *	CommentEntity comment = commandContext.getCommentEntityManager().create();
-         */
         String username = SecurityUtils.getCurrentMail();
         Authentication.setAuthenticatedUserId(username);
-
         // Add annotation information
         taskService.addComment(taskId, processInstanceId, "[" + outcome + "]" + comment);
     }
