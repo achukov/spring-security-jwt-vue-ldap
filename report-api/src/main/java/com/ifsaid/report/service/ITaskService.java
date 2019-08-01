@@ -15,7 +15,8 @@ public interface ITaskService extends IBaseService<Ldp, Long> {
     Map<String, Object> getTaskById(String taskId);
     List<CommentDto> getCommentsByTaskId(String taskId);
     void completeTask(Map<String, String> paramMap) throws Exception;
-    public Long countTasksByUidAndCategoryId(String userId,String categoryId);
+    Long countTasksByUidAndCategoryId(String userId,String categoryId);
     Page<TaskDto> getTaskByName(Pageable page, String token);
+    Ldp start(Long id);
 
 }

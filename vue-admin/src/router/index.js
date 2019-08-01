@@ -168,11 +168,11 @@ export const asyncRouterMap = [{
     }
   },
   {
-    path: 'index',
-    component: () => import('@/views/ldp/list/index'),
-    name: 'ldp_my',
+    path: 'tasks',
+    component: () => import('@/views/ldp/myprocess/index'),
+    name: 'my_process',
     meta: {
-      resources: 'ldp_my'
+      resources: 'my_process'
     }
   }
   ]

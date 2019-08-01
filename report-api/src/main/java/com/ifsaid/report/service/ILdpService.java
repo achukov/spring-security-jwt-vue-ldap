@@ -11,6 +11,5 @@ import java.util.Set;
 public interface ILdpService extends IBaseService<Ldp, Long> {
 
     Page<Ldp> findAll(MyPage page);
-    Ldp start(Long id);
 
 }

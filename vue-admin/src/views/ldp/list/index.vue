@@ -4,29 +4,29 @@
       <div v-title>Pass Approval</div>
 
       <div class="filter-container">
-        <el-button v-has="'pass:new'" type="success" plain size="mini" @click="addEntity">New Request</el-button>
+        <el-button v-has="'pass:new'" type="success" plain size="mini" @click="handleCreate">New Request</el-button>
         <el-input v-model="page.search" size="mini" placeholder="Search" prefix-icon="el-icon-search" style="width: 250px; margin-left: 10px;" class="filter-item" @keyup.enter.native="handleFilter()"/>
       </div>
 
       <el-dialog :visible.sync="dialog.visible" :title="dialog.title" :close-on-click-modal="false" :center="true" top="5vh" width="700px">
-        <el-form id="Ldp" ref="entity" :model="entity" :rules="rules" :inline="false" label-position="top" size="mini" >
+        <el-form id="Ldp" ref="form" :model="form" :rules="rules" :inline="false" label-position="top" size="mini" >
           <fieldset style="margin-bottom: 5px; border-radius: 5px; padding: 20px; border: 1px solid #DCDFE6;">
             <el-row :gutter="20">
               <el-col :span="12">
                 <el-form-item :label-width="formLabelWidth" label="Серийный номер" prop="serialnumber">
-                  <el-input v-model="entity.serialnumber" placeholder="Серийный номер"/>
+                  <el-input v-model="form.serialnumber" placeholder="Серийный номер"/>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item :label-width="formLabelWidth" label="Характер ущерба" prop="dmgtype">
-                  <el-input v-model="entity.dmgtype" placeholder="Характер ущерба"/>
+                  <el-input v-model="form.dmgtype" placeholder="Характер ущерба"/>
                 </el-form-item>
               </el-col>
             </el-row>
           </fieldset>
         </el-form>
         <span slot="footer" class="dialog-footer">
-          <el-button size="mini" type="primary" @click="saveAndFlush()">Save</el-button>
+          <el-button size="mini" type="primary" @click="saveAndFlushEntity()">Save</el-button>
           <el-button size="mini" @click="dialog.visible = false">Cancel</el-button>
           <el-button size="mini" type="success" @click="startProcess()">Submit</el-button>
           <!--  <el-button type="primary" @click="handleTask('btn_success')">handleTask</el-button>-->
@@ -51,10 +51,10 @@
         <el-table-column fixed="right" label="Actions" width="125">
           <template slot-scope="scope">
             <el-tooltip :open-delay="600" class="item" effect="light" content="Edit document" placement="top-start">
-              <el-button v-has="'pass:update'" type="primary" icon="el-icon-edit" plain size="mini" @click="updateEntity(scope.row)"/>
+              <el-button v-has="'pass:update'" type="primary" icon="el-icon-edit" plain size="mini" @click="handleSubmit(scope.row)"/>
             </el-tooltip>
             <el-tooltip :open-delay="600" class="item" effect="light" content="Delete document" placement="top-end">
-              <el-button v-has="'pass:delete'" type="danger" icon="el-icon-delete" plain size="mini" @click="deleteEntity(scope.row)"/>
+              <el-button v-has="'pass:delete'" type="danger" icon="el-icon-delete" plain size="mini" @click="handleDelete(scope.row)"/>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -79,29 +79,6 @@
         <el-button size="mini" @click="cancleCommit">Отменить</el-button>
       </span>
     </el-dialog> -->
-    <el-table v-loading="taskLoading" :data="taskData" :key="tableKey" size="mini" border highlight-current-row style="width: 100%">
-      <el-table-column width="200px" align="center" label="ID">
-        <template slot-scope="scope">
-          <span>{{ scope.row.taskId }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column width="200px" align="center" label="mission name">
-        <template slot-scope="scope">
-          <span>{{ scope.row.taskName }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column width="200px" align="center" label="Submission time">
-        <template slot-scope="scope">
-          <span>{{ scope.row.time | formatTime }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column fixed="right" align="center" label="operating" width="150">
-        <template slot-scope="scope">
-          <el-button size="small" type="success" @click="handleSubmit(scope.row)">Handle</el-button>
-          <el-button size="small" type="danger" @click="handleDelete(scope.row)">delete</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
   </el-container>
 </template>
 
@@ -109,7 +86,6 @@
 
 import { scrollTo } from '@/utils/scroll-to';
 import { getLdpPage, saveLdp, updateLdp, removeLdpById } from '@/api/ldp';
-import { getTaskByName } from '@/api/workflow';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -133,7 +109,7 @@ export default {
       actPicUrl: '',
       showOverflowTooltip: true,
       formLabelWidth: '130px',
-      entity: {
+      form: {
         lid: 0,
         serialnumber: '',
         employeeid: '',
@@ -185,7 +161,6 @@ export default {
   },
   created() {
     this.getTableData();
-    this.getTasks();
   },
   methods: {
     handleCurrentChange(index) {
@@ -214,73 +189,44 @@ export default {
         console.log('err :', err);
       });
     },
-    getTasks() {
-      const _this = this;
-      this.taskLoading = true;
-      getTaskByName(_this.pageTasks).then((result) => {
-        if (result.status === 200) {
-          _this.taskData = result.data.content;
-          _this.page.total = result.data.totalElements;
-          _this.taskLoading = false;
-        }
-      }).catch((err) => {
-        console.log('err :', err);
-      });
+    emptyForm() {
+      this.form.lid = 0;
+      this.form.createdBy = 'NA';
+      this.form.serialnumber = '';
+      this.form.employeeid = '';
+      this.form.dmgtype = '';
+      this.form.dmgdescription = '';
+      this.form.asset = '';
+      this.form.commisdate = '';
+      this.form.ifrs = '';
+      this.form.isrepare = '';
+      this.form.price = '';
     },
-    currentChange(index) {
-      this.page.page = index;
-      this.getTableData();
-    },
-    emptyEntity() {
-      this.entity.lid = 0;
-      this.entity.createdBy = 'NA';
-      this.entity.serialnumber = '';
-      this.entity.employeeid = '';
-      this.entity.dmgtype = '';
-      this.entity.dmgdescription = '';
-      this.entity.asset = '';
-      this.entity.commisdate = '';
-      this.entity.ifrs = '';
-      this.entity.isrepare = '';
-      this.entity.price = '';
-    },
-    addEntity() {
-      this.emptyEntity();
+    handleCreate() {
+      this.emptyForm();
       this.dialog.title = 'New Loss and Damage Claim Procedure';
       this.dialog.visible = true;
       this.$nextTick(() => {
-        this.$refs.entity.clearValidate();
+        this.$refs.form.clearValidate();
       });
     },
-    updateEntity(data) {
-      this.emptyEntity();
-      this.entity.lid = data.lid;
-      this.entity.serialnumber = data.serialnumber;
-      this.entity.employeeid = data.employeeid;
-      this.entity.dmgtype = data.dmgtype;
-      this.entity.dmgdescription = data.dmgdescription;
-      this.entity.asset = data.asset;
-      this.entity.commisdate = data.commisdate;
-      this.entity.ifrs = data.ifrs;
-      this.entity.isrepare = data.isrepare;
-      this.entity.price = data.price;
+    handleSubmit(data) {
+      this.emptyForm();
+      this.form.lid = data.lid;
+      this.form.serialnumber = data.serialnumber;
+      this.form.employeeid = data.employeeid;
+      this.form.dmgtype = data.dmgtype;
+      this.form.dmgdescription = data.dmgdescription;
+      this.form.asset = data.asset;
+      this.form.commisdate = data.commisdate;
+      this.form.ifrs = data.ifrs;
+      this.form.isrepare = data.isrepare;
+      this.form.price = data.price;
       this.actPicUrl = 'http://localhost:8090/activitiesView/info/' + data.lid;
       this.dialog.title = 'Loss and Damage Claim Procedure';
       this.dialog.visible = true;
     },
-    handleTask(elem) {
-      // const paramMap = {};
-      // paramMap.outcome = elem;
-      // paramMap.lid = this.lid;
-      // paramMap.comment = 'aaa';
-      // paramMap.LdpId =
-      // this.obj.taskId = this.taskId;
-      // this.obj.taskFlag = result;
-      // this.obj.comment = this.form.comment;
-      // this.obj.leaveId = this.form.id;
-      // this.obj.days = this.form.days;
-    },
-    deleteEntity(data) {
+    handleDelete(data) {
       const _this = this;
       if (data.lid > 0) {
         _this.$confirm('Are you sure you want to delete this record?', 'warning',
@@ -300,12 +246,12 @@ export default {
           });
       }
     },
-    saveAndFlush() {
+    saveAndFlushEntity() {
       const _this = this;
-      _this.$refs.entity.validate(valid => {
+      _this.$refs.form.validate(valid => {
         if (valid) {
-          if (_this.entity.lid > 0) {
-            updateLdp(_this.entity).then((result) => {
+          if (_this.form.lid > 0) {
+            updateLdp(_this.form).then((result) => {
               if (result.status === 200) {
                 _this.$notify({ title: 'Success', message: 'Modify successfully!', type: 'success' });
                 _this.getTableData();
@@ -315,7 +261,7 @@ export default {
               console.log('err :', err);
             });
           } else {
-            saveLdp(_this.entity).then((result) => {
+            saveLdp(_this.form).then((result) => {
               if (result.status === 200) {
                 _this.$notify({ title: 'Success', message: 'Succeeded!', type: 'success' });
                 _this.getTableData();

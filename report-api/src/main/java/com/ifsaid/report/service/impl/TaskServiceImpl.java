@@ -78,6 +78,26 @@ public class TaskServiceImpl extends BaseServiceImpl<Ldp, Long, LdpRepository> i
         return resultMap;
     }
 
+    @Override
+    public Page<TaskDto> getTaskByName(Pageable page, String token) {
+        final String authToken = token.substring(this.jwtTokenUtil.getTokenHead().length());
+        String username = jwtTokenUtil.getMailFromToken(authToken);
+        TaskQuery taskQuery  = taskService.createTaskQuery().taskCandidateOrAssigned(username);
+
+        List<TaskDto> taskDTOList = taskQuery.orderByTaskCreateTime().desc().list()
+                .stream().map(task -> {
+                    TaskDto dto = new TaskDto();
+                    dto.setTaskId(task.getId());
+                    dto.setTaskName(task.getName());
+                    dto.setProcessInstanceId(task.getProcessInstanceId());
+                    dto.setNodeKey(task.getTaskDefinitionKey());
+                    dto.setCategory(task.getCategory());
+                    dto.setTime(task.getCreateTime());
+                    return dto;
+                }).collect(Collectors.toList());
+        return new PageImpl<>(taskDTOList, page, taskDTOList.size());
+
+    }
 
     private List<String> getSequenceFlowInfo(String taskId) {
         List<String> resultList = new ArrayList<>();
@@ -118,11 +138,11 @@ public class TaskServiceImpl extends BaseServiceImpl<Ldp, Long, LdpRepository> i
     }
 
     @Override
-    public void completeTask(Map<String, String> paramMap) throws Exception {
-        String comment = paramMap.get("comment");
-        String outcome = paramMap.get("outcome");
-        String taskId = paramMap.get("taskId");
-        String LdpId = paramMap.get("LdpId");
+    public void completeTask(Map<String, String> map) throws Exception {
+        String comment = map.get("comment");
+        String outcome = map.get("outcome");
+        String taskId = map.get("taskId");
+        String LdpId = map.get("LdpId");
 
         Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
         String processInstanceId = task.getProcessInstanceId();
@@ -144,24 +164,20 @@ public class TaskServiceImpl extends BaseServiceImpl<Ldp, Long, LdpRepository> i
     }
 
     @Override
-    public Page<TaskDto> getTaskByName(Pageable page, String token) {
-        final String authToken = token.substring(this.jwtTokenUtil.getTokenHead().length());
-        String username = jwtTokenUtil.getMailFromToken(authToken);
-        TaskQuery taskQuery  = taskService.createTaskQuery().taskCandidateOrAssigned(username);
+    public Ldp start(Long id) {
+        Ldp ldapEntity = findById(id);
+        ldapEntity.setStatus(LdpEnum.EXAMINATION.getCode());
+        startProcessByKey(ldapEntity.getLid());
+        return super.update(ldapEntity);
+    }
 
-        List<TaskDto> taskDTOList = taskQuery.orderByTaskCreateTime().desc().list()
-                .stream().map(task -> {
-                    TaskDto dto = new TaskDto();
-                    dto.setTaskId(task.getId());
-                    dto.setTaskName(task.getName());
-                    dto.setProcessInstanceId(task.getProcessInstanceId());
-                    dto.setNodeKey(task.getTaskDefinitionKey());
-                    dto.setCategory(task.getCategory());
-                    dto.setTime(task.getCreateTime());
-                    return dto;
-                }).collect(Collectors.toList());
-            return new PageImpl<>(taskDTOList, page, taskDTOList.size());
-
+    private void startProcessByKey(Long aLong) {
+        String businessKey = LdpEnum.PROCESS_DEFINE_KEY.getCode() + ":" + aLong;
+        // Process variable, the person in charge (first submission)
+        Map<String, Object> variables = new HashMap<>();
+        variables.put(LdpEnum.ASSIGNEE_USER.getCode(), SecurityUtils.getCurrentMail());
+        // Startup process
+        runtimeService.startProcessInstanceByKey(LdpEnum.PROCESS_DEFINE_KEY.getCode(), businessKey, variables);
     }
 
     private void insertComment(String taskId, String processInstanceId, String outcome, String comment) {

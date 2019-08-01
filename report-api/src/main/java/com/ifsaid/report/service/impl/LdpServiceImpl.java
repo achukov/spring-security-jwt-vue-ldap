@@ -31,24 +31,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class LdpServiceImpl extends BaseServiceImpl<Ldp, Long, LdpRepository> implements ILdpService {
 
-    private final ServletContext servletContext;
-
-    private final EmailSender emailSender;
-    
-    private final IUserService userService;
-
-    private final JwtTokenProvider jwtTokenUtil;
-
-    private final RuntimeService runtimeService;
-
-    public LdpServiceImpl(ServletContext servletContext, EmailSender emailSender, IUserService userService, JwtTokenProvider jwtTokenUtil, RuntimeService runtimeService) {
-        this.servletContext = servletContext;
-        this.emailSender = emailSender;
-        this.userService = userService;
-        this.jwtTokenUtil = jwtTokenUtil;
-        this.runtimeService = runtimeService;
-    }
-
     @Override
     public Ldp findById(Long aLong) {
         return super.findById(aLong);
@@ -86,23 +68,5 @@ public class LdpServiceImpl extends BaseServiceImpl<Ldp, Long, LdpRepository> im
             all = baseRepository.findAll(pageRequest);
         }
         return all;
-    }
-
-    @Override
-    public Ldp start(Long id) {
-        Ldp ldapEntity = findById(id);
-        ldapEntity.setStatus(LdpEnum.EXAMINATION.getCode());
-        startProcessByKey(ldapEntity.getLid());
-        return super.update(ldapEntity);
-    }
-
-
-    private void startProcessByKey(Long aLong) {
-        String businessKey = LdpEnum.PROCESS_DEFINE_KEY.getCode() + ":" + aLong;
-        // Process variable, the person in charge (first submission)
-        Map<String, Object> variables = new HashMap<>();
-        variables.put(LdpEnum.ASSIGNEE_USER.getCode(), SecurityUtils.getCurrentMail());
-        // Startup process
-        runtimeService.startProcessInstanceByKey(LdpEnum.PROCESS_DEFINE_KEY.getCode(), businessKey, variables);
     }
 }
