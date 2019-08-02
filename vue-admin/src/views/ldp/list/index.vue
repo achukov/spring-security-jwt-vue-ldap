@@ -26,10 +26,9 @@
           </fieldset>
         </el-form>
         <span slot="footer" class="dialog-footer">
-          <el-button size="mini" type="primary" @click="saveAndFlushEntity()">Save</el-button>
+          <el-button v-if="form.procStarted === 0" size="mini" type="primary" @click="saveAndFlushEntity()">Save and Submit</el-button>
+          <el-button v-if="form.procStarted === 1" size="mini" type="primary" @click="saveAndFlushEntity()">Save</el-button>
           <el-button size="mini" @click="dialog.visible = false">Cancel</el-button>
-          <el-button size="mini" type="success" @click="startProcess()">Submit</el-button>
-          <!--  <el-button type="primary" @click="handleTask('btn_success')">handleTask</el-button>-->
         </span>
         <el-image :src="actPicUrl" style="width: 400px; height: 500px"/>
       </el-dialog>
@@ -86,6 +85,7 @@
 
 import { scrollTo } from '@/utils/scroll-to';
 import { getLdpPage, saveLdp, updateLdp, removeLdpById } from '@/api/ldp';
+// import { startTasks } from '@/api/workflow';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -99,58 +99,58 @@ export default {
         search: null,
         total: 0
       },
-      pageTasks: {
-        page: 1,
-        size: 15,
-        search: null,
-        total: 0
-      },
-      list: null,
       actPicUrl: '',
       showOverflowTooltip: true,
       formLabelWidth: '130px',
       form: {
         lid: 0,
-        serialnumber: '',
-        employeeid: '',
-        dmgtype: '',
-        dmgdescription: '',
-        asset: '',
-        commisdate: '',
-        ifrs: '',
-        isrepare: '',
-        price: ''
+        createdBy: undefined,
+        serialnumber: undefined,
+        employeeid: undefined,
+        dmgtype: undefined,
+        dmgdescription: undefined,
+        asset: undefined,
+        expldate: undefined,
+        ifrs: undefined,
+        comment: undefined,
+        respOpinion: undefined,
+        lmOpinion: undefined,
+        slmOpinion: undefined,
+        hrOpinion: undefined,
+        isRepare: undefined,
+        price: undefined,
+        lmDecision: undefined,
+        status: undefined,
+        overall: undefined,
+        procStarted: 0
       },
       dialog: {
         visible: false,
         title: ''
       },
-      taskData: [],
       tableData: [],
-      tableKey: 0,
       loading: false,
-      taskLoading: false,
       typeoptions: ['Пропуск на посещение', 'Пропуск на въезд'],
       parkoptions: ['Гостевой', 'Погрузка-разгрузка', 'Посадка пассажиров'],
       leveloptions: ['Наземный', 'Подземный'],
-      statusoptions: [{ value: 0, label: 'Отменен' }, { value: 1, label: 'Новый' }, { value: 2, label: 'На Согласовании' }, { value: 3, label: 'Утвержден' }],
+      statusoptions: [{ value: 0, label: 'Отменен' }, { value: 1, label: 'Новый' }, { value: 2, label: 'На Согласовании' }, { value: 3, label: 'Утвержден' }]
       // Verification rule
-      rules: {
-        startdate: [{ type: 'date', required: true, message: 'Необходимо заполнить дату начала', trigger: 'change' }],
-        enddate: [{ type: 'date', required: true, message: 'Необходимо заполнить дату окончания', trigger: 'change' }],
-        visitors: [{ required: true, message: 'Необходимо указать количество посетителей', trigger: 'blur' }],
-        contactperson: [{ required: true, message: 'Необходимо заполнить список посетителей', trigger: 'blur' }],
-        phonenumber: [
-          { required: true, message: 'Необходимо указать номер телефона', trigger: 'blur' },
-          { pattern: /^(\+7)?\s\(?[0-9]{3}\)?\s[0-9]{3}\-?[0-9]{4}$/, message: 'Укажите номер телефона полностью', trigger: 'blur' }
-        ],
-        cartype: [{ required: true, message: 'Необходимо указать марку автомобиля', trigger: 'blur' }],
-        parktype: [{ required: true, message: 'Необходимо указать вид парковки', trigger: 'blur' }],
-        parklevel: [{ required: true, message: 'Необходимо указать указать уровень парковки', trigger: 'blur' }],
-        describe: [{ required: true, message: 'Role description cannot be empty', trigger: 'blur' }],
-        carnumber: [{ required: true, message: 'Необходимо указать регистрационный номер автомобиля', trigger: 'blur' }
-        ]
-      }
+      // rules: {
+      //   startdate: [{ type: 'date', required: true, message: 'Необходимо заполнить дату начала', trigger: 'change' }],
+      //   enddate: [{ type: 'date', required: true, message: 'Необходимо заполнить дату окончания', trigger: 'change' }],
+      //   visitors: [{ required: true, message: 'Необходимо указать количество посетителей', trigger: 'blur' }],
+      //   contactperson: [{ required: true, message: 'Необходимо заполнить список посетителей', trigger: 'blur' }],
+      //   phonenumber: [
+      //     { required: true, message: 'Необходимо указать номер телефона', trigger: 'blur' },
+      //     { pattern: /^(\+7)?\s\(?[0-9]{3}\)?\s[0-9]{3}\-?[0-9]{4}$/, message: 'Укажите номер телефона полностью', trigger: 'blur' }
+      //   ],
+      //   cartype: [{ required: true, message: 'Необходимо указать марку автомобиля', trigger: 'blur' }],
+      //   parktype: [{ required: true, message: 'Необходимо указать вид парковки', trigger: 'blur' }],
+      //   parklevel: [{ required: true, message: 'Необходимо указать указать уровень парковки', trigger: 'blur' }],
+      //   describe: [{ required: true, message: 'Role description cannot be empty', trigger: 'blur' }],
+      //   carnumber: [{ required: true, message: 'Необходимо указать регистрационный номер автомобиля', trigger: 'blur' }
+      //   ]
+      // }
     };
   },
   computed: {
@@ -191,16 +191,25 @@ export default {
     },
     emptyForm() {
       this.form.lid = 0;
-      this.form.createdBy = 'NA';
+      this.form.createdBy = '';
       this.form.serialnumber = '';
       this.form.employeeid = '';
       this.form.dmgtype = '';
       this.form.dmgdescription = '';
       this.form.asset = '';
-      this.form.commisdate = '';
+      this.form.expldate = '';
       this.form.ifrs = '';
-      this.form.isrepare = '';
+      this.form.comment = '';
+      this.form.respOpinion = '';
+      this.form.lmOpinion = '';
+      this.form.slmOpinion = '';
+      this.form.hrOpinion = '';
+      this.form.isRepare = '';
       this.form.price = '';
+      this.form.lmDecision = '';
+      this.form.status = '';
+      this.form.overall = '';
+      this.form.procStarted = 0;
     },
     handleCreate() {
       this.emptyForm();
@@ -218,21 +227,47 @@ export default {
       this.form.dmgtype = data.dmgtype;
       this.form.dmgdescription = data.dmgdescription;
       this.form.asset = data.asset;
-      this.form.commisdate = data.commisdate;
+      this.form.expldate = data.expldate;
       this.form.ifrs = data.ifrs;
-      this.form.isrepare = data.isrepare;
+      this.form.comment = data.comment;
+      this.form.respOpinion = data.respOpinion;
+      this.form.lmOpinion = data.lmOpinion;
+      this.form.slmOpinion = data.slmOpinion;
+      this.form.hrOpinion = data.hrOpinion;
+      this.form.isRepare = data.isRepare;
       this.form.price = data.price;
+      this.form.lmDecision = data.lmDecision;
+      this.form.status = data.status;
+      this.form.overall = data.overall;
+      this.form.procStarted = data.procStarted;
       this.actPicUrl = 'http://localhost:8090/activitiesView/info/' + data.lid;
       this.dialog.title = 'Loss and Damage Claim Procedure';
       this.dialog.visible = true;
     },
+    // startProcess() {
+    //   const _this = this;
+    //   debugger;
+    //   if (_this.form.procStarted === 0) {
+    //     console.log(this.form.lid);
+    //     startTasks(_this.form.lid).then((result) => {
+    //       if (result.status === 200) {
+    //         updateLdp(_this.form.procStarted = 1);
+    //         _this.$notify({ title: 'Success', message: 'Process started successfully!', type: 'success' });
+    //         _this.dialog.visible = false;
+    //       }
+    //     }).catch((err) => {
+    //       console.log('err :', err);
+    //       _this.$notify.error({ title: 'Error', message: err.message });
+    //     });
+    //   }
+    // },
     handleDelete(data) {
       const _this = this;
       if (data.lid > 0) {
         _this.$confirm('Are you sure you want to delete this record?', 'warning',
           { confirmButtonText: 'Confirm', cancelButtonText: 'Cancel', type: 'warning' })
           .then(() => {
-            removeLdpById(data.psid).then((result) => {
+            removeLdpById(data.lid).then((result) => {
               if (result.status === 200) {
                 _this.$notify({ title: 'Success', message: 'Successfully deleted!', type: 'success' });
                 _this.getTableData();

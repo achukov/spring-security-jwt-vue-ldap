@@ -49,17 +49,17 @@ public class TaskController {
         return list;
     }
 
-    @PostMapping("/start/{id}")
-    public Result<String> start(@PathVariable Long id) {
-        log.info("Start by Id : {}", id);
-        try {
-            taskService.start(id);
-            return Result.success("Successful task");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Result.success("TaskDto failure");
-        }
-    }
+//    @PostMapping("/start/{id}")
+//    public Result<String> start(@PathVariable Long id) {
+//        log.info("Start by Id : {}", id);
+//        try {
+//            taskService.start(id);
+//            return Result.success("Successful task");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return Result.success("TaskDto failure");
+//        }
+//    }
 
     @PostMapping("/complete")
     public Result completeTask(@RequestBody Map<String, String> map) {

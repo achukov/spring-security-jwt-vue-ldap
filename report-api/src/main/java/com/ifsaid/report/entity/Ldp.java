@@ -37,7 +37,7 @@ public class Ldp extends BaseEntity implements Serializable {
     private String asset;
 
     @Column(name = "t_expldate")
-    private Date commisdate;
+    private Date expldate;
 
     @Column(name = "t_ifrs")
     private String ifrs;
@@ -45,43 +45,40 @@ public class Ldp extends BaseEntity implements Serializable {
     @Column(name = "t_content_id")
     private Integer contentId;
 
-    @Column(name = "t_add_comments")
-    private String addcomments;
+    @Column(name = "t_comment")
+    private String comment;
 
-    @Column(name = "t_add_comments2")
-    private String addcomments2;
+    @Column(name = "t_resp_opinion")
+    private String respOpinion;
 
-    @Column(name = "t_add_comments3")
-    private String addcomments3;
+    @Column(name = "t_lm_opinion")
+    private String lmOpinion;
 
-    @Column(name = "t_add_comments4")
-    private String addcomments4;
+    @Column(name = "t_slm_opinion")
+    private String slmOpinion;
 
-    @Column(name = "t_add_comments5")
-    private String addcomments5;
+    @Column(name = "t_hr_opinion")
+    private String hrOpinion;
 
     @Column(name = "t_is_repare")
-    private Integer isrepare;
+    private Integer isRepare;
 
     @Column(name = "t_price")
     private Double price;
 
-    @Column(name = "t_lm_decis")
-    private Integer lmdecis;
-
-    @Column(name = "t_status")
-    private String status;
+    @Column(name = "t_lm_decision")
+    private Integer lmDecision;
 
     @Column(name = "t_overall")
     private Integer overall;
 
+    @Column(name = "t_status")
+    private String status;
+
     @Column(name = "t_created_by")
     private String createdBy;
 
-    @Column(name = "t_updated_by")
-    private String updatedBy;
-
-    @Column(name = "t_history_log")
-    private String historyLog;
+    @Column(name = "t_proc_started")
+    private Integer procStarted;
 
 }

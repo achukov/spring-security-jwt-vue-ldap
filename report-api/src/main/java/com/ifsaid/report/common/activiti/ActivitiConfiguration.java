@@ -18,12 +18,6 @@ public class ActivitiConfiguration extends AbstractProcessEngineAutoConfiguratio
     private final DataSource dataSource;
     private final PlatformTransactionManager platformTransactionManager;
 
-    /**
-     * Inject data source and transaction template
-     *
-     * @param dataSource                 data source
-     * @param platformTransactionManager Transaction template
-     */
     @Autowired
     public ActivitiConfiguration(DataSource dataSource, PlatformTransactionManager platformTransactionManager) {
         this.dataSource = dataSource;

@@ -2,19 +2,14 @@ package com.ifsaid.report.service.impl;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.ServletContext;
 
 import com.ifsaid.report.common.enums.LdpEnum;
 import com.ifsaid.report.common.exception.JpaCrudException;
 import com.ifsaid.report.common.service.impl.BaseServiceImpl;
-import com.ifsaid.report.common.utils.EmailSender;
 import com.ifsaid.report.common.utils.SecurityUtils;
 import com.ifsaid.report.entity.Ldp;
 import com.ifsaid.report.repository.LdpRepository;
 import com.ifsaid.report.service.ILdpService;
-import com.ifsaid.report.service.IUserService;
 import com.ifsaid.report.vo.MyPage;
 
 import org.activiti.engine.RuntimeService;
@@ -23,13 +18,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import com.ifsaid.report.common.jwt.JwtTokenProvider;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 public class LdpServiceImpl extends BaseServiceImpl<Ldp, Long, LdpRepository> implements ILdpService {
+
+    private final RuntimeService runtimeService;
+
+    public LdpServiceImpl(RuntimeService runtimeService) {
+        this.runtimeService = runtimeService;
+    }
 
     @Override
     public Ldp findById(Long aLong) {
@@ -38,9 +38,26 @@ public class LdpServiceImpl extends BaseServiceImpl<Ldp, Long, LdpRepository> im
 
     @Override
     public Ldp save(Ldp entity) throws JpaCrudException {
-        return super.save(entity);
+        if (entity.getProcStarted().equals(0)) {
+            entity.setCreatedBy(SecurityUtils.getCurrentMail());
+            entity.setProcStarted(1);
+            entity.setStatus(LdpEnum.EXAMINATION.getCode());
+            super.save(entity);
+            startProcessByKey(entity.getLid());
+            return entity;
+        } else {
+            return super.save(entity);
+        }
     }
 
+    private void startProcessByKey(Long aLong) {
+        String businessKey = LdpEnum.PROCESS_DEFINE_KEY.getCode() + ":" + aLong;
+        // Process variable, the person in charge (first submission)
+        Map<String, Object> variables = new HashMap<>();
+        variables.put(LdpEnum.ASSIGNEE_USER.getCode(), SecurityUtils.getCurrentMail());
+        // Startup process
+        runtimeService.startProcessInstanceByKey(LdpEnum.PROCESS_DEFINE_KEY.getCode(), businessKey, variables);
+    }
     @Override
     public Ldp update(Ldp entity) throws JpaCrudException {
 //        entity.setUpdatedBy(SecurityUtils.getCurrentMail());

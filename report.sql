@@ -32,7 +32,7 @@ SET FOREIGN_KEY_CHECKS=0;
 -- ----------------------------
 -- Table structure for tb_ldp
 -- ----------------------------
-
+DROP TABLE IF EXISTS `tb_ldp`;
 CREATE TABLE `tb_ldp` (
   `t_lid` int(11) NOT NULL AUTO_INCREMENT,
   `t_serialnumber` varchar(255),
@@ -43,21 +43,20 @@ CREATE TABLE `tb_ldp` (
   `t_expldate` datetime,
   `t_ifrs` varchar(255),
   `t_content_id` int UNSIGNED,
-  `t_add_comments` varchar(255),
-  `t_add_comments2` varchar(255),
-  `t_add_comments3` varchar(255),
-  `t_add_comments4` varchar(255),
-  `t_add_comments5` varchar(255),
+  `t_comment` varchar(255),
+  `t_resp_opinion` varchar(255),
+  `t_lm_opinion` varchar(255),
+  `t_slm_opinion` varchar(255),
+  `t_hr_opinion` varchar(255),
   `t_is_repare` tinyint(4) DEFAULT 0,
   `t_price` int UNSIGNED,
-  `t_lm_decis` tinyint(4) DEFAULT 0,
+  `t_lm_decision` tinyint(4) DEFAULT 0,
   `t_overall` tinyint(4) DEFAULT 0,
-  `t_status` tinyint(4) DEFAULT 0,
+  `t_status` varchar(255),
+  `t_created_by` varchar(255) NOT NULL,
   `t_create_time` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
   `t_up_time` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `t_created_by` varchar(255) NOT NULL,
-  `t_updated_by` varchar(255),
-  `t_history_log` varchar(255),
+  `t_proc_started` tinyint(4) DEFAULT 0,
   PRIMARY KEY (`t_lid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 

@@ -139,10 +139,10 @@ public class TaskServiceImpl extends BaseServiceImpl<Ldp, Long, LdpRepository> i
 
     @Override
     public void completeTask(Map<String, String> map) throws Exception {
-        String comment = map.get("comment");
-        String outcome = map.get("outcome");
-        String taskId = map.get("taskId");
-        String LdpId = map.get("LdpId");
+        String comment = (String) map.get("comment");
+        String outcome = (String) map.get("outcome");
+        String taskId = (String) map.get("taskId");
+        String lid = (String) map.get("lid");
 
         Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
         String processInstanceId = task.getProcessInstanceId();
