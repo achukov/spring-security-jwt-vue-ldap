@@ -24,12 +24,10 @@ import java.util.Map;
 public class TaskController {
 
    private final ITaskService taskService;
-   private final ILdpService ldpService;
 
     @Autowired
-    public TaskController(ITaskService taskService, ILdpService ldpService) {
+    public TaskController(ITaskService taskService) {
         this.taskService = taskService;
-        this.ldpService = ldpService;
     }
     @GetMapping("/getTaskByName")
     public Result<Page<TaskDto>> todo(MyPage page, @RequestHeader(value = "${jwt.tokenHeader}") String token) {
@@ -43,10 +41,10 @@ public class TaskController {
         return Result.success(map);
     }
 
-    @GetMapping(value = "/getCommentsByTaskId")
-    public List<CommentDto> getCommentsByTaskId(@RequestParam(name = "taskId") String taskId) {
-        List<CommentDto> list = taskService.getCommentsByTaskId(taskId);
-        return list;
+    @GetMapping(value = "/getCommentsByTaskId/{id}")
+    public Result getCommentsByTaskId(@PathVariable String id) {
+        List<CommentDto> list = taskService.getCommentsByTaskId(id);
+        return Result.success(list);
     }
 
 //    @PostMapping("/start/{id}")

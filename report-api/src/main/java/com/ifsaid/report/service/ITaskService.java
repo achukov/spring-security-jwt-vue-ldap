@@ -13,7 +13,7 @@ import java.util.Map;
 
 public interface ITaskService extends IBaseService<Ldp, Long> {
     Map<String, Object> getTaskById(String taskId);
-    List<CommentDto> getCommentsByTaskId(String taskId);
+    List<CommentDto> getCommentsByTaskId(String id);
     void completeTask(Map<String, String> paramMap) throws Exception;
     Long countTasksByUidAndCategoryId(String userId,String categoryId);
     Page<TaskDto> getTaskByName(Pageable page, String token);

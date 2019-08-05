@@ -3,6 +3,7 @@ package com.ifsaid.report.service.impl;
 import com.ifsaid.report.common.enums.LdpEnum;
 import com.ifsaid.report.common.jwt.JwtTokenProvider;
 import com.ifsaid.report.common.service.impl.BaseServiceImpl;
+import com.ifsaid.report.common.utils.GlobalUtil;
 import com.ifsaid.report.common.utils.SecurityUtils;
 import com.ifsaid.report.dto.CommentDto;
 import com.ifsaid.report.dto.TaskDto;
@@ -119,22 +120,27 @@ public class TaskServiceImpl extends BaseServiceImpl<Ldp, Long, LdpRepository> i
     }
 
     @Override
-    public List<CommentDto> getCommentsByTaskId(String taskId) {
+    public List<CommentDto> getCommentsByTaskId(String id) {
         Task task = taskService.createTaskQuery()
-                .taskId(taskId)
+                .taskId(id)
                 .singleResult();
 
-        String processInstanceId = task.getProcessInstanceId();
-        List<Comment> taskComments = taskService.getProcessInstanceComments(processInstanceId);
-        ArrayList<CommentDto> commentModels = new ArrayList<>();
+        List<CommentDto> commentDtoList = taskService
+                .getProcessInstanceComments(task.getProcessInstanceId())
+                .stream().map(comment -> {
+                            CommentDto commentDto = new CommentDto();
+                            commentDto.setId(comment.getId());
+                            commentDto.setTime(comment.getTime());
+                            commentDto.setType(comment.getType());
+                            commentDto.setTaskId(comment.getTaskId());
+                            commentDto.setUserId(comment.getUserId());
+                            commentDto.setFullMessage(comment.getFullMessage());
+                            commentDto.setProcessInstanceId(comment.getProcessInstanceId());
+                            return commentDto;
+                        }
+                ).collect(Collectors.toList());
 
-        taskComments.forEach(item -> {
-            CommentDto commentModel = new CommentDto();
-            BeanUtils.copyProperties(item, commentModel);
-            commentModels.add(commentModel);
-        });
-
-        return commentModels;
+        return commentDtoList;
     }
 
     @Override
@@ -149,7 +155,7 @@ public class TaskServiceImpl extends BaseServiceImpl<Ldp, Long, LdpRepository> i
 
         insertComment(taskId, processInstanceId, outcome, comment);
         completeTask(taskId, outcome);
-//        updateStatus(processInstanceId, LdpId, outcome);
+        updateStatus(processInstanceId, lid, outcome);
 
     }
 
@@ -194,29 +200,28 @@ public class TaskServiceImpl extends BaseServiceImpl<Ldp, Long, LdpRepository> i
         taskService.complete(taskId, variables);
     }
 
-    private void updateStatus(String processInstanceId, String LdpId, String outcome) {
-        // First judge whether the process is over
-//        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
-//                .processInstanceId(processInstanceId).singleResult();
-//
-//
-//        if (GlobalUtil.isEmpty(processInstance)) {
-//            // There are two situations in the process of modifying the object information process:
-//            // the approval is all passed, and the end is abandoned....
-//            if (outcome.equals("give up")) {
-//                // Modify the status
-//                ldpService.set(LdpEnum.GIVE_UP.getCode());
-//            } else {
-//                leaveBillModel.setStatus(LdpEnum.COMPLETE.getCode());
-//            }
-//            leaveBillMapper.updateById(leaveBillModel);
-//        } else {
-//            if (outcome.equals("turn down")) {
-//
-//                leaveBillModel.setStatus(LeaveBillEnum.TURN_DOWN.getCode());
-//                leaveBillMapper.updateById(leaveBillModel);
-//            }
-//        }
+    private void updateStatus(String processInstanceId, String lid, String outcome) {
+        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
+                .processInstanceId(processInstanceId).singleResult();
+
+        Ldp LdpEntity = ldpService.findById(Integer.valueOf(lid).longValue());
+
+        if (GlobalUtil.isEmpty(processInstance)) {
+            // There are two situations in the process of modifying the object information process:
+            // the approval is all passed, and the end is abandoned....
+            if (outcome.equals("give up")) {
+                LdpEntity.setStatus(LdpEnum.GIVE_UP.getCode());
+            } else {
+                LdpEntity.setStatus(LdpEnum.COMPLETE.getCode());
+            }
+            ldpService.update(LdpEntity);
+        } else {
+            if (outcome.equals("turn down")) {
+
+                LdpEntity.setStatus(LdpEnum.TURN_DOWN.getCode());
+                ldpService.update(LdpEntity);
+            }
+        }
     }
 
 }
