@@ -14,6 +14,7 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.image.ProcessDiagramGenerator;
 import org.activiti.spring.ProcessEngineFactoryBean;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,10 +48,10 @@ public class ActivitiesViewServiceImpl implements IActivitiesViewService {
     }
 
     @Override
-    public InputStream checkNowProcessActivitiesById(String id) {
+    public InputStream checkNowProcessActivitiesById(String id, String uname) {
         String processInstanceBusinessKey = LdpEnum.PROCESS_DEFINE_KEY.getCode() + ":" + id;
 
-        List<Task> task = taskService.createTaskQuery().processInstanceBusinessKey(processInstanceBusinessKey).list();
+        Task task = taskService.createTaskQuery().taskId(uname).processInstanceBusinessKey(processInstanceBusinessKey).singleResult();
         Execution execution = runtimeService.createExecutionQuery().executionId(task.getExecutionId()).singleResult();
         String activityId = execution.getActivityId();
         String processDefinitionId = task.getProcessDefinitionId();
@@ -65,9 +66,14 @@ public class ActivitiesViewServiceImpl implements IActivitiesViewService {
         hightLightElements.add(activityId);
         InputStream imageStream;
         imageStream = processDiagramGenerator.generateDiagram(bpmnModel, "PNG", hightLightElements,
-                new ArrayList<>(), "Lucida", "Lucida", "Lucida", processEngineConfiguration.getClassLoader(), 1.0);
+                new ArrayList<>(),
+                processEngineConfiguration.getActivityFontName(),
+                processEngineConfiguration.getLabelFontName(), //.setAnnotationFontName("Times New Roman");
+                processEngineConfiguration.getAnnotationFontName(),
+                processEngineConfiguration.getClassLoader(),
+                1.0);
 
-        return imageStream;
+       return imageStream;
 
     }
 

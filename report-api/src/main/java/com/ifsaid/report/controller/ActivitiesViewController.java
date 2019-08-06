@@ -22,11 +22,11 @@ public class ActivitiesViewController {
     public ActivitiesViewController(IActivitiesViewService activitiesViewService) {
         this.activitiesViewService = activitiesViewService;
     }
-    @GetMapping("/info/{id}")
-    public void checkNowProcessActivitiesById(@PathVariable String id,
+    @GetMapping("/info/{id}/{uname}")
+    public void checkNowProcessActivitiesById(@PathVariable String id, @PathVariable String uname,
                                                        HttpServletResponse response) {
         response.setContentType("image/png");
-        try (InputStream stream = activitiesViewService.checkNowProcessActivitiesById(id);
+        try (InputStream stream = activitiesViewService.checkNowProcessActivitiesById(id, uname);
              ServletOutputStream outputStream = response.getOutputStream()) {
             BufferedImage image = ImageIO.read(stream);
             ImageIO.write(image, "PNG", outputStream);
