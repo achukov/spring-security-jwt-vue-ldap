@@ -1,12 +1,15 @@
 package com.ifsaid.report.service.impl;
 
+import com.ifsaid.report.common.enums.LdpEnum;
 import com.ifsaid.report.service.IActivitiesViewService;
+import lombok.extern.slf4j.Slf4j;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.engine.*;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.context.Context;
+import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.image.ProcessDiagramGenerator;
@@ -22,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 public class ActivitiesViewServiceImpl implements IActivitiesViewService {
@@ -44,60 +48,27 @@ public class ActivitiesViewServiceImpl implements IActivitiesViewService {
 
     @Override
     public InputStream checkNowProcessActivitiesById(String id) {
-//        String processInstanceBusinessKey = LdpEnum.PROCESS_DEFINE_KEY.getCode() + ":" + Id;
-//        Task task = taskService.createTaskQuery().processInstanceBusinessKey(processInstanceBusinessKey).singleResult();
-//        Execution execution = runtimeService.createExecutionQuery().executionId(task.getExecutionId()).singleResult();
-//        String activityId = execution.getActivityId();
-//        String processDefinitionId = task.getProcessDefinitionId();
-//        ProcessEngine defaultProcessEngine = ProcessEngines.getDefaultProcessEngine();
-//        ProcessEngineConfigurationImpl processEngineConfiguration = (ProcessEngineConfigurationImpl) defaultProcessEngine
-//                .getProcessEngineConfiguration();
-//        ProcessDiagramGenerator processDiagramGenerator = processEngineConfiguration.getProcessDiagramGenerator();
-//        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
-//        List<String> hightLightElements = new ArrayList<>();
-//        hightLightElements.add(activityId);
-//        InputStream imageStream;
-//        imageStream = processDiagramGenerator.generateDiagram(bpmnModel, "PNG", hightLightElements,
-//                new ArrayList<>(), "Lucida", "Lucida", "Lucida", processEngineConfiguration.getClassLoader(), 1.0);
-//
-//        return imageStream;
-        Task task = taskService.createTaskQuery()
-                .taskId(id)
-                .singleResult();
+        String processInstanceBusinessKey = LdpEnum.PROCESS_DEFINE_KEY.getCode() + ":" + id;
 
-        String processInstanceId = task.getProcessInstanceId();
-        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
-                .processInstanceId(processInstanceId).singleResult();
-
-        HistoricProcessInstance historicProcessInstance =
-                historyService.createHistoricProcessInstanceQuery()
-                        .processInstanceId(processInstanceId).singleResult();
-        String processDefinitionId = null;
-        List<String> executedActivityIdList = new ArrayList<>();
-        if (processInstance != null) {
-            processDefinitionId = processInstance.getProcessDefinitionId();
-            executedActivityIdList = this.runtimeService.getActiveActivityIds(processInstance.getId());
-        } else if (historicProcessInstance != null) {
-            processDefinitionId = historicProcessInstance.getProcessDefinitionId();
-            executedActivityIdList = historyService.createHistoricActivityInstanceQuery()
-                    .processInstanceId(processInstanceId)
-                    .orderByHistoricActivityInstanceId().asc().list()
-                    .stream().map(HistoricActivityInstance::getActivityId)
-                    .collect(Collectors.toList());
-        }
-
+        List<Task> task = taskService.createTaskQuery().processInstanceBusinessKey(processInstanceBusinessKey).list();
+        Execution execution = runtimeService.createExecutionQuery().executionId(task.getExecutionId()).singleResult();
+        String activityId = execution.getActivityId();
+        String processDefinitionId = task.getProcessDefinitionId();
+        ProcessEngine defaultProcessEngine = ProcessEngines.getDefaultProcessEngine();
+        ProcessEngineConfigurationImpl processEngineConfiguration = (ProcessEngineConfigurationImpl) defaultProcessEngine
+                .getProcessEngineConfiguration();
+        ProcessDiagramGenerator processDiagramGenerator = processEngineConfiguration.getProcessDiagramGenerator();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
-        ProcessEngineConfiguration processEngineConfiguration = processEngine.getProcessEngineConfiguration();
-        Context.setProcessEngineConfiguration((ProcessEngineConfigurationImpl) processEngineConfiguration);
-        ProcessDiagramGenerator diagramGenerator = processEngineConfiguration.getProcessDiagramGenerator();
 
-        return diagramGenerator.generateDiagram(
-                bpmnModel, "png",
-                executedActivityIdList, Collections.emptyList(),
-                "宋体",
-                "宋体",
-                "宋体",
-                null, 1.0);
+        List<String> hightLightElements = new ArrayList<>();
+
+        hightLightElements.add(activityId);
+        InputStream imageStream;
+        imageStream = processDiagramGenerator.generateDiagram(bpmnModel, "PNG", hightLightElements,
+                new ArrayList<>(), "Lucida", "Lucida", "Lucida", processEngineConfiguration.getClassLoader(), 1.0);
+
+        return imageStream;
+
     }
 
 }
