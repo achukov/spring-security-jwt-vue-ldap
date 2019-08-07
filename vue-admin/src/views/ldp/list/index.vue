@@ -14,7 +14,9 @@
             <el-row :gutter="20">
               <el-col :span="12">
                 <el-form-item :label-width="formLabelWidth" label="Серийный номер" prop="serialnumber">
-                  <el-input v-model="form.serialnumber" placeholder="Серийный номер"/>
+                  <el-input v-model="form.serialnumber" placeholder="Серийный номер">
+                    <el-button slot="append" icon="el-icon-search" @click="getAssetById('id')"/>
+                  </el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
