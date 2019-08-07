@@ -66,7 +66,7 @@ public class TaskController {
             return Result.success("Successful task");
         } catch (Exception e) {
             e.printStackTrace();
-            return Result.success("TaskDto failure");
+            return Result.error500("TaskDto failure", null);
         }
     }
 }

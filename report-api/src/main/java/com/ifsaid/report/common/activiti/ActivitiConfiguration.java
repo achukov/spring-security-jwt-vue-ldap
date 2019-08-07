@@ -33,6 +33,7 @@ public class ActivitiConfiguration extends AbstractProcessEngineAutoConfiguratio
                 configuration.setMailServerPort(25);
                 configuration.setMailServerDefaultFrom("do_not_replay@bat.com");
 				configuration.setDatabaseSchemaUpdate(ProcessEngineConfiguration.DB_SCHEMA_UPDATE_TRUE);
+				configuration.setAsyncExecutorActivate(true);
 				return configuration;
 				}
 }
