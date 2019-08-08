@@ -59,6 +59,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, String, UserRepositor
     public User findByAccount(String account) {
         return baseRepository.findByAccount(account);
     }
+
     @Override
     public User findByMail(String mail) {
         return baseRepository.findByMail(mail);

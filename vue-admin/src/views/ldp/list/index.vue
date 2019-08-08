@@ -87,7 +87,7 @@
 
 import { scrollTo } from '@/utils/scroll-to';
 import { getLdpPage, saveLdp, updateLdp, removeLdpById } from '@/api/ldp';
-// import { startTasks } from '@/api/workflow';
+import { getAssetById } from '@/api/eqtobrd';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -213,6 +213,16 @@ export default {
       this.form.overall = '';
       this.form.procStarted = 0;
     },
+    getAssetById(id) {
+      const _this = this;
+      getAssetById(id).then((result) => {
+        if (result.status === 200) {
+          // _this.commentList = result.data;
+        }
+      }).catch((err) => {
+        console.log('err :', err);
+      });
+    },
     handleCreate() {
       this.emptyForm();
       this.dialog.title = 'New Loss and Damage Claim Procedure';
@@ -312,6 +322,9 @@ export default {
         }
       });
     }
+  },
+  resetFields() {
+    this.form = {};
   }
 };
 
