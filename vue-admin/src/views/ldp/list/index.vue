@@ -8,21 +8,70 @@
         <el-input v-model="page.search" size="mini" placeholder="Search" prefix-icon="el-icon-search" style="width: 250px; margin-left: 10px;" class="filter-item" @keyup.enter.native="handleFilter()"/>
       </div>
 
-      <el-dialog :visible.sync="dialog.visible" :title="dialog.title" :close-on-click-modal="false" :center="true" top="5vh" width="700px">
+      <el-dialog :visible.sync="dialog.visible" :title="dialog.title" :close-on-click-modal="false" :center="true" top="5vh" width="1100px">
         <el-form id="Ldp" ref="form" :model="form" :rules="rules" :inline="false" label-position="top" size="mini" >
-          <fieldset style="margin-bottom: 5px; border-radius: 5px; padding: 20px; border: 1px solid #DCDFE6;">
+          <fieldset style="margin-bottom: 5px; border-radius: 5px; padding: 10px; border: 1px solid #DCDFE6;">
+            <legend>Оборудование и ущерб</legend>
             <el-row :gutter="20">
-              <el-col :span="12">
-                <el-form-item :label-width="formLabelWidth" label="Серийный номер" prop="serialnumber">
-                  <el-input v-model="form.serialnumber" placeholder="Серийный номер">
-                    <el-button slot="append" icon="el-icon-search" @click="getAssetById('id')"/>
+              <el-col :span="8">
+                <el-form-item :label-width="formLabelWidth" label="Серийный номер" prop="serialNumber">
+                  <el-input v-model="form.serialNumber" placeholder="Серийный номер">
+                    <el-button slot="append" icon="el-icon-search" @click="getAssetById(form.serialNumber)"/>
                   </el-input>
                 </el-form-item>
+                <el-form-item :label-width="formLabelWidth" label="Наименование" prop="eqtName">
+                  <el-input v-model="form.eqtName" placeholder="Наименование"/>
+                </el-form-item>
+                <el-form-item :label-width="formLabelWidth" label="OneId" prop="oid">
+                  <el-input v-model="form.oid" placeholder="OneId"/>
+                </el-form-item>
+                <el-form-item :label-width="formLabelWidth" label="Ответственный сотрудник" prop="email">
+                  <el-input v-model="form.email" placeholder="Ответственный сотрудник"/>
+                </el-form-item>
+                <el-form-item :label-width="formLabelWidth" label="Линейный Менеджер" prop="lmEmail">
+                  <el-input v-model="form.lmEmail" placeholder="Линейный Менеджер"/>
+                </el-form-item>
+                <el-form-item :label-width="formLabelWidth" label="Email HR BP" prop="hrbp">
+                  <el-input v-model="form.hrbp" placeholder="Email HR BP"/>
+                </el-form-item>
               </el-col>
-              <el-col :span="12">
+              <el-col :span="8">
+                <el-form-item :label-width="formLabelWidth" label="Юр. лицо" prop="organization">
+                  <el-input v-model="form.organization" placeholder="Юр. лицо"/>
+                </el-form-item>
+                <el-form-item :label-width="formLabelWidth" label="Локация" prop="location">
+                  <el-input v-model="form.location" placeholder="Локация"/>
+                </el-form-item>
+                <el-form-item :label-width="formLabelWidth" label="Asset (если CAPEX)" prop="capex">
+                  <el-input v-model="form.capex" placeholder="Asset (если CAPEX)"/>
+                </el-form-item>
+                <el-form-item :label-width="formLabelWidth" label="Дата ввода в эксплуатацию" prop="expldate">
+                  <el-input v-model="form.expldate" placeholder="Дата ввода в эксплуатацию"/>
+                </el-form-item>
+                <el-form-item :label-width="formLabelWidth" label="Остаточная стоимость (IFRS)" prop="ifrs">
+                  <el-input v-model="form.ifrs" placeholder="Остаточная стоимость (IFRS)"/>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
                 <el-form-item :label-width="formLabelWidth" label="Характер ущерба" prop="dmgtype">
                   <el-input v-model="form.dmgtype" placeholder="Характер ущерба"/>
                 </el-form-item>
+                <el-form-item :label-width="formLabelWidth" label="Описание ущерба" prop="dmgdescription">
+                  <el-input v-model="form.dmgdescription" type="textarea" placeholder="Описание ущерба"/>
+                </el-form-item>
+                <el-upload
+                  :on-preview="handlePreview"
+                  :on-remove="handleRemove"
+                  :before-remove="beforeRemove"
+                  :limit="3"
+                  :on-exceed="handleExceed"
+                  :file-list="fileList"
+                  class="upload-demo"
+                  action="https://jsonplaceholder.typicode.com/posts/"
+                  multiple>
+                  <el-button size="mini" type="warning">Upload photo</el-button>
+                  <div slot="tip" class="el-upload__tip">jpg/png files with a size less than 500kb</div>
+                </el-upload>
               </el-col>
             </el-row>
           </fieldset>
@@ -87,7 +136,7 @@
 
 import { scrollTo } from '@/utils/scroll-to';
 import { getLdpPage, saveLdp, updateLdp, removeLdpById } from '@/api/ldp';
-import { getAssetById } from '@/api/eqtobrd';
+import { getAssetById } from '@/api/asset';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -106,12 +155,17 @@ export default {
       formLabelWidth: '130px',
       form: {
         lid: 0,
+        oid: undefined,
+        eqtName: undefined,
         createdBy: undefined,
-        serialnumber: undefined,
+        serialNumber: undefined,
         employeeid: undefined,
+        email: undefined,
+        lmEmail: undefined,
+        hrbp: undefined,
         dmgtype: undefined,
         dmgdescription: undefined,
-        asset: undefined,
+        capex: undefined,
         expldate: undefined,
         ifrs: undefined,
         comment: undefined,
@@ -217,7 +271,7 @@ export default {
       const _this = this;
       getAssetById(id).then((result) => {
         if (result.status === 200) {
-          // _this.commentList = result.data;
+          _this.form = result.data;
         }
       }).catch((err) => {
         console.log('err :', err);
@@ -331,7 +385,7 @@ export default {
 </script>
 
 <style lang="scss">
-.el-form-item__label {
+.el-form--label-top .el-form-item__label {
   padding: 0 20px 0 0;
 }
 .el-alert__title {
@@ -340,7 +394,7 @@ export default {
 .init-container {
     line-height: 24px;
     font-weight: 700;
-    font-size: 14px;
+    font-size: 12px;
     color: #606266;
     margin-bottom: 17px;
 }
