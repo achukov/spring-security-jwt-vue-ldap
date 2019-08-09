@@ -245,28 +245,6 @@ export default {
         console.log('err :', err);
       });
     },
-    emptyForm() {
-      this.form.lid = 0;
-      this.form.createdBy = '';
-      this.form.serialnumber = '';
-      this.form.employeeid = '';
-      this.form.dmgtype = '';
-      this.form.dmgdescription = '';
-      this.form.asset = '';
-      this.form.expldate = '';
-      this.form.ifrs = '';
-      this.form.comment = '';
-      this.form.respOpinion = '';
-      this.form.lmOpinion = '';
-      this.form.slmOpinion = '';
-      this.form.hrOpinion = '';
-      this.form.isRepare = '';
-      this.form.price = '';
-      this.form.lmDecision = '';
-      this.form.status = '';
-      this.form.overall = '';
-      this.form.procStarted = 0;
-    },
     getAssetById(id) {
       const _this = this;
       getAssetById(id).then((result) => {
@@ -278,7 +256,7 @@ export default {
       });
     },
     handleCreate() {
-      this.emptyForm();
+      this.resetTemp();
       this.dialog.title = 'New Loss and Damage Claim Procedure';
       this.dialog.visible = true;
       this.$nextTick(() => {
@@ -286,7 +264,7 @@ export default {
       });
     },
     handleSubmit(data) {
-      this.emptyForm();
+      this.resetTemp();
       this.form.lid = data.lid;
       this.form.serialnumber = data.serialnumber;
       this.form.employeeid = data.employeeid;
@@ -375,10 +353,10 @@ export default {
           }
         }
       });
+    },
+    resetTemp() {
+      this.form = {};
     }
-  },
-  resetFields() {
-    this.form = {};
   }
 };
 
