@@ -53,8 +53,9 @@ public class UserDto {
         this.mail = mail;
     }
 
-    public UserDto(String uid, String avatar, String type, String account, String mail) {
+    public UserDto(String uid, String employeeId, String avatar, String type, String account, String mail) {
         this.uid = uid;
+        this.employeeId = employeeId;
         this.avatar = avatar;
         this.type = type;
         this.account = account;

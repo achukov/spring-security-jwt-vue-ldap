@@ -73,7 +73,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, String, UserRepositor
     @Override
     public UserDto findUserInfo(String account) {
         User user = findByAccount(account);
-        UserDto result = new UserDto(user.getUid(), user.getAvatar(), user.getType(), user.getAccount(), user.getMail());
+        UserDto result = new UserDto(user.getUid(), user.getEmployeeId(), user.getAvatar(), user.getType(), user.getAccount(), user.getMail());
         Set<Permission> permissions = permissionService.findAllByUserId(user.getUid());
         Set<ButtonVo> buttonVos = new HashSet<>();
         Set<MenuVo> menuVos = new HashSet<>();

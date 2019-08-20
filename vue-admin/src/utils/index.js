@@ -3,6 +3,9 @@ export function parseTime(time, cFormat) {
   if (arguments.length === 0) {
     return null;
   }
+  if (!time) {
+    return null;
+  }
   const format = cFormat || '{d}-{m}-{y} {h}:{i}:{s}';
   let date;
   if (typeof time === 'object') {
@@ -12,9 +15,9 @@ export function parseTime(time, cFormat) {
     date = new Date(time);
   }
   const formatObj = {
-    y: date.getFullYear(),
-    m: date.getMonth() + 1,
     d: date.getDate(),
+    m: date.getMonth() + 1,
+    y: date.getFullYear(),
     h: date.getHours(),
     i: date.getMinutes(),
     s: date.getSeconds(),
@@ -23,13 +26,23 @@ export function parseTime(time, cFormat) {
   const time_str = format.replace(/{(d|m|y|h|i|s|a)+}/g, (result, key) => {
     let value = formatObj[key];
     // Note: getDay() returns 0 on Sunday
-    if (key === 'a') { return ['day', 'One', 'Two', 'Three', 'Four', 'Five', 'Six'][value ]; }
+    if (key === 'a') {
+      return ['day', 'One', 'Two', 'Three', 'Four', 'Five', 'Six'][value];
+    }
     if (result.length > 0 && value < 10) {
       value = '0' + value;
     }
     return value || 0;
   });
   return time_str;
+}
+
+export function getLastMonthDate(time) {
+  time.setMonth(time.getMonth() - 1);
+  var y = time.getFullYear();
+  var m = time.getMonth() + 1;
+  var d = time.getDate();
+  return y + '-' + m + '-' + d;
 }
 
 export function formatTime(time, option) {
@@ -159,3 +172,35 @@ export const off = (function() {
     };
   }
 })();
+
+export function getCurrentMonthFirst(time) {
+  var date = time;
+  date.setDate(1);
+  var month = parseInt(date.getMonth() + 1);
+  var day = date.getDate();
+  if (month < 10) {
+    month = '0' + month;
+  }
+  if (day < 10) {
+    day = '0' + day;
+  }
+  return date.getFullYear() + '-' + month + '-' + day;
+}
+
+export function getCurrentMonthLast(time) {
+  var date = time;
+  var currentMonth = date.getMonth();
+  var nextMonth = ++currentMonth;
+  var nextMonthFirstDay = new Date(date.getFullYear(), nextMonth, 1);
+  var oneDay = 1000 * 60 * 60 * 24;
+  var lastTime = new Date(nextMonthFirstDay - oneDay);
+  var month = parseInt(lastTime.getMonth() + 1);
+  var day = lastTime.getDate();
+  if (month < 10) {
+    month = '0' + month;
+  }
+  if (day < 10) {
+    day = '0' + day;
+  }
+  return new Date(date.getFullYear() + '-' + month + '-' + day);
+}

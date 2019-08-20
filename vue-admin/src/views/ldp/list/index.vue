@@ -75,6 +75,8 @@
               </el-col>
             </el-row>
           </fieldset>
+          <!-- <fieldset style="margin-bottom: 5px; border-radius: 5px; padding: 10px; border: 1px solid #DCDFE6;">-->
+          <!-- </fieldset>-->
         </el-form>
         <span slot="footer" class="dialog-footer">
           <el-button v-if="form.procStarted === 0" size="mini" type="primary" @click="saveAndFlushEntity()">Save and Submit</el-button>
@@ -363,14 +365,20 @@ export default {
 </script>
 
 <style lang="scss">
+legend {
+    font-size: 12px;
+    padding: 10px;
+}
 .el-form--label-top .el-form-item__label {
   padding: 0 20px 0 0;
+  font-size: 12px;
+  line-height: 14px;
 }
 .el-alert__title {
   font-size: 1rem;
 }
 .init-container {
-    line-height: 24px;
+    line-height: 14px;
     font-weight: 700;
     font-size: 12px;
     color: #606266;
