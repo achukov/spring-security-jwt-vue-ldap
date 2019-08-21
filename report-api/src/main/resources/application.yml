@@ -26,7 +26,6 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL57Dialect
 
-
 jwt:
   tokenHeader: Authorization
   secret: w-eyJleHAiOjE1NDMyMDUyODUsInN1YiI6ImFkbWluIiwiY3JlYXRlZCI6MTU0MDYxMzI4N

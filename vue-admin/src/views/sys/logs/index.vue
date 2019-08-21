@@ -4,7 +4,12 @@
       <el-row :gutter="20">
         <el-col :span="24">
           <div class="fr">
-            <el-button type="primary" icon="iconfont my-icon-add" class="filter-item" @click="handleCreate">new record</el-button>
+            <template v-if="showWarning">
+              <el-alert :title="website.duty.alert" :closable="false" type="error" effect="dark" center show-icon/>
+            </template>
+            <template v-else>
+              <el-button type="primary" size="medium" icon="iconfont my-icon-add" class="filter-item" plain @click="handleCreate">new record</el-button>
+            </template>
           </div>
         </el-col>
       </el-row>
@@ -37,11 +42,13 @@
       <el-form ref="createForm" :model="temp" :rules="rules" label-position="right" label-width="100px">
         <div class="sameform">
           <el-form-item label="Date：" prop="dutydate">
-            <el-date-picker v-model="temp.dutydate" type="date" placeholder="Please select a date" format="dd-MM-yyyy" value-format="yyyy-MM-dd" />
+            <el-date-picker v-model="temp.dutydate" :picker-options="pickerOptions" type="date" placeholder="Please select a date" format="dd-MM-yyyy" value-format="yyyy-MM-dd" />
           </el-form-item>
           <el-form-item label="Duty note：">
             <el-input v-model="temp.remark" type="textarea" placeholder="Please enter the duty note" rows="5" />
           </el-form-item>
+          <div>disabledDates:{{ disabledDates }} <br>
+          </div>
         </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -71,15 +78,45 @@
 <script>
 import DatePicker from '@/components/DatePicker/index';
 import { getCurrentMonthFirst, parseTime, getCurrentMonthLast } from '@/utils';
-import { queryStaffDutySetting, createStaffDutySetting, deleteStaffDutySetting, updateStaffDutySetting } from '@/api/duty';
+import { queryStaffDutySetting, createStaffDutySetting, deleteStaffDutySetting,
+  updateStaffDutySetting, countStaffDutySetting, queryBusyStaffDutySetting } from '@/api/duty';
 import { mapGetters } from 'vuex';
+import moment from 'moment';
 export default {
   name: 'DutySetting',
   components: {
     DatePicker
   },
   data() {
+    var vm = this;
     return {
+      disabledDates: [],
+      pickerOptions: {
+        disabledDate(time) {
+          time = moment(time).format('YYYY-MM-DD');
+          return vm.disabledDates.indexOf(time) > -1;
+        },
+        shortcuts: [{
+          text: 'Today',
+          onClick(picker) {
+            picker.$emit('pick', new Date());
+          }
+        }, {
+          text: 'Tomorrow',
+          onClick(picker) {
+            const date = new Date();
+            date.setTime(date.getTime() + 3600 * 1000 * 24);
+            picker.$emit('pick', date);
+          }
+        }, {
+          text: 'Next week',
+          onClick(picker) {
+            const date = new Date();
+            date.setTime(date.getTime() + 3600 * 1000 * 24 * 7);
+            picker.$emit('pick', date);
+          }
+        }]
+      },
       temp: {},
       list: null,
       total: 0,
@@ -99,7 +136,7 @@ export default {
         children: 'children',
         label: 'label'
       },
-      branchId: undefined,
+      showWarning: false,
       branchsMap: undefined,
       updateDialogFormVisible: false,
       createDialogFormVisible: false,
@@ -114,7 +151,8 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'user'
+      'user',
+      'website'
     ])
   },
   watch: {
@@ -129,22 +167,31 @@ export default {
     }
   },
   created() {
+    this.initData();
     this.getList();
   },
   methods: {
+    initData() {
+      countStaffDutySetting(this.$store.state.user.employeeId).then(response => {
+        if (response.data >= 1) {
+          this.showWarning = true;
+        } else {
+          this.showWarning = false;
+        }
+      });
+    },
     getList() {
       this.list = [];
       queryStaffDutySetting(this.listQuery).then(response => {
         this.list = response.data;
-        console.log(this.list);
         this.total = response.data.total;
       });
     },
     handleCreate() {
-      this.temp = {
-        staffIdsArray: []
-      };
-      this.staffNames = undefined;
+      queryBusyStaffDutySetting().then(response => {
+        this.disabledDates = response.data;
+      });
+      this.resetTemp();
       this.$nextTick(() => {
         this.$refs['createForm'].clearValidate();
       });
@@ -161,6 +208,7 @@ export default {
               message: ret.message,
               type: 'success'
             });
+            this.initData();
             this.getList();
           });
         }
@@ -184,6 +232,7 @@ export default {
         if (this.list.length === 1) {
           this.listQuery.current -= 1;
         }
+        this.initData();
         this.getList();
       });
     },
@@ -196,36 +245,15 @@ export default {
     },
     updateData() {
       this.$refs['updateForm'].validate((valid) => {
-        if (valid) {
-          if (this.temp.staffIdsArray) {
-            this.temp.staffIds = this.temp.staffIdsArray.join(',');
-          } else {
-            this.$message({
-              type: 'warning',
-              message: '请添加值班人'
-            });
-            return;
-          }
-          updateStaffDutySetting(this.temp).then(ret => {
-            this.updateDialogFormVisible = false;
-            this.$message({
-              message: ret.message,
-              type: 'success'
-            });
-            this.getList();
+        updateStaffDutySetting(this.temp).then(ret => {
+          this.updateDialogFormVisible = false;
+          this.$message({
+            message: ret.message,
+            type: 'success'
           });
-        }
-      });
-    },
-    handleCreateCheck(item) {
-      this.cronStrList = [];
-      this.cycleCronList = [];
-      this.temp = Object.assign({}, item);
-      this.temp.categoryId = this.temp.id;
-      delete this.temp.id;
-      this.createCheckDialogFormVisible = true;
-      this.$nextTick(() => {
-        this.$refs['createCheckForm'].clearValidate();
+          this.initData();
+          this.getList();
+        });
       });
     },
     getCurrentMonthFirst(time) {
@@ -233,31 +261,11 @@ export default {
     },
     formatTime(time, cFormat) {
       return parseTime(time, cFormat);
+    },
+    resetTemp() {
+      this.temp = {
+      };
     }
-    // handleSelectStaff(val) {
-    //   if (val.length <= 0) {
-    //     this.staffNames = null;
-    //     this.temp.staffIdsArray = null;
-    //     this.staffDialogFormVisible = false;
-    //     return;
-    //   }
-    //   // 获取教职工信息
-    //   getStaffsByStaffIds({ ids: val.join(',') }).then(ret => {
-    //     if (ret.data.length > 0) {
-    //       var str = null;
-    //       for (var i in ret.data) {
-    //         if (!str) {
-    //           str = ret.data[i].staffName;
-    //         } else {
-    //           str += ',' + ret.data[i].staffName;
-    //         }
-    //       }
-    //       this.staffNames = str;
-    //     }
-    //   });
-    //   this.staffDialogFormVisible = false;
-    //   this.temp.staffIdsArray = val;
-    // }
   }
 };
 </script>
@@ -285,7 +293,7 @@ export default {
     height: 240px;
   }
   .dutymap .el-calendar-table .el-calendar-day {
-    height: 130px;
+    height: 103px;
     overflow: hidden;
   }
   .dutymap .el-calendar-table td.is-today {
@@ -322,13 +330,17 @@ export default {
     text-align: right;
   }
   .dutymap .dutymap_con .foodlist .el-button{
-    padding: 6px;
-    font-size: 12px;
+    padding: 3px;
+    font-size: 10px;
+  }
+  .el-date-table td.disabled div {
+    color: black;
+    background-color: #99a9bf;
   }
   .dutymap .dutymap_con .foodlist {
     position: relative;
     left: 30px;
-    font-size: 12px;
+    font-size: 11px;
     overflow-y: auto;
     width: 120px;
     height: 19px;

@@ -24,6 +24,9 @@ const common = {
       },
       role: {
         alert: 'Do not delete the role indiscriminately. When you really need to delete the role, (1). Make sure there are no users under this role. (2) Please make sure that the role has no assigned permissions. Only if the above two conditions are met, the role can be deleted successfully!'
+      },
+      duty: {
+        alert: 'Record already exist. sorry ;('
       }
     }
   },
