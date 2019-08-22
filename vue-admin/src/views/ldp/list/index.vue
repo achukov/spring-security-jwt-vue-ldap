@@ -369,11 +369,6 @@ legend {
     font-size: 12px;
     padding: 10px;
 }
-.el-form--label-top .el-form-item__label {
-  padding: 0 20px 0 0;
-  font-size: 12px;
-  line-height: 14px;
-}
 .el-alert__title {
   font-size: 1rem;
 }

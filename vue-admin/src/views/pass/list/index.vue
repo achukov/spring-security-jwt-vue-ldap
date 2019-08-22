@@ -28,7 +28,7 @@
             <el-col :span="16" :offset="6">
               <div style="margin-bottom: 10px; margin-top: 10px; text-align: left">
                 <el-radio-group v-model="entity.type" size="small">
-                  <el-radio-button v-for="item in typeoptions" :key="item" :label="item" :value="item"/>
+                  <el-radio-button v-for="item in typeoptions" :key="item.lastname" :label="item" :value="item"/>
                 </el-radio-group>
               </div>
             </el-col>
@@ -37,34 +37,37 @@
             <el-row :gutter="20">
               <el-col :span="12">
                 <el-form-item :label-width="formLabelWidth" label="Дата начала" prop="startdate">
-                  <el-date-picker v-model="entity.startdate" type="datetime" format="dd-MM-yyyy HH:mm" placeholder="Please pick a date" />
+                  <el-date-picker v-model="entity.startdate" :picker-options="pickerOptions" type="date" format="dd-MM-yyyy" placeholder="Please pick a date" />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item :label-width="formLabelWidth" label="Дата окончания" prop="enddate">
-                  <el-date-picker v-model="entity.enddate" type="datetime" format="dd-MM-yyyy HH:mm" placeholder="Please pick a date" />
+                  <el-date-picker v-model="entity.enddate" :picker-options="pickerOptions" type="date" format="dd-MM-yyyy" placeholder="Please pick a date" />
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row :gutter="20">
               <el-col :span="24">
                 <el-form-item :label-width="formLabelWidth" label="Посетители" prop="visitors">
-                  <el-input
-                    v-model="entity.visitors"
-                    :autosize="{ minRows: 3, maxRows: 5}"
-                    type="textarea"
-                    placeholder="Фамилия, Имя, Отчество посетителя пишутся в одну строку, каждый новый посетитель пишется с новой строки."
-                    cleareble/>
-                <!-- <UserList/> -->
+                  <div class="add_user">
+                    <el-button type="primary" size="mini" circle @click="staffDialogFormVisible = true"><i class="el-icon-user"/></el-button>
+                  </div>
                 </el-form-item>
               </el-col>
             </el-row>
+            <div class="visitorsData">
+              <el-table :data="tempVisitorsTable" stripe size="mini">
+                <el-table-column prop="firstname" label="firstname"/>
+                <el-table-column prop="middlename" label="middlename"/>
+                <el-table-column prop="lastname" label="lastname"/>
+              </el-table>
+            </div>
           </fieldset>
           <fieldset style="margin-bottom: 5px; border-radius: 5px; padding: 20px; border: 1px solid #DCDFE6;">
             <el-row :gutter="20">
               <el-col :span="12">
                 <el-form-item :label-width="formLabelWidth" label="Контактное лицо" prop="contactperson">
-                  <el-input v-model="entity.contactperson" placeholder="ivan_ivanov@bat.com"/>
+                  <el-input v-model="entity.contactperson" placeholder="username@bat.com"/>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -206,13 +209,34 @@
         @current-change="handleCurrentChange"
         @size-change="handleSizeChange"/>
     </el-footer>
-    <!-- <el-dialog :visible.sync="dialogVisible" :close-on-click-modal="false" :center="true" width="40%" title="Комментарии:">
-      <el-input v-model="comments" :autosize="{ minRows: 3, maxRows: 5}" type="textarea"/>
+    <el-dialog :visible.sync="staffDialogFormVisible" :close-on-click-modal="false" title="Visitor" width="450px" height="400px">
+      <el-form ref="staff" :model="staff" size="mini">
+        <el-form-item label="firstname:">
+          <el-row type="flex" class="row-bg" justify="center">
+            <el-col :span="18">
+              <el-input v-model="staff.firstname" name="firstname" placeholder="firstname" />
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item label="lastname:">
+          <el-row type="flex" class="row-bg" justify="center">
+            <el-col :span="18">
+              <el-input v-model="staff.lastname" name="lastname" placeholder="lastname" />
+            </el-col>
+          </el-row>
+        </el-form-item> <el-form-item label="middlename:">
+          <el-row type="flex" class="row-bg" justify="center">
+            <el-col :span="18">
+              <el-input v-model="staff.middlename" name="middlename" placeholder="middlename" />
+            </el-col>
+          </el-row>
+        </el-form-item>
+      </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button size="mini" type="primary" @click="saveAndFlush(0)">Сохранить</el-button>
-        <el-button size="mini" @click="cancleCommit">Отменить</el-button>
+        <el-button v-model="staff" size="mini" type="primary" @click="appendData(staff)">Добавить</el-button>
+        <el-button size="mini" @click="staffDialogFormVisible = false">Отменить</el-button>
       </span>
-    </el-dialog> -->
+    </el-dialog>
   </el-container>
 </template>
 
@@ -229,6 +253,24 @@ export default {
   },
   data() {
     return {
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() < (Date.now() - 8.64e7);
+        },
+        shortcuts: [{
+          text: 'Today',
+          onClick(picker) {
+            picker.$emit('pick', new Date());
+          }
+        }, {
+          text: 'Tomorrow',
+          onClick(picker) {
+            const date = new Date();
+            date.setTime(date.getTime() + 3600 * 1000 * 24);
+            picker.$emit('pick', date);
+          }
+        }]
+      },
       page: {
         page: 1,
         size: 17,
@@ -255,11 +297,18 @@ export default {
         buildingaccess: 0,
         state: 0
       },
+      staff: {
+        firstname: '',
+        lastname: '',
+        middlename: ''
+      },
       dialog: {
         visible: false,
         title: ''
       },
+      staffDialogFormVisible: false,
       tableData: [],
+      tempVisitorsTable: [],
       loading: false,
       authority: {
         list: [],
@@ -276,7 +325,7 @@ export default {
       rules: {
         startdate: [{ type: 'date', required: true, message: 'Необходимо заполнить дату начала', trigger: 'change' }],
         enddate: [{ type: 'date', required: true, message: 'Необходимо заполнить дату окончания', trigger: 'change' }],
-        visitors: [{ required: true, message: 'Необходимо указать количество посетителей', trigger: 'blur' }],
+        tempVisitorsTable: [{ required: true, message: 'Необходимо указать количество посетителей', trigger: 'blur' }],
         contactperson: [{ required: true, message: 'Необходимо заполнить список посетителей', trigger: 'blur' }],
         phonenumber: [
           { required: true, message: 'Необходимо указать номер телефона', trigger: 'blur' },
@@ -301,6 +350,11 @@ export default {
     this.getTableData();
   },
   methods: {
+    appendData(staff) {
+      this.tempVisitorsTable.push(staff);
+      this.staff = {};
+      this.staffDialogFormVisible = false;
+    },
     nextStep() {
       if (this.entity.state++ > 1) this.entity.state = 0;
     },
@@ -343,20 +397,7 @@ export default {
       this.getTableData();
     },
     emptyEntity() {
-      this.entity.psid = 0;
-      this.entity.type = 'Пропуск на посещение';
-      this.entity.createdBy = '';// = this.$store.state.user.account
-      this.entity.startdate = '';
-      this.entity.enddate = '';
-      this.entity.visitors = '';
-      this.entity.contactperson = '';
-      this.entity.phonenumber = '';
-      this.entity.carnumber = '';
-      this.entity.cartype = '';
-      this.entity.parktype = '';
-      this.entity.parklevel = '';
-      this.entity.buildingaccess = 0;
-      this.entity.state = 0;
+      this.entity = {};
     },
     addEntity() {
       this.emptyEntity();
@@ -374,7 +415,7 @@ export default {
       this.entity.createdBy = data.createdBy;
       this.entity.startdate = data.startdate;
       this.entity.enddate = data.enddate;
-      this.entity.visitors = data.visitors;
+      this.tempVisitorsTable = JSON.parse(data.visitors);
       this.entity.contactperson = data.contactperson;
       this.entity.phonenumber = data.phonenumber;
       this.entity.carnumber = data.carnumber;
@@ -443,6 +484,7 @@ export default {
           _this.entity.state = id;
           if (_this.entity.psid > 0) {
             _this.entity.historyLog = _this.entity.historyLog + 'Updated by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString();
+            _this.entity.visitors = JSON.stringify(this.tempVisitorsTable);
             updatePass(_this.entity).then((result) => {
               if (result.status === 200) {
                 _this.$notify({ title: 'Success', message: 'Modify the Pass successfully!', type: 'success' });
@@ -453,7 +495,7 @@ export default {
               console.log('err :', err);
             });
           } else {
-            // New role
+            _this.entity.visitors = JSON.stringify(this.tempVisitorsTable);
             savePass(_this.entity).then((result) => {
               if (result.status === 200) {
                 _this.$notify({ title: 'Success', message: 'New Pass succeeded!', type: 'success' });
@@ -474,8 +516,16 @@ export default {
 </script>
 
 <style lang="scss">
-.el-form-item__label {
-  padding: 0 20px 0 0;
+.el-form .add_user {
+  position: absolute;
+  top: -28px;
+  left: 100px;
+  z-index: 1;
+  padding-bottom: 3px;
+}
+.el-form .add_user .el-button{
+  padding: 4px;
+  font-size: 12px;
 }
 .el-alert__title {
   font-size: 1rem;

@@ -1,13 +1,13 @@
 <template>
   <div class="login-container">
     <div v-title>Log In</div>
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
+    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" autocomplete="on" class="login-form" auto-complete="on" label-position="left">
       <h3 class="title">BAT Login Form</h3>
       <el-form-item prop="username">
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
-        <el-input v-model="loginForm.username" name="username" type="text" auto-complete="on" placeholder="ivan_ivanov@bat.com" />
+        <el-input v-model="loginForm.username" autocomplete="on" name="username" type="text" auto-complete="on" placeholder="username@bat.com" />
       </el-form-item>
       <el-form-item prop="password">
         <span class="svg-container">
@@ -16,9 +16,10 @@
         <el-input
           :type="pwdType"
           v-model="loginForm.password"
+          autocomplete="on"
           name="password"
           auto-complete="on"
-          placeholder="Password"
+          placeholder="password"
           @keyup.enter.native="handleLogin" />
         <span class="show-pwd" @click="showPwd">
           <svg-icon icon-class="eye" />
@@ -46,8 +47,8 @@ export default {
   data() {
     return {
       loginForm: {
-        username: 'alexey_chukov@bat.com',
-        password: '0407Alex'
+        username: '',
+        password: ''
       },
       loginRules: {
         username: [{ required: true, message: 'Username cannot be empty', trigger: 'blur' },

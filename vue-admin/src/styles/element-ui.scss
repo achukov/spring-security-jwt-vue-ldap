@@ -16,7 +16,11 @@
    position: relative;
    margin: 0 auto;
  }
-
+ .el-dialog__header {
+ }
+ .el-form--label-top .el-form-item__label {
+   padding: 0 3px 0 0;
+ }
  //element ui upload
  .upload-container {
    .el-upload {

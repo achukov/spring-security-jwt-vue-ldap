@@ -424,9 +424,6 @@ export default {
     height: 100%;
     width: 100%;
   }
- .el-form-item__label {
-   padding: 0 20px 0 0;
-  }
   .el-select .el-input {
     width: 120px;
   }

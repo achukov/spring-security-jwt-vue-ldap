@@ -245,9 +245,6 @@ width: 700px;
 //     color: #606266;
 //     margin-bottom: 17px;
 // }
-.el-form-item__label {
-  padding: 0 20px 0 0;
-}
 .el-alert__title {
   font-size: 1rem;
 }

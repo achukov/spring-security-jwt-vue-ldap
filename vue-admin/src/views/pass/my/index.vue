@@ -440,9 +440,6 @@ export default {
 </script>
 
 <style lang="scss">
-.el-form-item__label {
-  padding: 0 20px 0 0;
-}
 .el-alert__title {
   font-size: 1rem;
 }
