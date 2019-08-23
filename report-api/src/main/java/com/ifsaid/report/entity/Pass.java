@@ -1,6 +1,7 @@
 package com.ifsaid.report.entity;
 
 import com.ifsaid.report.common.entity.BaseEntity;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -52,7 +53,7 @@ public class Pass extends BaseEntity implements Serializable {
     private String parktype;
 
     @Column(name = "t_buildingaccess")
-    private String buildingaccess;
+    private Integer buildingaccess;
 
     @Column(name = "t_comments")
     private String comments;
@@ -62,6 +63,12 @@ public class Pass extends BaseEntity implements Serializable {
 
     @Column(name = "t_state")
     private Integer state;
+
+    @Column(name = "t_nonwork")
+    private Integer nonwork;
+
+    @Column(name = "t_escort")
+    private Integer escort;
 
     @Column(name = "t_created_by")
     private String createdBy;

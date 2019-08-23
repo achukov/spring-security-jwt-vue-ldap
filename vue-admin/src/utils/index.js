@@ -179,7 +179,7 @@ export function compareDate(date) {
   } else {
     result = false;
   }
-  // console.log(stringTime + "的时间戳为：" + timestamp2)
+  // console.log(stringTime + "：" + timestamp2)
   return result;
 }
 

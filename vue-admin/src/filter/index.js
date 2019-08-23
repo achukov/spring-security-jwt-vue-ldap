@@ -69,13 +69,28 @@ Vue.filter('showGender', function(gender) {
   return result;
 });
 
-Vue.filter('uppercase', function(value) {
-  if (!value) {
-    return '';
+Vue.filter('uppercase', string => {
+  if (typeof string !== 'string') {
+    return string;
   }
 
-  value = value.toString();
-  return value.toUpperCase();
+  return string.toUpperCase();
+});
+
+Vue.filter('lowercase', string => {
+  if (typeof string !== 'string') {
+    return string;
+  }
+
+  return string.toLowerCase();
+});
+
+Vue.filter('titlecase', string => {
+  if (typeof string !== 'string') {
+    return string;
+  }
+
+  return string.charAt(0).toUpperCase() + string.slice(1);
 });
 
 Vue.filter('formatText', function(text) {
@@ -86,4 +101,28 @@ Vue.filter('formatText', function(text) {
   } catch (e) {
     return null;
   }
+});
+
+Vue.filter('mapToStr', function(data) {
+  var ret = JSON.parse(data);
+  var str = '';
+  try {
+    for (var i = 0; i < ret.length; i++) {
+      for (var item in ret[i]) {
+        str += ret[i][item] + ' ';
+      }
+      str += '\n';
+    }
+    return str;
+  } catch (e) {
+    return null;
+  }
+});
+
+Vue.filter('JSONencode', object => {
+  return JSON.stringify(object);
+});
+
+Vue.filter('JSONdecode', json => {
+  return JSON.parse(json);
 });

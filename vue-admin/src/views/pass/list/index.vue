@@ -10,20 +10,6 @@
 
       <el-dialog :visible.sync="dialog.visible" :title="dialog.title" :close-on-click-modal="false" :center="true" top="5vh" width="700px">
         <el-form id="Pass" ref="entity" :model="entity" :rules="rules" :inline="false" label-position="top" size="mini" >
-          <el-collapse v-model="activeName" accordion>
-            <el-collapse-item title="info" name="1">
-              <div> Номер: {{ entity.psid }} </div>
-              <div> Автор: {{ entity.createdBy }} </div>
-              <div style="white-space: pre-line;"> История: {{ entity.historyLog | formatText }} </div>
-            </el-collapse-item>
-            <el-collapse-item title="status" name="2">
-              <el-steps :active="entity.state" align-center process-status="success" finish-status="finish">
-                <el-step title="Новый" description="Заполнение документа"/>
-                <el-step title="На Согласовании" description="Утверждается отделом безопасности"/>
-                <el-step title="Утвержден" description="Заявка согласована"/>
-              </el-steps>
-            </el-collapse-item>
-          </el-collapse>
           <el-row :gutter="20">
             <el-col :span="16" :offset="6">
               <div style="margin-bottom: 10px; margin-top: 10px; text-align: left">
@@ -47,6 +33,16 @@
               </el-col>
             </el-row>
             <el-row :gutter="20">
+              <el-col :span="12">
+                <el-checkbox v-model="entity.nonwork" :true-label="1" :false-label="0" label="Посещение в нерабочее время"/>
+                this: {{ entity.nonwork }}
+                <el-checkbox v-model="entity.escort" :true-label="1" :false-label="0" label="Требуется сопровождение службы безопасности"/>
+                this: {{ entity.escort }}
+              </el-col>
+            </el-row>
+          </fieldset>
+          <fieldset style="margin-bottom: 5px; border-radius: 5px; padding: 20px; border: 1px solid #DCDFE6;">
+            <el-row :gutter="20">
               <el-col :span="24">
                 <el-form-item :label-width="formLabelWidth" label="Посетители" prop="visitors">
                   <div class="add_user">
@@ -60,6 +56,11 @@
                 <el-table-column prop="firstname" label="firstname"/>
                 <el-table-column prop="middlename" label="middlename"/>
                 <el-table-column prop="lastname" label="lastname"/>
+                <el-table-column fixed="right" width="50" >
+                  <template slot-scope="scope">
+                    <el-button type="danger" size="mini" icon="el-icon-delete" circle alt="delete" title="delete" @click="deleteData(scope.row)"/>
+                  </template>
+                </el-table-column>
               </el-table>
             </div>
           </fieldset>
@@ -78,6 +79,7 @@
                 </el-form-item>
               </el-col>
             </el-row>
+            aaaa: {{ entity.type }}
           </fieldset>
           <fieldset v-if="entity.type =='Пропуск на въезд'" style="margin-bottom: 5px; border-radius: 5px; padding: 20px; border: 1px solid #DCDFE6;">
             <el-row :gutter="20">
@@ -118,9 +120,7 @@
             </el-row>
             <el-row :gutter="20">
               <el-col :span="12">
-                <el-form-item :label-width="formLabelWidth" label="Требуется доступ в здание" prop="buildingaccess">
-                  <el-switch v-model="entity.buildingaccess" active-text="Да" inactive-text="Нет" active-value="1" inactive-value="0"/>
-                </el-form-item>
+                <el-checkbox v-model="entity.buildingaccess" :true-label="1" :false-label="0" label="Требуется доступ в здание"/>
               </el-col>
             </el-row>
           </fieldset>
@@ -128,17 +128,15 @@
         <span slot="footer" class="dialog-footer">
           <el-button size="mini" type="primary" @click="saveAndFlush(1)">Save and Submit</el-button>
           <el-button size="mini" @click="dialog.visible = false">Cancel</el-button>
+          <div class="history">
+            <el-button type="warning" size="mini" circle @click="showWorkflowHistory = true"><i class="el-icon-chat-line-square"/></el-button>
+          </div>
         </span>
       </el-dialog>
 
     </el-header>
     <el-main>
       <el-table v-loading="loading" :data="tableData" :default-sort = "{prop: 'psid', order: 'descending'}" size="mini" border tooltip-effect="light" element-loading-text="Loading..." style="width: 100%">
-        <!-- <el-table-column type="expand">
-          <template slot-scope="scope">
-            <p>Посетители: {{ scope.row.visitors }}</p>
-          </template>
-        </el-table-column> -->
         <el-table-column sortable fixed prop="psid" label="Id" width="60"/>
         <el-table-column show-overflow-tooltip sortable prop="createTime" label="Создано">
           <template slot-scope="scope">
@@ -148,7 +146,7 @@
         </el-table-column>
         <el-table-column show-overflow-tooltip label="Кем создано" width="180">
           <template slot-scope="scope">
-            <span style="margin-left: 5px"> {{ scope.row.createdBy }}</span>
+            <span style="margin-left: 5px"> {{ scope.row.createdBy | lowercase }}</span>
           </template>
         </el-table-column>
         <el-table-column show-overflow-tooltip sortable prop="type" label="Тип" width="180">
@@ -170,7 +168,11 @@
             <span style="margin-left: 5px">{{ scope.row.enddate | formatTime }}</span>
           </template>
         </el-table-column>
-        <el-table-column show-overflow-tooltip prop="visitors" label="Посетители" width="180"/>
+        <el-table-column show-overflow-tooltip label="Посетители" width="180">
+          <template slot-scope="scope">
+            {{ scope.row.visitors | mapToStr }}
+          </template>
+        </el-table-column>
         <el-table-column show-overflow-tooltip prop="carnumber" label="Номер автомобиля" width="180"/>
         <el-table-column sortable prop="state" label="Статус">
           <template slot-scope="scope">
@@ -237,6 +239,23 @@
         <el-button size="mini" @click="staffDialogFormVisible = false">Отменить</el-button>
       </span>
     </el-dialog>
+    <el-dialog :visible.sync="showWorkflowHistory" title="Workflow History" width="550PX" height="350px">
+      <el-form ref="staff" :model="staff" size="mini">
+        <fieldset style="margin-bottom: 5px; border-radius: 5px; padding: 20px; border: 1px solid #DCDFE6;">
+          <el-steps :active="entity.state" align-center process-status="success" finish-status="finish">
+            <el-step title="Новый" description="Заполнение документа"/>
+            <el-step title="На Согласовании" description="Утверждается отделом безопасности"/>
+            <el-step title="Утвержден" description="Заявка согласована"/>
+          </el-steps>
+          <div> Номер: {{ entity.psid }} </div>
+          <div> Автор: {{ entity.createdBy | lowercase }} </div>
+          <div style="white-space: pre-line;"> История: {{ entity.historyLog | formatText }} </div>
+        </fieldset>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="showWorkflowHistory = false">Закрыть</el-button>
+      </span>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -295,7 +314,9 @@ export default {
         parktype: '',
         parklevel: '',
         buildingaccess: 0,
-        state: 0
+        state: 0,
+        nonwork: 0,
+        escort: 0
       },
       staff: {
         firstname: '',
@@ -307,6 +328,7 @@ export default {
         title: ''
       },
       staffDialogFormVisible: false,
+      showWorkflowHistory: false,
       tableData: [],
       tempVisitorsTable: [],
       loading: false,
@@ -355,6 +377,10 @@ export default {
       this.staff = {};
       this.staffDialogFormVisible = false;
     },
+    deleteData(row) {
+      var val = this.tempVisitorsTable.splice(row, 1);
+      this.entity.visitors = JSON.stringify(val);
+    },
     nextStep() {
       if (this.entity.state++ > 1) this.entity.state = 0;
     },
@@ -397,7 +423,12 @@ export default {
       this.getTableData();
     },
     emptyEntity() {
-      this.entity = {};
+      this.entity = {
+        buildingaccess: 0,
+        nonwork: 0,
+        escort: 0,
+        type: 'Пропуск на посещение'
+      };
     },
     addEntity() {
       this.emptyEntity();
@@ -423,6 +454,8 @@ export default {
       this.entity.parktype = data.parktype;
       this.entity.parklevel = data.parklevel;
       this.entity.buildingaccess = data.buildingaccess;
+      this.entity.nonwork = data.nonwork;
+      this.entity.escort = data.escort;
       this.entity.state = data.state;
       this.entity.createTime = data.createTime;
       this.entity.historyLog = data.historyLog;
@@ -483,7 +516,7 @@ export default {
         if (valid) {
           _this.entity.state = id;
           if (_this.entity.psid > 0) {
-            _this.entity.historyLog = _this.entity.historyLog + 'Updated by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString();
+            _this.entity.historyLog = _this.entity.historyLog + ';Updated by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString();
             _this.entity.visitors = JSON.stringify(this.tempVisitorsTable);
             updatePass(_this.entity).then((result) => {
               if (result.status === 200) {
@@ -496,6 +529,9 @@ export default {
             });
           } else {
             _this.entity.visitors = JSON.stringify(this.tempVisitorsTable);
+            console.log(_this.entity.buildingaccess);
+            console.log(_this.entity.nonwork);
+            console.log(_this.entity.escort);
             savePass(_this.entity).then((result) => {
               if (result.status === 200) {
                 _this.$notify({ title: 'Success', message: 'New Pass succeeded!', type: 'success' });
@@ -523,6 +559,18 @@ export default {
   z-index: 1;
   padding-bottom: 3px;
 }
+.dialog-footer .history {
+  position: absolute;
+  bottom: 17px;
+  right: 30px;
+  padding-bottom: 3px;
+}
+.el-checkbox__label {
+  display: inline-block;
+  padding-left: 10px;
+  line-height: 19px;
+  font-size: 12px;
+}
 .el-form .add_user .el-button{
   padding: 4px;
   font-size: 12px;
@@ -530,6 +578,9 @@ export default {
 .el-alert__title {
   font-size: 1rem;
 }
+/*.el-table .line-break .cell {*/
+/*  white-space: pre;*/
+/*}*/
 .init-container {
     line-height: 24px;
     font-weight: 700;
