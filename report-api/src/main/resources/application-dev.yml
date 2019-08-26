@@ -4,7 +4,7 @@ spring:
   datasource:
     name: BOOT_DATA_SOURCE
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://z2glrumsvli01:3306/report?useUnicode=true&characterEncoding=UTF8&useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://z2glrumsvli01:3306/report?useUnicode=true&characterEncoding=UTF8&useSSL=false&useTimezone=true&serverTimezone=GMT%2B3
     username: report_admin
     password: west123
     platform: mysql

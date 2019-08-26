@@ -1,12 +1,12 @@
 package com.ifsaid.report.entity;
 
 import com.ifsaid.report.common.entity.BaseEntity;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.Time;
 import java.util.Date;
 
 @Entity
@@ -28,11 +28,17 @@ public class Pass extends BaseEntity implements Serializable {
     @Column(name = "t_startdate")
     private Date startdate;
 
+    @Column(name = "t_starttime")
+    private Time starttime;
+
     @Column(name = "t_enddate")
     private Date enddate;
 
     @Column(name = "t_visitors")
     private String visitors;
+
+    @Column(name = "t_vehicles")
+    private String vehicles;
 
     @Column(name = "t_contactperson")
     private String contactperson;

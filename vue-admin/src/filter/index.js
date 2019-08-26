@@ -33,9 +33,9 @@ Vue.filter('showState', function(state) {
 Vue.filter('showBuild', function(buildingaccess) {
   // Determine what type of state is
   let result = '';
-  if (buildingaccess === '0') {
+  if (buildingaccess === 0) {
     result = 'Нет';
-  } else if (buildingaccess === '1') {
+  } else if (buildingaccess === 1) {
     result = 'Да';
   } else {
     result = 'Неизвестно';
