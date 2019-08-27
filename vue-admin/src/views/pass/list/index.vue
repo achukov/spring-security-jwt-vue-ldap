@@ -11,6 +11,7 @@
       <el-dialog :visible.sync="createDialogFormVisible" :close-on-click-modal="false" :center="true" title="New Pass Approval Request" top="5vh" width="700px">
         <el-form ref="createForm" :model="temp" :rules="rules" :inline="false" label-position="top" size="mini" >
           <fieldset style="margin-bottom: 5px; border-radius: 5px; padding: 20px; border: 1px solid #DCDFE6;">
+            <legend style="padding: 0 8px; font-weight: 700;">Время</legend>
             <el-row :gutter="20">
               <el-col :span="12">
                 <el-form-item :label-width="formLabelWidth" label="Дата начала" prop="startdate">
@@ -96,6 +97,7 @@
             </div>
           </fieldset>
           <fieldset style="margin-bottom: 5px; border-radius: 5px; padding: 20px; border: 1px solid #DCDFE6;">
+            <legend style="padding: 0 8px; font-weight: 700;">Контакты</legend>
             <el-row :gutter="20">
               <el-col :span="12">
                 <el-form-item :label-width="formLabelWidth" label="Контактное лицо" prop="contactperson">
@@ -115,29 +117,18 @@
         <span slot="footer" class="dialog-footer">
           <el-button size="mini" type="primary" @click="createData(1)">Save and Submit</el-button>
           <el-button size="mini" @click="createDialogFormVisible = false">Cancel</el-button>
-          <div class="history">
-            <el-button type="warning" size="mini" circle @click="showWorkflowHistory = true"><i class="el-icon-chat-line-square"/></el-button>
-          </div>
         </span>
       </el-dialog>
       <!-- End -->
       <!-- Update -->
       <el-dialog :visible.sync="updateDialogFormVisible" :close-on-click-modal="false" :center="true" title="Pass Approval Request" top="5vh" width="700px">
         <el-form ref="updateForm" :model="temp" :rules="rules" :inline="false" label-position="top" size="mini" >
-          <el-row :gutter="20">
-            <el-col :span="16" :offset="6">
-              <div style="margin-bottom: 10px; margin-top: 10px; text-align: left">
-                <el-radio-group v-model="temp.type" size="small">
-                  <el-radio-button v-for="item in typeoptions" :key="item.lastname" :label="item" :value="item"/>
-                </el-radio-group>
-              </div>
-            </el-col>
-          </el-row>
           <fieldset style="margin-bottom: 5px; border-radius: 5px; padding: 20px; border: 1px solid #DCDFE6;">
+            <legend style="padding: 0 8px; font-weight: 700;">Время</legend>
             <el-row :gutter="20">
               <el-col :span="12">
                 <el-form-item :label-width="formLabelWidth" label="Дата начала" prop="startdate">
-                  <el-date-picker v-model="temp.startdate" :picker-options="pickerOptions" type="date" format="dd-MM-yyyy" placeholder="Please pick a date" />
+                  <el-date-picker v-model="temp.startdate" :picker-options="pickerOptions" type="date" format="dd-MM-yyyy" placeholder="Please pick a date"/>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -146,42 +137,80 @@
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-row :gutter="20">
-              <el-col :span="12">
-                <el-form-item v-if="temp.nonwork" :label-width="formLabelWidth" label="Время начала" prop="starttime">
-                  <el-time-picker v-model="temp.starttime" size="mini" placeholder="Select time" format="HH:mm" value-format="HH:mm:ss"/>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-checkbox v-model="temp.nonwork" :true-label="1" :false-label="0" label="Посещение в нерабочее время"/>
-                <el-checkbox v-model="temp.escort" :true-label="1" :false-label="0" label="Требуется сопровождение службы безопасности"/>
-              </el-col>
-            </el-row>
+            <el-form-item>
+              <el-row :gutter="20">
+                <el-col :span="12">
+                  <el-form-item v-if="temp.nonwork" :label-width="formLabelWidth" label="Время начала" prop="starttime">
+                    <el-time-picker v-model="temp.starttime" size="mini" placeholder="Select time" format="HH:mm" value-format="HH:mm:ss"/>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-checkbox v-model="temp.nonwork" :true-label="1" :false-label="0" label="Посещение в нерабочее время"/>
+                  <el-checkbox v-model="temp.escort" :true-label="1" :false-label="0" label="Требуется сопровождение службы безопасности"/>
+                </el-col>
+              </el-row>
+            </el-form-item>
           </fieldset>
           <fieldset style="margin-bottom: 5px; border-radius: 5px; padding: 20px; border: 1px solid #DCDFE6;">
+            <legend style="padding: 0 8px; font-weight: 700;">Посетители</legend>
             <el-row :gutter="20">
               <el-col :span="24">
-                <el-form-item :label-width="formLabelWidth" label="Посетители" prop="visitors">
+                <el-form-item prop="visitors">
                   <div class="add_user">
-                    <el-button type="primary" size="mini" circle @click="staffDialogFormVisible = true"><i class="el-icon-user"/></el-button>
+                    <el-button type="success" size="mini" plain @click="handleCreateStaff()"><i class="el-icon-user"/></el-button>
                   </div>
                 </el-form-item>
               </el-col>
             </el-row>
-            <div v-if="tempVisitorsTable.length > 0" class="visitorsData">
+            <div class="visitorsData">
               <el-table :data="tempVisitorsTable" stripe size="mini">
                 <el-table-column prop="lastname" label="Фамилия"/>
                 <el-table-column prop="firstname" label="Имя"/>
                 <el-table-column prop="middlename" label="Отчество"/>
+                <el-table-column prop="pass_ser" label="Серия"/>
+                <el-table-column prop="pass_num" label="Номер"/>
                 <el-table-column fixed="right" width="50" >
                   <template slot-scope="scope">
-                    <el-button type="danger" size="mini" icon="el-icon-delete" circle alt="delete" title="delete" @click="deleteData(scope.row)"/>
+                    <el-button type="danger" size="mini" icon="el-icon-delete" circle alt="delete" title="delete" @click="deleteStaff(scope.row)"/>
                   </template>
                 </el-table-column>
               </el-table>
             </div>
           </fieldset>
           <fieldset style="margin-bottom: 5px; border-radius: 5px; padding: 20px; border: 1px solid #DCDFE6;">
+            <legend style="padding: 0 8px; font-weight: 700;">Транспортные средства</legend>
+            <el-row :gutter="20">
+              <el-col :span="24">
+                <el-form-item prop="vehicles">
+                  <div class="add_vehicle">
+                    <el-button type="success" size="mini" plain @click="handleCreateVehicle()"><i class="el-icon-truck"/></el-button>
+                  </div>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <div class="vehicleData">
+              <el-table :data="tempVehiclesTable" stripe size="mini">
+                <el-table-column prop="carnumber" label="Номер"/>
+                <el-table-column prop="cartype" label="Марка"/>
+                <el-table-column prop="parktype" label="Вид" width="100px"/>
+                <el-table-column prop="parklevel" label="Уровень"/>
+                <el-table-column prop="buildingaccess" label="Доступ">
+                  <template slot-scope="scope">
+                    <el-tag size="mini">
+                      {{ scope.row.buildingaccess | showBuild }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column fixed="right" width="50" >
+                  <template slot-scope="scope">
+                    <el-button type="danger" size="mini" icon="el-icon-delete" circle alt="delete" title="delete" @click="deleteVehicle(scope.row)"/>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </fieldset>
+          <fieldset style="margin-bottom: 5px; border-radius: 5px; padding: 20px; border: 1px solid #DCDFE6;">
+            <legend style="padding: 0 8px; font-weight: 700;">Контакты</legend>
             <el-row :gutter="20">
               <el-col :span="12">
                 <el-form-item :label-width="formLabelWidth" label="Контактное лицо" prop="contactperson">
@@ -197,52 +226,9 @@
               </el-col>
             </el-row>
           </fieldset>
-          <fieldset v-if="temp.type =='Пропуск на въезд'" style="margin-bottom: 5px; border-radius: 5px; padding: 20px; border: 1px solid #DCDFE6;">
-            <el-row :gutter="20">
-              <el-col :span="12">
-                <template>
-                  <el-form-item :label-width="formLabelWidth" label="Номер автомобиля" prop="carnumber">
-                    <el-input v-uppercase v-model="temp.carnumber" placeholder="А777АА199"/>
-                  </el-form-item>
-                </template>
-              </el-col>
-              <el-col :span="12">
-                <template>
-                  <el-form-item :label-width="formLabelWidth" label="Марка автомобиля" prop="cartype">
-                    <el-input v-model="temp.cartype" placeholder="TOYOTA"/>
-                  </el-form-item>
-                </template>
-              </el-col>
-            </el-row>
-            <el-row :gutter="20">
-              <el-col :span="12">
-                <template>
-                  <el-form-item :label-width="formLabelWidth" label="Вид парковки" prop="parktype">
-                    <el-select v-model="temp.parktype" placeholder="please choose" class="filter-item">
-                      <el-option v-for="item in parkoptions" :key="item" :label="item" :value="item"/>
-                    </el-select>
-                  </el-form-item>
-                </template>
-              </el-col>
-              <el-col :span="12">
-                <template>
-                  <el-form-item :label-width="formLabelWidth" label="Уровень парковки" prop="parklevel">
-                    <el-select v-model="temp.parklevel" placeholder="please choose" class="filter-item">
-                      <el-option v-for="item in leveloptions" :key="item" :label="item" :value="item"/>
-                    </el-select>
-                  </el-form-item>
-                </template>
-              </el-col>
-            </el-row>
-            <el-row :gutter="20">
-              <el-col :span="12">
-                <el-checkbox v-model="temp.buildingaccess" :true-label="1" :false-label="0" label="Требуется доступ в здание"/>
-              </el-col>
-            </el-row>
-          </fieldset>
         </el-form>
         <span slot="footer" class="dialog-footer">
-          <el-button size="mini" type="primary" @click="updateData()">Update</el-button>
+          <el-button size="mini" type="primary" @click="updateData()">Save</el-button>
           <el-button size="mini" @click="updateDialogFormVisible = false">Cancel</el-button>
           <div class="history">
             <el-button type="warning" size="mini" circle @click="showWorkflowHistory = true"><i class="el-icon-chat-line-square"/></el-button>
@@ -254,43 +240,51 @@
     <el-main>
       <el-table v-loading="loading" :data="tableData" :default-sort = "{prop: 'psid', order: 'descending'}" size="mini" border tooltip-effect="light" element-loading-text="Loading..." style="width: 100%">
         <el-table-column sortable fixed prop="psid" label="Id" width="60"/>
-        <el-table-column show-overflow-tooltip sortable prop="createTime" label="Создано">
+        <el-table-column show-overflow-tooltip sortable prop="createTime" label="Создано" width="170">
           <template slot-scope="scope">
             <i class="el-icon-time"/>
             <span style="margin-left: 5px">{{ scope.row.createTime | formatTime }}</span>
           </template>
         </el-table-column>
-        <el-table-column show-overflow-tooltip label="Кем создано" width="180">
+        <el-table-column show-overflow-tooltip label="Кем создано" width="190">
           <template slot-scope="scope">
             <span style="margin-left: 5px"> {{ scope.row.createdBy | lowercase }}</span>
           </template>
         </el-table-column>
-        <el-table-column show-overflow-tooltip sortable prop="type" label="Тип" width="180">
-          <template slot-scope="scope">
-            <i v-if="scope.row.type=='Пропуск на посещение'" class="el-icon-user"/>
-            <i v-else class="el-icon-truck"/>
-            <span style="margin-left: 5px">{{ scope.row.type }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column show-overflow-tooltip label="Действителен с">
-          <template slot-scope="scope">
-            <i class="el-icon-time"/>
-            <span style="margin-left: 5px">{{ scope.row.startdate | formatTime }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column show-overflow-tooltip label="Действителен по" width="180">
+        <!--        <el-table-column show-overflow-tooltip sortable prop="type" label="Тип" width="180">-->
+        <!--          <template slot-scope="scope">-->
+        <!--            <i v-if="scope.row.type=='Пропуск на посещение'" class="el-icon-user"/>-->
+        <!--            <i v-else class="el-icon-truck"/>-->
+        <!--            <span style="margin-left: 5px">{{ scope.row.type }}</span>-->
+        <!--          </template>-->
+        <!--        </el-table-column>-->
+        <el-table-column show-overflow-tooltip label="Действителен с" width="150">
           <template slot-scope="scope">
             <i class="el-icon-time"/>
-            <span style="margin-left: 5px">{{ scope.row.enddate | formatTime }}</span>
+            <span style="margin-left: 5px">{{ scope.row.startdate | formatDate }}</span>
           </template>
         </el-table-column>
-        <el-table-column show-overflow-tooltip label="Посетители" width="180">
+        <el-table-column show-overflow-tooltip label="Действителен по" width="150">
           <template slot-scope="scope">
-            {{ scope.row.visitors | mapToStr }}
+            <i class="el-icon-time"/>
+            <span style="margin-left: 5px">{{ scope.row.enddate | formatDate }}</span>
           </template>
         </el-table-column>
-        <el-table-column show-overflow-tooltip prop="carnumber" label="Номер автомобиля" width="180"/>
-        <el-table-column sortable prop="state" label="Статус">
+        <el-table-column show-overflow-tooltip label="Посетители" width="300">
+          <template slot-scope="props">
+            <div v-for="child in JSON.parse(props.row.visitors)" :key="child.lastname" label-position="left" >
+              {{ child.lastname }} {{ child.firstname }} {{ child.middlename }} ({{ child.pass_ser }}-{{ child.pass_num }})
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column show-overflow-tooltip label="Транспорт" width="350">
+          <template slot-scope="props">
+            <div v-for="child in JSON.parse(props.row.vehicles)" :key="child.carnumber" label-position="left" >
+              [{{ child.cartype }} {{ child.carnumber }}] {{ child.parktype }}:{{ child.parklevel }} [{{ child.buildingaccess | showBuild }}]
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column sortable prop="state" label="Статус" width="150">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.state==0" type="info" size="mini">Новый</el-tag>
             <el-tag v-if="scope.row.state==1" type="warning" size="mini">На Согласовании</el-tag>
@@ -328,7 +322,7 @@
         @size-change="handleSizeChange"/>
     </el-footer>
     <el-dialog :visible.sync="staffDialogFormVisible" :close-on-click-modal="false" title="Посетитель" width="450px" height="400px">
-      <el-form ref="CreateStaff" :model="staff" :rules="staffRules" size="mini" label-width="90px">
+      <el-form ref="CreateStaff" :model="staff" :rules="staffRules" size="mini" label-width="100px">
         <el-form-item label="Фамилия:" prop="lastname">
           <el-row type="flex" class="row-bg" justify="center">
             <el-col :span="18">
@@ -494,13 +488,7 @@ export default {
       tempVisitorsTable: [],
       tempVehiclesTable: [],
       loading: false,
-      authority: {
-        list: [],
-        psid: 0,
-        visible: false,
-        title: ''
-      },
-      typeoptions: ['Пропуск на посещение', 'Пропуск на въезд'],
+      // typeoptions: ['Пропуск на посещение', 'Пропуск на въезд'],
       parkoptions: ['Гостевой', 'Погрузка-разгрузка', 'Посадка пассажиров'],
       leveloptions: ['Наземный', 'Подземный'],
       statusoptions: [{ value: 0, label: 'Отменен' }, { value: 1, label: 'Новый' }, { value: 2, label: 'На Согласовании' }, { value: 3, label: 'Утвержден' }],
@@ -520,7 +508,7 @@ export default {
         cartype: [{ required: true, message: 'Необходимо указать марку автомобиля', trigger: 'blur' }],
         parktype: [{ required: true, message: 'Необходимо указать вид парковки', trigger: 'blur' }],
         parklevel: [{ required: true, message: 'Необходимо указать указать уровень парковки', trigger: 'blur' }],
-        carnumber: [{ required: true, message: 'Необходимо указать регистрационный номер автомобиля', trigger: 'blur' }]
+        carnumber: [{ required: true, message: 'Необходимо указать рег. номер автомобиля', trigger: 'blur' }]
       },
       staffRules: {
         lastname: [{ required: true, message: 'Необходимо указать фамилию', trigger: 'blur' }],
@@ -602,8 +590,7 @@ export default {
     handleCreate() {
       this.temp = {
         nonwork: 0,
-        escort: 0,
-        type: 'Пропуск на посещение'
+        escort: 0
       };
       this.tempVisitorsTable = [];
       this.tempVehiclesTable = [];
@@ -616,7 +603,7 @@ export default {
       this.vehicle = {
         buildingaccess: 0
       };
-      this.tempVehiclesTable = [];
+      // this.tempVehiclesTable = [];
       this.$nextTick(() => {
         this.$refs['CreateVehicle'].clearValidate();
       });
@@ -624,7 +611,7 @@ export default {
     },
     handleCreateStaff() {
       this.staff = {};
-      this.tempVehiclesTable = [];
+      // this.tempVisitorsTable = [];
       this.$nextTick(() => {
         this.$refs['CreateStaff'].clearValidate();
       });
@@ -632,6 +619,8 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row);
+      this.tempVehiclesTable = JSON.parse(this.temp.vehicles);
+      this.tempVisitorsTable = JSON.parse(this.temp.visitors);
       this.updateDialogFormVisible = true;
       this.$nextTick(() => {
         this.$refs['updateForm'].clearValidate();
@@ -692,6 +681,7 @@ export default {
           _this.temp.state = id;
           _this.temp.historyLog = ';Created by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString();
           _this.temp.visitors = JSON.stringify(this.tempVisitorsTable);
+          _this.temp.vehicles = JSON.stringify(this.tempVehiclesTable);
           savePass(_this.temp).then((result) => {
             if (result.status === 200) {
               _this.createDialogFormVisible = false;
@@ -711,6 +701,7 @@ export default {
         if (valid) {
           _this.temp.historyLog = _this.temp.historyLog + ';Updated by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString();
           _this.temp.visitors = JSON.stringify(this.tempVisitorsTable);
+          _this.temp.vehicles = JSON.stringify(this.tempVehiclesTable);
           updatePass(_this.temp).then((result) => {
             if (result.status === 200) {
               _this.updateDialogFormVisible = false;
@@ -759,15 +750,16 @@ export default {
 .el-alert__title {
   font-size: 1rem;
 }
-/*.el-table .line-break .cell {*/
-/*  white-space: pre;*/
-/*}*/
+.el-table .cell {
+  word-break: break-word;
+
+}
 .init-container {
-    line-height: 24px;
-    font-weight: 700;
-    font-size: 14px;
-    color: #606266;
-    margin-bottom: 17px;
+  line-height: 24px;
+  font-weight: 700;
+  font-size: 14px;
+  color: #606266;
+  margin-bottom: 17px;
 }
 .fieldset {
 margin: 20px;
