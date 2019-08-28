@@ -94,6 +94,7 @@ export function mapToArry(map) {
   }
   return list;
 }
+
 export function getObjectURL(file) {
   var url = null;
   if (window.createObjectURL !== undefined) {

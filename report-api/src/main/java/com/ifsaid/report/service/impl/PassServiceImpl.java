@@ -71,7 +71,7 @@ public class PassServiceImpl extends BaseServiceImpl<Pass, Long, PassRepository>
                 // subject
                 "Pass Approval number: " + entity.getPsid() + " for your approval",
                 //  msg
-                "Please click this <a href=\"http://ruits/pass/decision/" + entity.getPsid() + " \">link</a> for further details."
+                "Please click this <a href=\"http://ruits/pass/index/" + entity.getPsid() + " \">link</a> for further details."
                 + " Thank you."
                 );
         return entity;
@@ -95,7 +95,7 @@ public class PassServiceImpl extends BaseServiceImpl<Pass, Long, PassRepository>
                 "Please click this <a href=\"http://ruits/pass/my\">link</a> for further details."
                 + " Thank you."
             );
-        } else if ( entity.getState() == 0 ) {
+        } else if ( entity.getState() == 3 ) {
             emailSender.htmlEmail(
                 servletContext,
                 // user name

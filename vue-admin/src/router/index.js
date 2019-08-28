@@ -22,32 +22,14 @@ import Layout from '@/views/layout/Layout';
   }
 **/
 
-export const constantRouterMap = [{
-  path: '/login',
-  name: 'Login',
-  component: () => import('@/views/login/index'),
-  hidden: true
-},
-{
-  path: '/',
-  component: Layout,
-  redirect: '/dashboard',
-  name: 'Dashboard',
-  hidden: true,
-  children: [{
-    path: 'dashboard',
-    component: () => import('@/views/dashboard/index')
-  }, {
-    path: 'userinfo',
-    name: 'UserInfo',
-    component: () => import('@/views/dashboard/userinfo')
-  }]
-},
-{
-  path: '/error',
-  component: () => import('@/views/error/404/index'),
-  hidden: true
-}
+export const constantRouterMap = [
+  { path: '/login', name: 'Login', component: () => import('@/views/login/index'), hidden: true },
+  { path: '/', component: Layout, redirect: '/dashboard', name: 'Dashboard', hidden: true,
+    children: [
+      { path: 'dashboard', component: () => import('@/views/dashboard/index') },
+      { path: 'userinfo', name: 'UserInfo', component: () => import('@/views/dashboard/userinfo') }
+    ] },
+  { path: '/error', component: () => import('@/views/error/404/index'), hidden: true }
 ];
 
 export default new Router({
@@ -58,175 +40,34 @@ export default new Router({
 
 // Asynchronously mounted route
 // Dynamic routing table that needs to be loaded according to permissions
-export const asyncRouterMap = [{
-  path: '/pre',
-  component: Layout,
-  name: 'pre',
-  meta: {
-    resources: 'pre',
-    title: 'Permissions'
+export const asyncRouterMap = [
+  { path: '/pre', component: Layout, name: 'pre', meta: { resources: 'pre', title: 'Permissions' },
+    children: [
+      { path: 'index', component: () => import('@/views/pre/perm/index'), name: 'perm', meta: { resources: 'perm' }},
+      { path: 'user', component: () => import('@/views/pre/user/index'), name: 'user', meta: { resources: 'user' }},
+      { path: 'role', component: () => import('@/views/pre/role/index'), name: 'role', meta: { resources: 'role' }},
+      { path: 'dept', component: () => import('@/views/pre/dept/index'), name: 'dept', meta: { resources: 'dept' }}
+    ]
   },
-  children: [{
-    path: 'index',
-    component: () => import('@/views/pre/perm/index'),
-    name: 'perm',
-    meta: {
-      resources: 'perm'
-    }
+  { path: '/pass', component: Layout, name: 'pass', redirect: '/pass/index', meta: { resources: 'pass', title: 'PassApproval' },
+    children: [
+      { path: 'index', component: () => import('@/views/pass/list/index'), name: 'pass_list', meta: { resources: 'pass_list' }},
+      { path: 'index/:id', component: () => import('@/views/pass/list/index'), hidden: true, meta: { resources: 'pass_list' }},
+      { path: 'my', component: () => import('@/views/pass/my/index'), name: 'pass_my', meta: { resources: 'pass_my' }}
+    ]
   },
-  {
-    path: 'user',
-    component: () => import('@/views/pre/user/index'),
-    name: 'user',
-    meta: {
-      resources: 'user'
-    }
+  { path: '/ldp', component: Layout, name: 'ldp', meta: { resources: 'ldp', title: 'ldp' },
+    children: [
+      { path: 'index', component: () => import('@/views/ldp/list/index'), name: 'ldp_my', meta: { resources: 'ldp_my' }},
+      { path: 'tasks', component: () => import('@/views/ldp/myprocess/index'), name: 'my_process', meta: { resources: 'my_process' }}
+    ]
   },
-  {
-    path: 'role',
-    component: () => import('@/views/pre/role/index'),
-    name: 'role',
-    meta: {
-      resources: 'role'
-    }
+  { path: '/sys', component: Layout, name: 'sys', meta: { resources: 'sys', title: 'System settings' },
+    children: [
+      { path: 'folder', component: () => import('@/views/sys/folder/index'), name: 'folder', meta: { resources: 'folder' }},
+      { path: 'database', component: () => import('@/views/sys/database/index'), name: 'sys_database', meta: { resources: 'sys_database' }}
+    ]
   },
-  {
-    path: 'dept',
-    component: () => import('@/views/pre/dept/index'),
-    name: 'dept',
-    meta: {
-      resources: 'dept'
-    }
-  }
-  ]
-},
-
-{ path: '/pass',
-  component: Layout,
-  name: 'pass',
-  redirect: '/pass/index',
-  meta: {
-    resources: 'pass',
-    title: 'PassApproval'
-  },
-  children: [{
-    path: 'index',
-    component: () => import('@/views/pass/list/index'),
-    name: 'pass_list',
-    meta: {
-      resources: 'pass_list'
-    }
-  },
-  {
-    path: 'my',
-    component: () => import('@/views/pass/my/index'),
-    name: 'pass_my',
-    meta: {
-      resources: 'pass_my'
-    }
-  },
-  {
-    path: 'decision/:id',
-    component: () => import('@/views/pass/list/decision'),
-    hidden: true,
-    name: 'pass_decision',
-    meta: {
-      resources: 'pass_decision'
-    }
-  },
-  {
-    path: 'category',
-    component: () => import('@/views/pass/category/index'),
-    name: 'category',
-    meta: {
-      resources: 'article_category'
-    }
-  },
-  {
-    path: 'article_my',
-    component: () => import('@/views/pass/my/index'),
-    name: 'article_my',
-    meta: {
-      resources: 'article_my'
-    }
-  }
-  ]
-},
-{ path: '/ldp',
-  component: Layout,
-  name: 'ldp',
-  meta: {
-    resources: 'ldp',
-    title: 'ldp'
-  },
-  children: [{
-    path: 'index',
-    component: () => import('@/views/ldp/list/index'),
-    name: 'ldp_my',
-    meta: {
-      resources: 'ldp_my'
-    }
-  },
-  {
-    path: 'tasks',
-    component: () => import('@/views/ldp/myprocess/index'),
-    name: 'my_process',
-    meta: {
-      resources: 'my_process'
-    }
-  }
-  ]
-},
-{ path: '/sys',
-  component: Layout,
-  name: 'sys',
-  meta: {
-    resources: 'sys',
-    title: 'System settings'
-  },
-  children: [{
-    path: 'folder',
-    component: () => import('@/views/sys/folder/index'),
-    name: 'folder',
-    meta: {
-      resources: 'folder'
-    }
-  },
-  {
-    path: 'wechat',
-    component: () => import('@/views/sys/wechat/index'),
-    name: 'sys_wechat',
-    meta: {
-      resources: 'sys_wechat'
-    }
-  },
-  {
-    path: 'database',
-    component: () => import('@/views/sys/database/index'),
-    name: 'sys_database',
-    meta: {
-      resources: 'sys_database'
-    }
-  },
-  {
-    path: 'logs',
-    component: () => import('@/views/sys/logs/index'),
-    name: 'sys_logs',
-    meta: {
-      resources: 'sys_logs'
-    }
-  }
-  ]
-},
-
-// redirect 404
-{
-  path: '*',
-  component: () => import('@/views/error/404/index'),
-  hidden: true,
-  meta: {
-    resources: '404',
-    title: '404'
-  }
-}
+  // redirect 404
+  { path: '*', component: () => import('@/views/error/404/index'), hidden: true, meta: { resources: '404', title: '404' }}
 ];

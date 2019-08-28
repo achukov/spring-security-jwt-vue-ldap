@@ -2,7 +2,6 @@
   <el-container v-has="'pass:view'">
     <el-header height ="35px">
       <div v-title>Pass Approval</div>
-
       <div class="filter-container">
         <el-button v-has="'pass:new'" type="success" plain size="mini" @click="handleCreate">New Request</el-button>
         <el-input v-model="page.search" size="mini" placeholder="Search" prefix-icon="el-icon-search" style="width: 250px; margin-left: 10px;" class="filter-item" @keyup.enter.native="handleFilter()"/>
@@ -128,12 +127,12 @@
             <el-row :gutter="20">
               <el-col :span="12">
                 <el-form-item :label-width="formLabelWidth" label="Дата начала" prop="startdate">
-                  <el-date-picker v-model="temp.startdate" :picker-options="pickerOptions" type="date" format="dd-MM-yyyy" placeholder="Please pick a date"/>
+                  <el-date-picker :disabled="isEdit" v-model="temp.startdate" :picker-options="pickerOptions" type="date" format="dd-MM-yyyy" placeholder="Please pick a date"/>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item :label-width="formLabelWidth" label="Дата окончания" prop="enddate">
-                  <el-date-picker v-model="temp.enddate" :picker-options="pickerOptions" type="date" format="dd-MM-yyyy" placeholder="Please pick a date" />
+                  <el-date-picker :disabled="isEdit" v-model="temp.enddate" :picker-options="pickerOptions" type="date" format="dd-MM-yyyy" placeholder="Please pick a date" />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -141,12 +140,12 @@
               <el-row :gutter="20">
                 <el-col :span="12">
                   <el-form-item v-if="temp.nonwork" :label-width="formLabelWidth" label="Время начала" prop="starttime">
-                    <el-time-picker v-model="temp.starttime" size="mini" placeholder="Select time" format="HH:mm" value-format="HH:mm:ss"/>
+                    <el-time-picker :disabled="isEdit" v-model="temp.starttime" size="mini" placeholder="Select time" format="HH:mm" value-format="HH:mm:ss"/>
                   </el-form-item>
                 </el-col>
                 <el-col :span="12">
-                  <el-checkbox v-model="temp.nonwork" :true-label="1" :false-label="0" label="Посещение в нерабочее время"/>
-                  <el-checkbox v-model="temp.escort" :true-label="1" :false-label="0" label="Требуется сопровождение службы безопасности"/>
+                  <el-checkbox :disabled="isEdit" v-model="temp.nonwork" :true-label="1" :false-label="0" label="Посещение в нерабочее время"/>
+                  <el-checkbox :disabled="isEdit" v-model="temp.escort" :true-label="1" :false-label="0" label="Требуется сопровождение службы безопасности"/>
                 </el-col>
               </el-row>
             </el-form-item>
@@ -157,7 +156,7 @@
               <el-col :span="24">
                 <el-form-item prop="visitors">
                   <div class="add_user">
-                    <el-button type="success" size="mini" plain @click="handleCreateStaff()"><i class="el-icon-user"/></el-button>
+                    <el-button :disabled="isEdit" type="success" size="mini" plain @click="handleCreateStaff()"><i class="el-icon-user"/></el-button>
                   </div>
                 </el-form-item>
               </el-col>
@@ -171,7 +170,7 @@
                 <el-table-column prop="pass_num" label="Номер"/>
                 <el-table-column fixed="right" width="50" >
                   <template slot-scope="scope">
-                    <el-button type="danger" size="mini" icon="el-icon-delete" circle alt="delete" title="delete" @click="deleteStaff(scope.row)"/>
+                    <el-button :disabled="isEdit" type="danger" size="mini" icon="el-icon-delete" circle alt="delete" title="delete" @click="deleteStaff(scope.row)"/>
                   </template>
                 </el-table-column>
               </el-table>
@@ -183,7 +182,7 @@
               <el-col :span="24">
                 <el-form-item prop="vehicles">
                   <div class="add_vehicle">
-                    <el-button type="success" size="mini" plain @click="handleCreateVehicle()"><i class="el-icon-truck"/></el-button>
+                    <el-button :disabled="isEdit" type="success" size="mini" plain @click="handleCreateVehicle()"><i class="el-icon-truck"/></el-button>
                   </div>
                 </el-form-item>
               </el-col>
@@ -203,7 +202,7 @@
                 </el-table-column>
                 <el-table-column fixed="right" width="50" >
                   <template slot-scope="scope">
-                    <el-button type="danger" size="mini" icon="el-icon-delete" circle alt="delete" title="delete" @click="deleteVehicle(scope.row)"/>
+                    <el-button :disabled="isEdit" type="danger" size="mini" icon="el-icon-delete" circle alt="delete" title="delete" @click="deleteVehicle(scope.row)"/>
                   </template>
                 </el-table-column>
               </el-table>
@@ -214,12 +213,12 @@
             <el-row :gutter="20">
               <el-col :span="12">
                 <el-form-item :label-width="formLabelWidth" label="Контактное лицо" prop="contactperson">
-                  <el-input v-model="temp.contactperson" placeholder="username@bat.com"/>
+                  <el-input :disabled="isEdit" v-model="temp.contactperson" placeholder="username@bat.com"/>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item :label-width="formLabelWidth" label="Телефон для связи" prop="phonenumber">
-                  <el-input v-mask="'+7 (###) ###-####'" v-model="temp.phonenumber" type="tel" placeholder="+7 (___) ___-____">
+                  <el-input v-mask="'+7 (###) ###-####'" :disabled="isEdit" v-model="temp.phonenumber" type="tel" placeholder="+7 (___) ___-____">
                     <i slot="prefix" class="el-input__icon el-icon-phone"/>
                   </el-input>
                 </el-form-item>
@@ -228,8 +227,115 @@
           </fieldset>
         </el-form>
         <span slot="footer" class="dialog-footer">
-          <el-button size="mini" type="primary" @click="updateData()">Save</el-button>
+          <el-button v-if="!isEdit" size="mini" type="primary" @click="updateData(0)">Save</el-button>
           <el-button size="mini" @click="updateDialogFormVisible = false">Cancel</el-button>
+          <div class="history">
+            <el-button type="warning" size="mini" circle @click="showWorkflowHistory = true"><i class="el-icon-chat-line-square"/></el-button>
+          </div>
+        </span>
+      </el-dialog>
+      <!-- End -->
+      <!-- Decision -->
+      <el-dialog :visible.sync="decisionDialogFormVisible" :close-on-click-modal="false" :center="true" title="Pass Approval Request" top="5vh" width="700px">
+        <el-form ref="updateForm" :model="temp" :rules="rules" :inline="false" label-position="top" size="mini" >
+          <fieldset style="margin-bottom: 5px; border-radius: 5px; padding: 20px; border: 1px solid #DCDFE6;">
+            <legend style="padding: 0 8px; font-weight: 700;">Время</legend>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item :label-width="formLabelWidth" label="Дата начала" prop="startdate">
+                  <el-date-picker :disabled="true" v-model="temp.startdate" :picker-options="pickerOptions" type="date" format="dd-MM-yyyy" placeholder="Please pick a date"/>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item :label-width="formLabelWidth" label="Дата окончания" prop="enddate">
+                  <el-date-picker :disabled="true" v-model="temp.enddate" :picker-options="pickerOptions" type="date" format="dd-MM-yyyy" placeholder="Please pick a date" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-form-item>
+              <el-row :gutter="20">
+                <el-col :span="12">
+                  <el-form-item v-if="temp.nonwork" :label-width="formLabelWidth" label="Время начала" prop="starttime">
+                    <el-time-picker :disabled="true" v-model="temp.starttime" size="mini" placeholder="Select time" format="HH:mm" value-format="HH:mm:ss"/>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-checkbox :disabled="true" v-model="temp.nonwork" :true-label="1" :false-label="0" label="Посещение в нерабочее время"/>
+                  <el-checkbox :disabled="true" v-model="temp.escort" :true-label="1" :false-label="0" label="Требуется сопровождение службы безопасности"/>
+                </el-col>
+              </el-row>
+            </el-form-item>
+          </fieldset>
+          <fieldset style="margin-bottom: 5px; border-radius: 5px; padding: 20px; border: 1px solid #DCDFE6;">
+            <legend style="padding: 0 8px; font-weight: 700;">Посетители</legend>
+            <el-row :gutter="20">
+              <el-col :span="24">
+                <el-form-item prop="visitors">
+                  <div class="add_user">
+                    <el-button :disabled="true" type="success" size="mini" plain @click="handleCreateStaff()"><i class="el-icon-user"/></el-button>
+                  </div>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <div class="visitorsData">
+              <el-table :data="tempVisitorsTable" stripe size="mini">
+                <el-table-column prop="lastname" label="Фамилия"/>
+                <el-table-column prop="firstname" label="Имя"/>
+                <el-table-column prop="middlename" label="Отчество"/>
+                <el-table-column prop="pass_ser" label="Серия"/>
+                <el-table-column prop="pass_num" label="Номер"/>
+              </el-table>
+            </div>
+          </fieldset>
+          <fieldset style="margin-bottom: 5px; border-radius: 5px; padding: 20px; border: 1px solid #DCDFE6;">
+            <legend style="padding: 0 8px; font-weight: 700;">Транспортные средства</legend>
+            <el-row :gutter="20">
+              <el-col :span="24">
+                <el-form-item prop="vehicles">
+                  <div class="add_vehicle">
+                    <el-button :disabled="true" type="success" size="mini" plain @click="handleCreateVehicle()"><i class="el-icon-truck"/></el-button>
+                  </div>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <div class="vehicleData">
+              <el-table :data="tempVehiclesTable" stripe size="mini">
+                <el-table-column prop="carnumber" label="Номер"/>
+                <el-table-column prop="cartype" label="Марка"/>
+                <el-table-column prop="parktype" label="Вид" width="150px"/>
+                <el-table-column prop="parklevel" label="Уровень"/>
+                <el-table-column prop="buildingaccess" label="Доступ">
+                  <template slot-scope="scope">
+                    <el-tag size="mini">
+                      {{ scope.row.buildingaccess | showBuild }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </fieldset>
+          <fieldset style="margin-bottom: 5px; border-radius: 5px; padding: 20px; border: 1px solid #DCDFE6;">
+            <legend style="padding: 0 8px; font-weight: 700;">Контакты</legend>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item :label-width="formLabelWidth" label="Контактное лицо" prop="contactperson">
+                  <el-input :disabled="true" v-model="temp.contactperson" placeholder="username@bat.com"/>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item :label-width="formLabelWidth" label="Телефон для связи" prop="phonenumber">
+                  <el-input v-mask="'+7 (###) ###-####'" :disabled="true" v-model="temp.phonenumber" type="tel" placeholder="+7 (___) ___-____">
+                    <i slot="prefix" class="el-input__icon el-icon-phone"/>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </fieldset>
+        </el-form>
+        <span v-has="'pass:approve'" slot="footer" class="dialog-footer">
+          <el-button v-if="temp.state === 1" size="mini" type="success" @click="updateData(2)">Утвердить</el-button>
+          <el-button v-if="temp.state === 1" size="mini" type="danger" @click="addComment">Отклонить</el-button>
+          <el-button v-else size="mini" @click="decisionDialogFormVisible = false">Cancel</el-button>
           <div class="history">
             <el-button type="warning" size="mini" circle @click="showWorkflowHistory = true"><i class="el-icon-chat-line-square"/></el-button>
           </div>
@@ -251,13 +357,6 @@
             <span style="margin-left: 5px"> {{ scope.row.createdBy | lowercase }}</span>
           </template>
         </el-table-column>
-        <!--        <el-table-column show-overflow-tooltip sortable prop="type" label="Тип" width="180">-->
-        <!--          <template slot-scope="scope">-->
-        <!--            <i v-if="scope.row.type=='Пропуск на посещение'" class="el-icon-user"/>-->
-        <!--            <i v-else class="el-icon-truck"/>-->
-        <!--            <span style="margin-left: 5px">{{ scope.row.type }}</span>-->
-        <!--          </template>-->
-        <!--        </el-table-column>-->
         <el-table-column show-overflow-tooltip label="Действителен с" width="150">
           <template slot-scope="scope">
             <i class="el-icon-time"/>
@@ -270,7 +369,7 @@
             <span style="margin-left: 5px">{{ scope.row.enddate | formatDate }}</span>
           </template>
         </el-table-column>
-        <el-table-column show-overflow-tooltip label="Посетители" width="300">
+        <el-table-column show-overflow-tooltip label="Посетители" width="330">
           <template slot-scope="props">
             <div v-for="child in JSON.parse(props.row.visitors)" :key="child.lastname" label-position="left" >
               {{ child.lastname }} {{ child.firstname }} {{ child.middlename }} ({{ child.pass_ser }}-{{ child.pass_num }})
@@ -292,10 +391,10 @@
             <el-tag v-if="scope.row.state==3" type="danger" size="mini">Отменен</el-tag>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="Решение" width="125">
+        <el-table-column fixed="right" label="Decision" width="125">
           <template slot-scope="scope">
             <el-button v-has="'pass:approve'" v-if="scope.row.state === 1" size="mini" icon="el-icon-check" type="success" @click="decision(scope.row, 2)"/>
-            <el-button v-has="'pass:approve'" v-if="scope.row.state === 1" size="mini" icon="el-icon-close" type="danger" @click="decision(scope.row, 0)"/>
+            <el-button v-has="'pass:approve'" v-if="scope.row.state === 1" size="mini" icon="el-icon-close" type="danger" @click="decision(scope.row, 3)"/>
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="Actions" width="125">
@@ -373,7 +472,7 @@
         <el-form-item label="Марка:" prop="cartype">
           <el-row type="flex" class="row-bg" justify="center">
             <el-col :span="18">
-              <el-input v-model="vehicle.cartype" name="cartype" placeholder="TOYOTA"/>
+              <el-input v-uppercase v-model="vehicle.cartype" name="cartype" placeholder="TOYOTA"/>
             </el-col>
           </el-row>
         </el-form-item>
@@ -408,9 +507,9 @@
         <el-button size="mini" @click="vehicleDialogFormVisible = false">Отменить</el-button>
       </span>
     </el-dialog>
-    <el-dialog :visible.sync="showWorkflowHistory" title="Workflow History" width="550PX" height="350px">
+    <el-dialog :visible.sync="showWorkflowHistory" title="Workflow History" width="800px" height="350px">
       <el-form ref="staff" :model="staff" size="mini">
-        <fieldset style="margin-bottom: 5px; border-radius: 5px; padding: 20px; border: 1px solid #DCDFE6;">
+        <fieldset style="margin-bottom: 5px; border-radius: 5px; padding: 10px; border: 1px solid #DCDFE6;">
           <el-steps :active="temp.state" align-center process-status="success" finish-status="finish">
             <el-step title="Новый" description="Заполнение документа"/>
             <el-step title="На Согласовании" description="Утверждается отделом безопасности"/>
@@ -425,13 +524,20 @@
         <el-button size="mini" @click="showWorkflowHistory = false">Закрыть</el-button>
       </span>
     </el-dialog>
+    <el-dialog :visible.sync="showComments" :close-on-click-modal="false" :center="true" width="40%" title="Комментарии:">
+      <el-input v-model="comments" :autosize="{ minRows: 3, maxRows: 5}" type="textarea"/>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="mini" type="primary" @click="updateData(3)">Сохранить</el-button>
+        <el-button size="mini" @click="showComments = false">Закрыть</el-button>
+      </span>
+    </el-dialog>
   </el-container>
 </template>
 
 <script>
 
 import { scrollTo } from '@/utils/scroll-to';
-import { getPassPage, savePass, updatePass, removePassById } from '@/api/pass';
+import { getPassPage, savePass, updatePass, removePassById, getPassById } from '@/api/pass';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -478,17 +584,19 @@ export default {
         parklevel: '',
         buildingaccess: 0
       },
+      showComments: false,
       showOverflowTooltip: true,
       updateDialogFormVisible: false,
       createDialogFormVisible: false,
       staffDialogFormVisible: false,
       vehicleDialogFormVisible: false,
+      decisionDialogFormVisible: false,
       showWorkflowHistory: false,
+      isEdit: false,
       tableData: [],
       tempVisitorsTable: [],
       tempVehiclesTable: [],
       loading: false,
-      // typeoptions: ['Пропуск на посещение', 'Пропуск на въезд'],
       parkoptions: ['Гостевой', 'Погрузка-разгрузка', 'Посадка пассажиров'],
       leveloptions: ['Наземный', 'Подземный'],
       statusoptions: [{ value: 0, label: 'Отменен' }, { value: 1, label: 'Новый' }, { value: 2, label: 'На Согласовании' }, { value: 3, label: 'Утвержден' }],
@@ -527,8 +635,15 @@ export default {
   },
   created() {
     this.getTableData();
+    if (typeof this.$route.params.id !== 'undefined') {
+      const id = parseInt(this.$route.params.id);
+      this.fetchData(id);
+    }
   },
   methods: {
+    addComment() {
+      this.showComments = true;
+    },
     appendStaff(staff) {
       const _this = this;
       _this.$refs['CreateStaff'].validate((valid) => {
@@ -583,6 +698,19 @@ export default {
         console.log('err :', err);
       });
     },
+    fetchData(id) {
+      const _this = this;
+      getPassById(id).then((result) => {
+        if (result.status === 200) {
+          _this.temp = result.data;
+          this.tempVehiclesTable = JSON.parse(_this.temp.vehicles);
+          this.tempVisitorsTable = JSON.parse(_this.temp.visitors);
+          this.decisionDialogFormVisible = true;
+        }
+      }).catch((err) => {
+        console.log('err :', err);
+      });
+    },
     currentChange(index) {
       this.page.page = index;
       this.getTableData();
@@ -619,6 +747,7 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row);
+      this.temp.state === 2 ? this.isEdit = true : this.isEdit = false;
       this.tempVehiclesTable = JSON.parse(this.temp.vehicles);
       this.tempVisitorsTable = JSON.parse(this.temp.visitors);
       this.updateDialogFormVisible = true;
@@ -628,17 +757,19 @@ export default {
     },
     decision(row, id) {
       const _this = this;
-      debugger;
       row.state = id;
       if (row.psid > 0) {
         _this.$confirm('Вы точно хотите ' + (id === 2 ? 'утвердить' : 'отклонить') + ' заявку ?', 'Внимание',
           { confirmButtonText: 'Да', cancelButtonText: 'Отменить', type: 'warning' })
           .then(() => {
-            if (id === 2) {
-              row.historyLog = row.historyLog + ';Approved by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString();
-            } else if (id === 0) {
-              // _this.addComment()
-              row.historyLog = row.historyLog + ';Rejected by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString();
+            switch (id) {
+              case 2:
+                row.historyLog = row.historyLog + ';Approved by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString();
+                break;
+              case 3:
+                row.historyLog = row.historyLog + ';Rejected by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString();
+                break;
+              default:
             }
             updatePass(row).then((result) => {
               if (result.status === 200) {
@@ -657,12 +788,12 @@ export default {
     handleDelete(row) {
       const _this = this;
       if (row.psid > 0) {
-        _this.$confirm('Are you sure you want to delete this record?', 'warning',
-          { confirmButtonText: 'Confirm', cancelButtonText: 'Cancel', type: 'warning' })
+        _this.$confirm('Удалить Pass Approval Request № ' + row.psid + ' ?', 'warning',
+          { confirmButtonText: 'Удалить', cancelButtonText: 'Отменить', type: 'warning' })
           .then(() => {
             removePassById(row.psid).then((result) => {
               if (result.status === 200) {
-                _this.$notify({ title: 'Success', message: 'Successfully deleted!', type: 'success' });
+                _this.$notify({ title: 'Success', message: 'Запись успешно удалена.', type: 'success' });
                 _this.getTableData();
               }
             }).catch((err) => {
@@ -670,7 +801,7 @@ export default {
               _this.$notify.error({ title: 'Error', message: err.message });
             });
           }).catch(() => {
-            _this.$message({ type: 'info', message: 'Cancelled' });
+            _this.$message({ type: 'info', message: 'Отменено' });
           });
       }
     },
@@ -695,16 +826,28 @@ export default {
         }
       });
     },
-    updateData() {
+    updateData(id) {
       const _this = this;
       _this.$refs['updateForm'].validate((valid) => {
         if (valid) {
-          _this.temp.historyLog = _this.temp.historyLog + ';Updated by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString();
+          _this.temp.state = id;
+          switch (id) {
+            case 2:
+              _this.temp.historyLog = _this.temp.historyLog + ';Approved by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString();
+              break;
+            case 3:
+              _this.temp.historyLog = _this.temp.historyLog + ';Rejected by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString() + ' Comments: ' + _this.comments;
+              break;
+            default:
+              _this.temp.historyLog = _this.temp.historyLog + ';Updated by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString();
+          }
           _this.temp.visitors = JSON.stringify(this.tempVisitorsTable);
           _this.temp.vehicles = JSON.stringify(this.tempVehiclesTable);
           updatePass(_this.temp).then((result) => {
             if (result.status === 200) {
               _this.updateDialogFormVisible = false;
+              _this.decisionDialogFormVisible = false;
+              _this.showComments = false;
               _this.$notify({ title: 'Success', message: 'Modify the Pass successfully!', type: 'success' });
               _this.getTableData();
             }
