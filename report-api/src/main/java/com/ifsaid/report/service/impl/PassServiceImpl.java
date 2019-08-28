@@ -69,7 +69,7 @@ public class PassServiceImpl extends BaseServiceImpl<Pass, Long, PassRepository>
                 // to
                 to,
                 // subject
-                "Pass Approval number: " + entity.getPsid() + " for your approval",
+                "New Pass Approval №: " + entity.getPsid() + " for your approval",
                 //  msg
                 "Please click this <a href=\"http://ruits/pass/index/" + entity.getPsid() + " \">link</a> for further details."
                 + " Thank you."
@@ -92,7 +92,7 @@ public class PassServiceImpl extends BaseServiceImpl<Pass, Long, PassRepository>
                 // subject
                 "Pass Approval number: " + entity.getPsid() + " was approved.",
                 //  msg
-                "Please click this <a href=\"http://ruits/pass/my\">link</a> for further details."
+                "Please click this <a href=\"http://ruits/pass/index/\">link</a> for further details."
                 + " Thank you."
             );
         } else if ( entity.getState() == 3 ) {
@@ -106,12 +106,12 @@ public class PassServiceImpl extends BaseServiceImpl<Pass, Long, PassRepository>
                 "Pass Approval number: " + entity.getPsid() + " was rejected."
                 + " History Log: " + entity.getHistoryLog(),
                 //  msg
-                "Please click this <a href=\"http://ruits/pass/my\">link</a> for further details."
+                "Please click this <a href=\"http://ruits/pass/index/\">link</a> for further details."
                 + " Thank you."
             );
 
         } else {
-            // TODO replay
+            // TODO доделать уведомления
         }
 
         return super.update(entity);
