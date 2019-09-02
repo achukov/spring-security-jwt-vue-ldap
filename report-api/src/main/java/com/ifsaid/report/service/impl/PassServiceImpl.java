@@ -54,7 +54,6 @@ public class PassServiceImpl extends BaseServiceImpl<Pass, Long, PassRepository>
 
         List<User> approvers = userService.findByDept(13);
     
-        log.info("approvers{} ", approvers);
         String[] to = new String[approvers.size()];
         for (int i = 0; i < approvers.size(); i++) {
             to[i] = approvers.get(i).getMail();
@@ -62,7 +61,7 @@ public class PassServiceImpl extends BaseServiceImpl<Pass, Long, PassRepository>
 
         super.save(entity);
 
-            emailSender.htmlEmailManyTo(
+        emailSender.htmlEmailManyTo(
                 servletContext,
                 // user name
                 null,
@@ -86,28 +85,28 @@ public class PassServiceImpl extends BaseServiceImpl<Pass, Long, PassRepository>
             emailSender.htmlEmail(
                 servletContext,
                 // user name
-                entity.getCreatedBy().toString(),
+                entity.getCreatedBy(),
                 // to
-                entity.getCreatedBy().toString(),
+                entity.getCreatedBy(),
                 // subject
                 "Pass Approval number: " + entity.getPsid() + " was approved.",
                 //  msg
-                "Please click this <a href=\"http://ruits/pass/index/\">link</a> for further details."
-                + " Thank you."
+            "Please click this <a href=\"http://ruits/pass/index/" + entity.getPsid() + " \">link</a> for further details."
+                    + " Thank you."
             );
         } else if ( entity.getState() == 3 ) {
             emailSender.htmlEmail(
                 servletContext,
                 // user name
-                null,
+                entity.getCreatedBy(),
                 // to
-                entity.getCreatedBy().toString(),
+                entity.getCreatedBy(),
                 // subject
                 "Pass Approval number: " + entity.getPsid() + " was rejected."
                 + " History Log: " + entity.getHistoryLog(),
                 //  msg
-                "Please click this <a href=\"http://ruits/pass/index/\">link</a> for further details."
-                + " Thank you."
+            "Please click this <a href=\"http://ruits/pass/index/" + entity.getPsid() + " \">link</a> for further details."
+                    + " Thank you."
             );
 
         } else {

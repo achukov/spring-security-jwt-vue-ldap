@@ -2,19 +2,16 @@ package com.ifsaid.report.common.config;
 
 import java.io.IOException;
 import java.util.Properties;
-
-// import com.ifsaid.report.common.utils.EmailSender;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.springframework.beans.factory.annotation.Value;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 
 @Configuration
 @PropertySource("classpath:mail/javamail.properties")
@@ -29,10 +26,11 @@ public class MailConfig {
     @Value("${mail.smtp.auth}")
     private String mailSmtpAuth;
     @Value("${mail.smtp.starttls.enable}")
-    private String mailSmtpStartTtlsEnable;
+    private String mailSmtpStartTlsEnable;
     @Value("${mail.debug}")
     private String mailDebug;
 
+    // email configuration
     @Bean
     public JavaMailSender mailSender() throws IOException{
 
@@ -45,22 +43,24 @@ public class MailConfig {
         final Properties properties = new Properties();
         properties.put("mail.transport.protocol", mailTransportProtocol);
         properties.put("mail.smtp.auth", mailSmtpAuth);
-        properties.put("mail.smtp.starttls.enable", mailSmtpStartTtlsEnable);
+        properties.put("mail.smtp.starttls.enable", mailSmtpStartTlsEnable);
         properties.put("mail.debug", mailDebug);
         mailSender.setJavaMailProperties(properties);
 
         return mailSender;
     }
-    
-    @Bean
-    public ResourceBundleMessageSource emailMessageSource() {
-        final ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename("mail/");
-        return messageSource;
-    }
 
+    // Freemarker configuration
     @Bean
-    public ExecutorService executorService() {
-        return Executors.newCachedThreadPool();
+    public FreeMarkerConfigurationFactoryBean getFreeMarkerConfiguration() {
+        FreeMarkerConfigurationFactoryBean freeMarkerConfigurationFactoryBean = new FreeMarkerConfigurationFactoryBean();
+        freeMarkerConfigurationFactoryBean.setTemplateLoaderPath("/mail/");
+        return freeMarkerConfigurationFactoryBean;
     }
+//
+//    @Bean
+//    public ExecutorService executorService() {
+//        return Executors.newCachedThreadPool();
+//    }
+
 }

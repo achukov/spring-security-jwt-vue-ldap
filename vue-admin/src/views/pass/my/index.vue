@@ -54,8 +54,8 @@
                 <el-table-column prop="lastname" label="Фамилия"/>
                 <el-table-column prop="firstname" label="Имя"/>
                 <el-table-column prop="middlename" label="Отчество"/>
-                <el-table-column prop="pass_ser" label="Серия"/>
-                <el-table-column prop="pass_num" label="Номер"/>
+                <!--                <el-table-column prop="pass_ser" label="Серия"/>-->
+                <!--                <el-table-column prop="pass_num" label="Номер"/>-->
                 <el-table-column fixed="right" width="50" >
                   <template slot-scope="scope">
                     <el-button type="danger" size="mini" icon="el-icon-delete" circle alt="delete" title="delete" @click="deleteStaff(scope.row)"/>
@@ -167,8 +167,8 @@
                 <el-table-column prop="lastname" label="Фамилия"/>
                 <el-table-column prop="firstname" label="Имя"/>
                 <el-table-column prop="middlename" label="Отчество"/>
-                <el-table-column prop="pass_ser" label="Серия"/>
-                <el-table-column prop="pass_num" label="Номер"/>
+                <!--                <el-table-column prop="pass_ser" label="Серия"/>-->
+                <!--                <el-table-column prop="pass_num" label="Номер"/>-->
                 <el-table-column fixed="right" width="50" >
                   <template slot-scope="scope">
                     <el-button :disabled="isEdit" type="danger" size="mini" icon="el-icon-delete" circle alt="delete" title="delete" @click="deleteStaff(scope.row)"/>
@@ -263,14 +263,14 @@
             <span style="margin-left: 5px">{{ scope.row.enddate | formatDate }}</span>
           </template>
         </el-table-column>
-        <el-table-column show-overflow-tooltip label="Посетители" width="400">
+        <el-table-column show-overflow-tooltip label="Посетители" width="320">
           <template slot-scope="props">
             <div v-for="child in JSON.parse(props.row.visitors)" :key="child.lastname" label-position="left" >
-              {{ child.lastname }} {{ child.firstname }} {{ child.middlename }} ({{ child.pass_ser }}-{{ child.pass_num }})
+              {{ child.lastname }} {{ child.firstname }} {{ child.middlename }}
             </div>
           </template>
         </el-table-column>
-        <el-table-column show-overflow-tooltip label="Транспорт" width="400">
+        <el-table-column show-overflow-tooltip label="Транспорт" width="320">
           <template slot-scope="props">
             <div v-for="child in JSON.parse(props.row.vehicles)" :key="child.carnumber" label-position="left" >
               [{{ child.cartype }} {{ child.carnumber }}] {{ child.parktype }}:{{ child.parklevel }} [{{ child.buildingaccess | showBuild }}]
@@ -331,17 +331,17 @@
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item label="Паспорт:">
-          <el-row type="flex" class="row-bg" justify="center">
-            <el-col :span="6">
-              <el-input v-model="staff.pass_ser" name="pass_ser" placeholder="Серия" />
-            </el-col>
-            <el-col :span="1" class="line">-</el-col>
-            <el-col :span="11">
-              <el-input v-model="staff.pass_num" name="pass_num" placeholder="Номер" />
-            </el-col>
-          </el-row>
-        </el-form-item>
+        <!--        <el-form-item label="Паспорт:">-->
+        <!--          <el-row type="flex" class="row-bg" justify="center">-->
+        <!--            <el-col :span="6">-->
+        <!--              <el-input v-model="staff.pass_ser" name="pass_ser" placeholder="Серия" />-->
+        <!--            </el-col>-->
+        <!--            <el-col :span="1" class="line">-</el-col>-->
+        <!--            <el-col :span="11">-->
+        <!--              <el-input v-model="staff.pass_num" name="pass_num" placeholder="Номер" />-->
+        <!--            </el-col>-->
+        <!--          </el-row>-->
+        <!--        </el-form-item>-->
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button v-model="staff" size="mini" type="primary" @click="appendStaff(staff)">Сохранить</el-button>
@@ -401,7 +401,8 @@
           <el-steps :active="temp.state" align-center process-status="success" finish-status="finish">
             <el-step title="Новый" description="Заполнение документа"/>
             <el-step title="На Согласовании" description="Утверждается отделом безопасности"/>
-            <el-step title="Утвержден" description="Заявка согласована"/>
+            <el-step v-if="temp.state === 2" title="Утвержден" description="Заявка согласована"/>
+            <el-step v-if="temp.state === 3" title="Отменен" status="error" description="Заявка отмененеа"/>
           </el-steps>
           <div> Номер: {{ temp.psid }} </div>
           <div> Автор: {{ temp.createdBy | lowercase }} </div>
@@ -500,10 +501,10 @@ export default {
       },
       staffRules: {
         lastname: [{ required: true, message: 'Необходимо указать фамилию', trigger: 'blur' }],
-        firstname: [{ required: true, message: 'Необходимо указать имя', trigger: 'blur' }],
-        middlename: [{ required: true, message: 'Необходимо указать отчество', trigger: 'blur' }],
-        pass_ser: [{ required: true, message: 'Необходимо указать серию паспорта', trigger: 'blur' }],
-        pass_num: [{ required: true, message: 'Необходимо указать номер паспорта', trigger: 'blur' }]
+        firstname: [{ required: true, message: 'Необходимо указать имя', trigger: 'blur' }]
+        // middlename: [{ required: true, message: 'Необходимо указать отчество', trigger: 'blur' }]
+        // pass_ser: [{ required: true, message: 'Необходимо указать серию паспорта', trigger: 'blur' }],
+        // pass_num: [{ required: true, message: 'Необходимо указать номер паспорта', trigger: 'blur' }]
       }
     };
   },

@@ -64,6 +64,12 @@ public class Pass extends BaseEntity implements Serializable {
     @Column(name = "t_comments")
     private String comments;
 
+    @Column(name = "t_approvedby")
+    private String approvedby;
+
+    @Column(name = "t_rejectedby")
+    private String rejectedby;
+
     @Column(name = "t_category_id")
     private Integer categoryId;
 
