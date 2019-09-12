@@ -768,7 +768,7 @@ export default {
     decision(row, id) {
       const _this = this;
       if (row.psid > 0) {
-        _this.$confirm('Вы точно хотите ' + (id === 2 ? 'утвердить' : 'отклонить') + ' заявку ?', 'Внимание',
+        _this.$confirm('Вы точно хотите ' + (id === 4 ? 'отклонить' : 'утвердить') + ' заявку ?', 'Внимание',
           { confirmButtonText: 'Да', cancelButtonText: 'Отменить', type: 'warning' })
           .then(() => {
             row.state = id;
