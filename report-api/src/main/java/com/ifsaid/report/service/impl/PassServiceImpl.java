@@ -50,30 +50,32 @@ public class PassServiceImpl extends BaseServiceImpl<Pass, Long, PassRepository>
 
     @Override
     public Pass save(Pass entity) throws JpaCrudException {
-        entity.setCreatedBy(SecurityUtils.getCurrentMail());
+       entity.setCreatedBy(SecurityUtils.getCurrentMail());
+//
+//        List<User> approvers = userService.findByDept(13);
+//
+//        String[] to = new String[approvers.size()];
+//        for (int i = 0; i < approvers.size(); i++) {
+//            to[i] = approvers.get(i).getMail();
+//        }
 
-        List<User> approvers = userService.findByDept(13);
-    
-        String[] to = new String[approvers.size()];
-        for (int i = 0; i < approvers.size(); i++) {
-            to[i] = approvers.get(i).getMail();
-        }
+//        super.save(entity);
+//
+//        emailSender.htmlEmailManyTo(
+//                servletContext,
+//                // user name
+//                null,
+//                // to
+//                to,
+//                // subject
+//                "New Pass Approval №: " + entity.getPsid() + " for your approval",
+//                //  msg
+//                "Please click this <a href=\"http://ruits/pass/index/" + entity.getPsid() + " \">link</a> for further details."
+//                + " Thank you."
+//                );
+//        return entity;
 
-        super.save(entity);
-
-        emailSender.htmlEmailManyTo(
-                servletContext,
-                // user name
-                null,
-                // to
-                to,
-                // subject
-                "New Pass Approval №: " + entity.getPsid() + " for your approval",
-                //  msg
-                "Please click this <a href=\"http://ruits/pass/index/" + entity.getPsid() + " \">link</a> for further details."
-                + " Thank you."
-                );
-        return entity;
+        return super.save(entity);
         
     } 
 

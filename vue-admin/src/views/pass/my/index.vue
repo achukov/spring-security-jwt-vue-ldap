@@ -246,18 +246,18 @@
             <span style="margin-left: 5px">{{ scope.row.createTime | formatTime }}</span>
           </template>
         </el-table-column>
-        <el-table-column show-overflow-tooltip label="Кем создано" width="190">
+        <el-table-column show-overflow-tooltip sortable label="Кем создано" width="190">
           <template slot-scope="scope">
             <span style="margin-left: 5px"> {{ scope.row.createdBy | lowercase }}</span>
           </template>
         </el-table-column>
-        <el-table-column show-overflow-tooltip label="Действителен с" width="150">
+        <el-table-column show-overflow-tooltip sortable label="Действителен с" width="150">
           <template slot-scope="scope">
             <i class="el-icon-time"/>
             <span style="margin-left: 5px">{{ scope.row.startdate | formatDate }}</span>
           </template>
         </el-table-column>
-        <el-table-column show-overflow-tooltip label="Действителен по" width="150">
+        <el-table-column show-overflow-tooltip sortable label="Действителен по" width="150">
           <template slot-scope="scope">
             <i class="el-icon-time"/>
             <span style="margin-left: 5px">{{ scope.row.enddate | formatDate }}</span>
@@ -277,12 +277,13 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column sortable prop="state" label="Статус" width="150">
+        <el-table-column prop="state" sortable label="Статус" width="150">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.state==0" type="info" size="mini">Новый</el-tag>
-            <el-tag v-if="scope.row.state==1" type="warning" size="mini">На Согласовании</el-tag>
-            <el-tag v-if="scope.row.state==2" type="success" size="mini">Утвержден</el-tag>
-            <el-tag v-if="scope.row.state==3" type="danger" size="mini">Отменен</el-tag>
+            <el-tag v-if="scope.row.state==1" type="warning" size="mini">Согласование Security</el-tag>
+            <el-tag v-if="scope.row.state==2" type="warning" size="mini">Обработка Reception</el-tag>
+            <el-tag v-if="scope.row.state==3" type="success" size="mini">Утвержден</el-tag>
+            <el-tag v-if="scope.row.state==4" type="danger" size="mini">Отменен</el-tag>
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="Actions" width="125">
@@ -395,14 +396,15 @@
         <el-button size="mini" @click="vehicleDialogFormVisible = false">Отменить</el-button>
       </span>
     </el-dialog>
-    <el-dialog :visible.sync="showWorkflowHistory" title="Workflow History" width="800px" height="350px">
+    <el-dialog :visible.sync="showWorkflowHistory" title="Workflow History" width="820px" height="350px">
       <el-form ref="staff" :model="staff" size="mini">
         <fieldset style="margin-bottom: 5px; border-radius: 5px; padding: 10px; border: 1px solid #DCDFE6;">
           <el-steps :active="temp.state" align-center process-status="success" finish-status="finish">
             <el-step title="Новый" description="Заполнение документа"/>
-            <el-step title="На Согласовании" description="Утверждается отделом безопасности"/>
-            <el-step v-if="temp.state === 2" title="Утвержден" description="Заявка согласована"/>
-            <el-step v-if="temp.state === 3" title="Отменен" status="error" description="Заявка отмененеа"/>
+            <el-step title="Security" description="На согласовании отделом Security"/>
+            <el-step title="Reception" description="Обработка сотрудниками Reception"/>
+            <el-step v-if="temp.state === 3" title="Утвержден" description="Заявка согласована"/>
+            <el-step v-if="temp.state === 4" title="Отменен" status="error" description="Заявка отмененеа"/>
           </el-steps>
           <div> Номер: {{ temp.psid }} </div>
           <div> Автор: {{ temp.createdBy | lowercase }} </div>
@@ -480,7 +482,6 @@ export default {
       typeoptions: ['Пропуск на посещение', 'Пропуск на въезд'],
       parkoptions: ['Гостевой', 'Погрузка-разгрузка', 'Посадка пассажиров'],
       leveloptions: ['Наземный', 'Подземный'],
-      statusoptions: [{ value: 0, label: 'Отменен' }, { value: 1, label: 'Новый' }, { value: 2, label: 'На Согласовании' }, { value: 3, label: 'Утвержден' }],
       // Verification rule
       rules: {
         startdate: [{ type: 'date', required: true, message: 'Необходимо заполнить дату начала', trigger: 'change' }],
