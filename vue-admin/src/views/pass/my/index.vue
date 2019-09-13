@@ -239,59 +239,60 @@
     </el-header>
     <el-main>
       <el-table v-loading="loading" :data="tableData" :default-sort = "{prop: 'psid', order: 'descending'}" size="mini" border tooltip-effect="light" element-loading-text="Loading..." style="width: 100%">
-        <el-table-column sortable fixed prop="psid" label="Id" width="60"/>
-        <el-table-column show-overflow-tooltip sortable prop="createTime" label="Создано" width="170">
+        <el-table-column sortable fixed prop="psid" label="№" width="60"/>
+        <el-table-column show-overflow-tooltip sortable prop="createTime" label="Создан" width="150">
           <template slot-scope="scope">
             <i class="el-icon-time"/>
-            <span style="margin-left: 5px">{{ scope.row.createTime | formatTime }}</span>
+            <span style="margin-left: 5px">{{ scope.row.createTime | formatDate }}</span>
           </template>
         </el-table-column>
-        <el-table-column show-overflow-tooltip sortable label="Кем создано" width="190">
+        <el-table-column show-overflow-tooltip sortable prop="createdBy" label="Автор" width="190">
           <template slot-scope="scope">
             <span style="margin-left: 5px"> {{ scope.row.createdBy | lowercase }}</span>
           </template>
         </el-table-column>
-        <el-table-column show-overflow-tooltip sortable label="Действителен с" width="150">
+        <el-table-column show-overflow-tooltip sortable prop="startdate" label="Действителен с" width="150">
           <template slot-scope="scope">
             <i class="el-icon-time"/>
             <span style="margin-left: 5px">{{ scope.row.startdate | formatDate }}</span>
           </template>
         </el-table-column>
-        <el-table-column show-overflow-tooltip sortable label="Действителен по" width="150">
+        <el-table-column show-overflow-tooltip sortable prop="enddate" label="Действителен по" width="150">
           <template slot-scope="scope">
             <i class="el-icon-time"/>
             <span style="margin-left: 5px">{{ scope.row.enddate | formatDate }}</span>
           </template>
         </el-table-column>
-        <el-table-column show-overflow-tooltip label="Посетители" width="320">
+        <el-table-column show-overflow-tooltip label="Посетители" width="300">
           <template slot-scope="props">
             <div v-for="child in JSON.parse(props.row.visitors)" :key="child.lastname" label-position="left" >
               {{ child.lastname }} {{ child.firstname }} {{ child.middlename }}
             </div>
           </template>
         </el-table-column>
-        <el-table-column show-overflow-tooltip label="Транспорт" width="320">
+        <el-table-column show-overflow-tooltip label="Транспорт" width="300">
           <template slot-scope="props">
             <div v-for="child in JSON.parse(props.row.vehicles)" :key="child.carnumber" label-position="left" >
               [{{ child.cartype }} {{ child.carnumber }}] {{ child.parktype }}:{{ child.parklevel }} [{{ child.buildingaccess | showBuild }}]
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="state" sortable label="Статус" width="150">
+        <el-table-column prop="state" sortable label="Статус" width="200">
           <template slot-scope="scope">
-            <el-tag v-if="scope.row.state==0" type="info" size="mini">Новый</el-tag>
-            <el-tag v-if="scope.row.state==1" type="warning" size="mini">Согласование Security</el-tag>
-            <el-tag v-if="scope.row.state==2" type="warning" size="mini">Обработка Reception</el-tag>
-            <el-tag v-if="scope.row.state==3" type="success" size="mini">Утвержден</el-tag>
-            <el-tag v-if="scope.row.state==4" type="danger" size="mini">Отменен</el-tag>
+            <el-tag v-if="scope.row.state === 0" type="info" size="mini">Новый</el-tag>
+            <el-tag v-if="scope.row.state === 1" type="warning" size="mini">Согласование Security</el-tag>
+            <el-tag v-if="scope.row.approvedby != null" type="success" size="mini">Согласован: {{ scope.row.approvedby }}</el-tag>
+            <el-tag v-if="scope.row.state === 2" type="process" size="mini">Обработка Reception</el-tag>
+            <el-tag v-if="scope.row.state === 3" type="process" size="mini">Пропуск заказан: {{ scope.row.processedby }} </el-tag>
+            <el-tag v-if="scope.row.state === 4 || scope.row.rejectedby != null" type="danger" size="mini">Отменен: {{ scope.row.rejectedby }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="Actions" width="125">
+        <el-table-column fixed="right" label="Действия" width="125">
           <template slot-scope="scope">
-            <el-tooltip :open-delay="600" class="item" effect="light" content="Edit document" placement="top-start">
+            <el-tooltip :open-delay="600" class="item" effect="light" content="Редактировать документ" placement="top-start">
               <el-button v-has="'pass:update'" type="primary" icon="el-icon-edit" plain size="mini" @click="handleUpdate(scope.row)"/>
             </el-tooltip>
-            <el-tooltip :open-delay="600" class="item" effect="light" content="Delete document" placement="top-end">
+            <el-tooltip :open-delay="600" class="item" effect="light" content="Удалить документ" placement="top-end">
               <el-button v-has="'pass:delete'" v-if="scope.row.state === 0" type="danger" icon="el-icon-delete" plain size="mini" @click="handleDelete(scope.row)"/>
             </el-tooltip>
           </template>
@@ -407,7 +408,6 @@
             <el-step v-if="temp.state === 4" title="Отменен" status="error" description="Заявка отмененеа"/>
           </el-steps>
           <div> Номер: {{ temp.psid }} </div>
-          <div> Автор: {{ temp.createdBy | lowercase }} </div>
           <div style="white-space: pre-line;"> История: {{ temp.historyLog | formatText }} </div>
         </fieldset>
       </el-form>
@@ -609,7 +609,7 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row);
-      this.temp.state !== 0 && this.temp.state !== 3 ? this.isEdit = true : this.isEdit = false;
+      this.temp.state !== 0 ? this.isEdit = true : this.isEdit = false;
       this.tempVehiclesTable = JSON.parse(this.temp.vehicles);
       this.tempVisitorsTable = JSON.parse(this.temp.visitors);
       this.updateDialogFormVisible = true;
@@ -642,7 +642,7 @@ export default {
       _this.$refs['createForm'].validate((valid) => {
         if (valid) {
           _this.temp.state = id;
-          _this.temp.historyLog = ';Created by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString();
+          _this.temp.historyLog = ';Создан: ' + this.$store.state.user.account + ' ' + new Date().toLocaleString();
           _this.temp.visitors = JSON.stringify(this.tempVisitorsTable);
           _this.temp.vehicles = JSON.stringify(this.tempVehiclesTable);
           savePass(_this.temp).then((result) => {
@@ -662,7 +662,7 @@ export default {
       const _this = this;
       _this.$refs['updateForm'].validate((valid) => {
         if (valid) {
-          _this.temp.historyLog = _this.temp.historyLog + ';Updated by: ' + this.$store.state.user.account + ' at: ' + new Date().toLocaleString();
+          _this.temp.historyLog = _this.temp.historyLog + ';Отредактирован: ' + this.$store.state.user.account + ' ' + new Date().toLocaleString();
           _this.temp.visitors = JSON.stringify(this.tempVisitorsTable);
           _this.temp.vehicles = JSON.stringify(this.tempVehiclesTable);
           updatePass(_this.temp).then((result) => {

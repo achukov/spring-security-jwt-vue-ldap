@@ -59,60 +59,76 @@ public class PassServiceImpl extends BaseServiceImpl<Pass, Long, PassRepository>
 //            to[i] = approvers.get(i).getMail();
 //        }
 
-//        super.save(entity);
-//
-//        emailSender.htmlEmailManyTo(
-//                servletContext,
-//                // user name
-//                null,
-//                // to
-//                to,
-//                // subject
-//                "New Pass Approval №: " + entity.getPsid() + " for your approval",
-//                //  msg
-//                "Please click this <a href=\"http://ruits/pass/index/" + entity.getPsid() + " \">link</a> for further details."
-//                + " Thank you."
-//                );
-//        return entity;
+        super.save(entity);
 
-        return super.save(entity);
-        
-    } 
+        emailSender.htmlEmail(
+                servletContext,
+                // user name
+                null,
+                // to
+                "RUSecurity1@bat.mail.onmicrosoft.com",
+                // subject
+                "New Pass Approval №: " + entity.getPsid() + " for your review",
+                //  msg
+                "Please click this <a href=\"http://ruits/pass/index/" + entity.getPsid() + " \">link</a> for further details."
+                + " Thank you."
+                );
+        return entity;
+
+    }
 
     @Override
     public Pass update(Pass entity) throws JpaCrudException {
         entity.setUpdatedBy(SecurityUtils.getCurrentMail());
 
-        if( entity.getState() == 2 ){
-            emailSender.htmlEmail(
-                servletContext,
-                // user name
-                entity.getCreatedBy(),
-                // to
-                entity.getCreatedBy(),
-                // subject
-                "Pass Approval number: " + entity.getPsid() + " was approved.",
-                //  msg
-            "Please click this <a href=\"http://ruits/pass/index/" + entity.getPsid() + " \">link</a> for further details."
-                    + " Thank you."
-            );
-        } else if ( entity.getState() == 3 ) {
-            emailSender.htmlEmail(
-                servletContext,
-                // user name
-                entity.getCreatedBy(),
-                // to
-                entity.getCreatedBy(),
-                // subject
-                "Pass Approval number: " + entity.getPsid() + " was rejected."
-                + " History Log: " + entity.getHistoryLog(),
-                //  msg
-            "Please click this <a href=\"http://ruits/pass/index/" + entity.getPsid() + " \">link</a> for further details."
-                    + " Thank you."
-            );
-
-        } else {
-            // TODO доделать уведомления
+        switch(entity.getState()) {
+            case (2):
+                // для reception
+                emailSender.htmlEmail(
+                        servletContext,
+                        // user name
+                        null,
+                        // to
+                        "receptionBAT@bat.mail.onmicrosoft.com",
+                        // subject
+                        "Pass Approval №: " + entity.getPsid() + " was approved by " + entity.getApprovedby() + ", and sent to you for review",
+                        //  msg
+                        "Please click this <a href=\"http://ruits/pass/index/" + entity.getPsid() + " \">link</a> for further details."
+                                + " Thank you."
+                );
+                break;
+            case (3):
+                //пропуск заказан, для инициатора
+                emailSender.htmlEmail(
+                        servletContext,
+                        // user name
+                        entity.getCreatedBy(),
+                        // to
+                        entity.getCreatedBy(),
+                        // subject
+                        "Pass Approval №: " + entity.getPsid() + " was approved.",
+                        //  msg
+                        "Please click this <a href=\"http://ruits/pass/index/" + entity.getPsid() + " \">link</a> for further details."
+                                + " Thank you."
+                );
+                break;
+            case (4):
+                //отклонен, для инициатора
+                emailSender.htmlEmail(
+                        servletContext,
+                        // user name
+                        entity.getCreatedBy(),
+                        // to
+                        entity.getCreatedBy(),
+                        // subject
+                        "Pass Approval №: " + entity.getPsid() + " was rejected.",
+                        //  msg
+                        "Please click this <a href=\"http://ruits/pass/index/" + entity.getPsid() + " \">link</a> for further details."
+                                + " Thank you."
+                );
+                break;
+            default:
+                break;
         }
 
         return super.update(entity);

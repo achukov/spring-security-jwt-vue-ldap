@@ -333,14 +333,14 @@
           </fieldset>
         </el-form>
         <span v-has="'pass:security'" slot="footer" class="dialog-footer">
-          <el-button v-if="temp.state === 1" size="mini" type="success" @click="updateData(2)">Утвердить</el-button>
-          <el-button v-if="temp.state === 1" size="mini" type="danger" @click="addComment">Отклонить</el-button>
-          <el-button v-else size="mini" @click="decisionDialogFormVisible = false">Cancel</el-button>
+          <el-button v-has="'pass:security'" v-if="temp.state === 1" size="mini" type="success" @click="updateData(2)">Утвердить</el-button>
+          <el-button v-has="'pass:security'" v-if="temp.state === 1" size="mini" type="danger" @click="addComment">Отклонить</el-button>
+          <el-button v-else size="mini" @click="decisionDialogFormVisible = false">Отменить</el-button>
           <div class="history">
             <el-button type="warning" size="mini" circle @click="showWorkflowHistory = true"><i class="el-icon-chat-line-square"/></el-button>
           </div>
         </span>
-        <el-button v-if="temp.state === 2" size="mini" type="success" @click="updateData(3)">Пропуск заказан</el-button>
+        <el-button v-has="'pass:reception'" v-if="temp.state === 2" size="mini" type="success" @click="updateData(3)">Пропуск заказан</el-button>
       </el-dialog>
       <!-- End -->
     </el-header>
@@ -353,18 +353,18 @@
             <span style="margin-left: 5px">{{ scope.row.createTime | formatDate }}</span>
           </template>
         </el-table-column>
-        <el-table-column show-overflow-tooltip sortable label="Автор" width="190">
+        <el-table-column show-overflow-tooltip sortable prop="createdBy" label="Автор" width="190">
           <template slot-scope="scope">
             <span style="margin-left: 5px"> {{ scope.row.createdBy | lowercase }}</span>
           </template>
         </el-table-column>
-        <el-table-column show-overflow-tooltip sortable label="Действителен с" width="150">
+        <el-table-column show-overflow-tooltip sortable prop="startdate" label="Действителен с" width="150">
           <template slot-scope="scope">
             <i class="el-icon-time"/>
             <span style="margin-left: 5px">{{ scope.row.startdate | formatDate }}</span>
           </template>
         </el-table-column>
-        <el-table-column show-overflow-tooltip sortable label="Действителен по" width="150">
+        <el-table-column show-overflow-tooltip sortable prop="enddate" label="Действителен по" width="150">
           <template slot-scope="scope">
             <i class="el-icon-time"/>
             <span style="margin-left: 5px">{{ scope.row.enddate | formatDate }}</span>
@@ -390,11 +390,11 @@
             <el-tag v-if="scope.row.state === 1" type="warning" size="mini">Согласование Security</el-tag>
             <el-tag v-if="scope.row.approvedby != null" type="success" size="mini">Согласован: {{ scope.row.approvedby }}</el-tag>
             <el-tag v-if="scope.row.state === 2" type="process" size="mini">Обработка Reception</el-tag>
-            <el-tag v-if="scope.row.state === 3" type="success" size="mini">Пропуск заказан: {{ scope.row.processedby }} </el-tag>
+            <el-tag v-if="scope.row.state === 3" type="process" size="mini">Пропуск заказан: {{ scope.row.processedby }} </el-tag>
             <el-tag v-if="scope.row.state === 4 || scope.row.rejectedby != null" type="danger" size="mini">Отменен: {{ scope.row.rejectedby }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="Decision" width="125">
+        <el-table-column fixed="right" label="Решение" width="125">
           <template slot-scope="scope">
             <el-tooltip :open-delay="600" class="item" effect="light" content="Утвердить" placement="top-start">
               <el-button v-has="'pass:security'" v-if="scope.row.state === 1" size="mini" icon="el-icon-check" type="success" @click="decision(scope.row, 2)"/>
@@ -407,12 +407,12 @@
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="Actions" width="125">
+        <el-table-column fixed="right" label="Действия" width="125">
           <template slot-scope="scope">
-            <el-tooltip :open-delay="600" class="item" effect="light" content="Edit document" placement="top-start">
+            <el-tooltip :open-delay="600" class="item" effect="light" content="Редактировать документ" placement="top-start">
               <el-button v-has="'pass:view'" type="primary" icon="el-icon-edit" plain size="mini" @click="handleUpdate(scope.row)"/>
             </el-tooltip>
-            <el-tooltip :open-delay="600" class="item" effect="light" content="Delete document" placement="top-end">
+            <el-tooltip :open-delay="600" class="item" effect="light" content="Удалить документ" placement="top-end">
               <el-button v-has="'pass:security'" type="danger" icon="el-icon-delete" plain size="mini" @click="handleDelete(scope.row)"/>
             </el-tooltip>
           </template>
@@ -778,7 +778,7 @@ export default {
                 row.approvedby = this.$store.state.user.account;
                 break;
               case 3:
-                row.temp.historyLog = row.temp.historyLog + ';Обработан: ' + this.$store.state.user.account + ' ' + new Date().toLocaleString();
+                row.historyLog = row.historyLog + ';Обработан: ' + this.$store.state.user.account + ' ' + new Date().toLocaleString();
                 row.processedby = this.$store.state.user.account;
                 break;
               case 4:

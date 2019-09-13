@@ -18,3 +18,5 @@ sudo nohup java -jar ./report-api-1.0.jar > ./report-api.log  2>&1 &
  <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
 
  npm install --save-dev webpack
+ 
+ 0 22 * * * /usr/bin/mysql --user=report_admin --password=west123 -e "DELETE FROM report.tb_pass WHERE t_enddate = DATE_FORMAT( NOW() + INTERVAL +30 DAY , '%Y-%m-%d 00:00:00') and t_state in (3,4);" >> /var/www/ruits/del.log
